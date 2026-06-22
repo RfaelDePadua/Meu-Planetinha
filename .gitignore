@@ -1,0 +1,16 @@
+# Dependências
+node_modules/
+
+# Planejamento / ferramentas de IA
+.planning/
+.codex/
+.claude/
+.gsd-backup/
+
+# Editor / OS
+.vscode/
+.DS_Store
+
+# Ambiente / logs
+.env
+npm-debug.log

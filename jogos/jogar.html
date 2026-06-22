@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Jogando no Meu Planetinha — plataforma educacional gamificada para crianças.">
+  <title>Jogar — Meu Planetinha</title>
+
+  <!-- Google Fonts: preconnect + stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CSS Load Order (depth-1: ../estilos/...) -->
+  <link rel="stylesheet" href="../estilos/reset.css">
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/animacoes.css">
+  <link rel="stylesheet" href="../estilos/pages/jogar.css">
+</head>
+<body class="page-jogar" data-planeta="letrion">
+
+  <!-- ── BACK LINK (always visible in lobby) ── -->
+  <a class="back-link" href="../explorar/explorar.html" id="back-link">
+    <i class="bi bi-arrow-left" aria-hidden="true"></i> Explorar
+  </a>
+
+  <!-- ══════════════════════ ERROR STATE ══════════════════════ -->
+  <div class="state-error" id="state-error" hidden>
+    <i class="bi bi-rocket-takeoff error-icon" aria-hidden="true"></i>
+    <h1 class="error-title">Planeta não encontrado</h1>
+    <p class="error-sub">O jogo que você procura não existe no nosso universo… por enquanto!</p>
+    <a class="error-cta" href="../explorar/explorar.html">
+      <i class="bi bi-joystick" aria-hidden="true"></i> Explorar jogos
+    </a>
+  </div>
+
+  <!-- ══════════════════════ LOBBY ══════════════════════ -->
+  <div class="state-lobby" id="state-lobby">
+    <div class="lobby-card">
+
+      <!-- art strip -->
+      <div class="lobby-art">
+        <img class="lobby-cover-img" id="lobby-cover-img" src="" alt="" hidden>
+        <div class="lobby-cover-fallback" id="lobby-cover-fallback" aria-hidden="true">
+          <i class="bi bi-controller"></i>
+        </div>
+        <div class="diff-stars" id="lobby-stars" aria-hidden="true"></div>
+      </div>
+
+      <!-- info -->
+      <div class="lobby-info">
+        <span class="planet-chip" id="lobby-chip">
+          <span class="planet-dot" aria-hidden="true"></span>
+          <span id="lobby-chip-text">Planeta · Matéria</span>
+        </span>
+        <h1 class="lobby-title" id="lobby-title">Nome do Jogo</h1>
+
+        <div class="tab-nav" role="tablist">
+          <button class="tab-btn active" data-tab="sobre" role="tab" aria-selected="true">Sobre</button>
+          <button class="tab-btn" data-tab="como-jogar" role="tab" aria-selected="false">Como Jogar</button>
+        </div>
+        <div class="tab-panel active" id="tab-sobre" role="tabpanel">
+          <p id="sobre-text"></p>
+        </div>
+        <div class="tab-panel" id="tab-como-jogar" role="tabpanel">
+          <ol class="tutorial-steps" id="tutorial-steps-lobby"></ol>
+        </div>
+
+        <div class="lobby-progress" aria-hidden="true">
+          <div class="lobby-progress-bar" id="lobby-progress-bar"></div>
+        </div>
+        <button class="jogar-btn" id="btn-jogar" disabled aria-label="Iniciar jogo">
+          <i class="bi bi-hourglass-split" id="jogar-icon" aria-hidden="true"></i>
+          <span id="jogar-text">Carregando…</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ ROTATE WARNING ══════════════════════ -->
+  <div class="rotate-overlay" id="rotate-overlay" hidden role="alert" aria-live="polite">
+    <i class="bi bi-phone-landscape rotate-icon" aria-hidden="true"></i>
+    <h2 class="rotate-title">Gire o celular</h2>
+    <p class="rotate-sub">Este jogo é melhor no modo paisagem</p>
+  </div>
+
+  <!-- ══════════════════════ GAME SHELL ══════════════════════ -->
+  <div class="state-shell" id="state-shell" hidden>
+
+    <!-- left: decorative panel -->
+    <aside class="panel-left" aria-hidden="true">
+      <span class="panel-left-label">
+        <span class="planet-dot"></span>
+        <span id="left-chip-text">Planeta</span>
+      </span>
+      <div class="panel-left-rule"></div>
+      <h2 class="panel-left-title" id="left-title">Título</h2>
+      <div class="panel-left-stars" id="left-stars"></div>
+    </aside>
+
+    <!-- center: game iframe -->
+    <main class="game-center" id="game-center">
+      <div class="game-iframe-wrap" id="game-iframe-wrap">
+        <div class="game-loading" id="game-loading">
+          <div class="loading-dots" aria-hidden="true">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+          </div>
+          <p class="loading-text" id="loading-text">Preparando a aventura…</p>
+        </div>
+        <iframe id="game-iframe" title="Área do jogo" sandbox="allow-scripts allow-same-origin" allow="autoplay" hidden></iframe>
+      </div>
+    </main>
+
+    <!-- right: functional panel -->
+    <aside class="panel-right">
+      <button class="shell-back" id="shell-back" type="button" aria-label="Voltar">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar
+      </button>
+      <div class="panel-divider"></div>
+      <span class="planet-chip">
+        <span class="planet-dot" aria-hidden="true"></span>
+        <span id="right-chip-text">Planeta</span>
+      </span>
+      <p class="panel-game-title" id="right-title">Nome do Jogo</p>
+      <div class="panel-spacer"></div>
+      <div class="ctrl-group">
+        <button class="ctrl-btn is-how" id="btn-tutorial-panel" type="button">
+          <i class="bi bi-question-circle" aria-hidden="true"></i> Como Jogar
+        </button>
+        <button class="ctrl-btn" id="btn-pause" type="button">
+          <i class="bi bi-pause-circle" id="pause-icon" aria-hidden="true"></i>
+          <span id="pause-label">Pausar</span>
+        </button>
+        <button class="ctrl-btn" id="btn-mute" type="button">
+          <i class="bi bi-volume-up-fill" id="mute-icon" aria-hidden="true"></i>
+          <span id="mute-label">Som</span>
+        </button>
+        <button class="ctrl-btn" id="btn-fullscreen" type="button">
+          <i class="bi bi-fullscreen" id="fs-icon" aria-hidden="true"></i> Tela cheia
+        </button>
+      </div>
+    </aside>
+
+    <!-- horizontal strip (desktop horizontal games) -->
+    <div class="horiz-strip" id="horiz-strip" aria-label="Controles">
+      <button class="shell-back strip-back" id="strip-back" type="button" aria-label="Voltar">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      </button>
+      <span class="strip-title" id="strip-title">Título</span>
+      <div class="strip-spacer"></div>
+      <button class="strip-btn is-how" id="strip-tutorial" type="button" aria-label="Como jogar">
+        <i class="bi bi-question-circle"></i>
+      </button>
+      <button class="strip-btn" id="strip-pause" type="button" aria-label="Pausar">
+        <i class="bi bi-pause-circle" id="strip-pause-icon"></i>
+      </button>
+      <button class="strip-btn" id="strip-mute" type="button" aria-label="Silenciar">
+        <i class="bi bi-volume-up-fill" id="strip-mute-icon"></i>
+      </button>
+      <button class="strip-btn" id="strip-fullscreen" type="button" aria-label="Tela cheia">
+        <i class="bi bi-fullscreen" id="strip-fs-icon"></i>
+      </button>
+    </div>
+
+    <!-- mobile top bar -->
+    <div class="mobile-topbar" role="toolbar" aria-label="Controles do jogo">
+      <button class="topbar-btn" id="mobile-back" type="button" aria-label="Voltar">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <span class="topbar-title" id="mobile-title">Título</span>
+      <button class="topbar-btn" id="mobile-pause" type="button" aria-label="Pausar">
+        <i class="bi bi-pause-circle" id="mobile-pause-icon"></i>
+      </button>
+    </div>
+
+    <!-- mobile bottom drawer (always visible) -->
+    <div class="bottom-drawer" id="bottom-drawer">
+      <button class="drawer-trigger" id="drawer-trigger" type="button" aria-expanded="false" aria-controls="drawer-content">
+        <span class="drawer-handle" aria-hidden="true"></span>
+        <div class="drawer-pills-row" aria-hidden="true">
+          <span class="drawer-pill is-how"><i class="bi bi-question-circle"></i> Como jogar</span>
+          <span class="drawer-pill"><i class="bi bi-info-circle"></i> Info</span>
+        </div>
+      </button>
+      <div class="drawer-content" id="drawer-content" hidden>
+        <div class="drawer-tab-nav" role="tablist">
+          <button class="drawer-tab-btn active" data-dtab="how" type="button" role="tab">Como Jogar</button>
+          <button class="drawer-tab-btn" data-dtab="info" type="button" role="tab">Sobre</button>
+        </div>
+        <div id="dtab-how">
+          <ol class="tutorial-steps" id="tutorial-steps-drawer"></ol>
+        </div>
+        <div id="dtab-info" hidden>
+          <p class="drawer-sobre-text" id="drawer-sobre-text"></p>
+        </div>
+        <div class="drawer-controls-row">
+          <button class="drawer-ctrl" id="drawer-mute" type="button">
+            <i class="bi bi-volume-up-fill" id="drawer-mute-icon"></i> Som
+          </button>
+          <button class="drawer-ctrl" id="drawer-fullscreen" type="button">
+            <i class="bi bi-fullscreen" id="drawer-fs-icon"></i> Tela cheia
+          </button>
+          <button class="drawer-ctrl" id="drawer-exit" type="button">
+            <i class="bi bi-x-circle"></i> Sair
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /state-shell -->
+
+  <!-- ══════════════════════ PAUSE OVERLAY ══════════════════════ -->
+  <div class="pause-overlay" id="pause-overlay" hidden role="dialog" aria-modal="true" aria-label="Jogo pausado">
+    <div class="pause-card">
+      <h2 class="pause-title">Pausado</h2>
+      <button class="pause-btn primary" id="btn-resume" type="button">
+        <i class="bi bi-play-fill" aria-hidden="true"></i> Continuar
+      </button>
+      <button class="pause-btn" id="btn-restart" type="button">
+        <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i> Reiniciar
+      </button>
+      <button class="pause-btn" id="btn-how-pause" type="button">
+        <i class="bi bi-question-circle" aria-hidden="true"></i> Como jogar
+      </button>
+      <button class="pause-btn" id="btn-exit-pause" type="button">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Sair do jogo
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ TUTORIAL OVERLAY ══════════════════════ -->
+  <div class="tutorial-overlay" id="tutorial-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+    <div class="tutorial-card">
+      <div class="tutorial-header">
+        <h2 class="tutorial-title" id="tutorial-title">Como Jogar</h2>
+        <button class="tutorial-close" id="tutorial-close" type="button" aria-label="Fechar tutorial">
+          <i class="bi bi-x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <ol class="tutorial-steps-full" id="tutorial-steps-overlay"></ol>
+      <button class="jogar-btn" id="btn-tutorial-ok" type="button" style="margin-top:0;">
+        <i class="bi bi-check2" aria-hidden="true"></i> Entendi!
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts: game data → shell controller -->
+  <script src="../scripts/games.js"></script>
+  <script src="../scripts/jogar.js"></script>
+
+</body>
+</html>

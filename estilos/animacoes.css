@@ -1,0 +1,128 @@
+/*
+ * animacoes.css — Meu Planetinha Animation System
+ * Phase 13 · @keyframes, animation application, visibility/reduced-motion hooks
+ *
+ * Depends on: base.css (tokens + pseudo-element structure)
+ * Load order: after base.css, before layout.css
+ *
+ * Reduced motion: base.css already has the @media (prefers-reduced-motion: reduce)
+ * rule that kills all animation-duration/transition-duration. No duplication here.
+ */
+
+/* =========================================
+   @KEYFRAMES
+   ========================================= */
+
+/* ANIM-01: Starfield diagonal drift.
+   Translates pseudo-element by -50% in both axes.
+   With 200vw×200vh sizing and tiling backgrounds,
+   this produces a seamless infinite loop. */
+@keyframes starfield-drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-50%, -50%); }
+}
+
+/* ANIM-02: Planet gentle vertical bob */
+@keyframes planet-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--anim-float-distancia))); }
+}
+
+/* ANIM-03: Sparkle twinkle in/out */
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 1; }
+}
+
+/* ANIM-04: Hero entrance — element rises 20px and fades in.
+   Applied to non-3D hero children (header, dots, cta).
+   NOT applied to .carousel-scene — opacity on a perspective container
+   would flatten preserve-3d children; transform would also affect 3D. */
+@keyframes entrada-hero {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ANIM-05: Soft pulse — gently oscillates opacity to invite interaction.
+   Designed to layer on top of a completed entrada-hero (opacity snaps to 1 first). */
+@keyframes pulsar-suave {
+  0%, 100% { opacity: 0.70; }
+  50%      { opacity: 1;    }
+}
+
+/* =========================================
+   ANIM-01: STARFIELD DRIFT
+   Applied to body::before/::after (defined in base.css).
+   Near stars drift slowly; far stars drift ~30% faster for parallax.
+   ========================================= */
+
+body::before,
+body::after {
+  will-change: transform;
+}
+
+body::before {
+  animation: starfield-drift var(--anim-drift-duracao) linear infinite;
+}
+
+body::after {
+  animation: starfield-drift calc(var(--anim-drift-duracao) * 0.7) linear infinite;
+}
+
+/* =========================================
+   ANIM-02: PLANET FLOAT
+   Targets .planet-sphere (NOT .planet-card) to avoid
+   transform conflicts with carousel positioning.
+   ========================================= */
+
+.planet-sphere {
+  animation: planet-float var(--anim-float-duracao) ease-in-out infinite;
+}
+
+/* Stagger: negative delays so all planets are mid-cycle on page load.
+   5 planets, each offset by ~20% of the 4s cycle = 0.8s increments. */
+.planet-card:nth-child(1) .planet-sphere { animation-delay: 0s; }
+.planet-card:nth-child(2) .planet-sphere { animation-delay: -0.8s; }
+.planet-card:nth-child(3) .planet-sphere { animation-delay: -1.6s; }
+.planet-card:nth-child(4) .planet-sphere { animation-delay: -2.4s; }
+.planet-card:nth-child(5) .planet-sphere { animation-delay: -3.2s; }
+
+/* =========================================
+   ANIM-03: SPARKLE ACCENTS
+   Positioned absolutely inside .carousel-scene (3D context).
+   translateZ(-50px) pushes them behind the orbit plane in 3D space.
+   Each sparkle gets individual top/left/delay/duration via inline style.
+   ========================================= */
+
+.sparkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  pointer-events: none;
+  opacity: 0;
+  z-index: -1;
+  animation: sparkle-twinkle var(--anim-sparkle-duracao) ease-in-out infinite;
+}
+
+/* =========================================
+   ANIM-05: TAB HIDDEN — pause all animations
+   Toggled by scripts/animacoes.js via Page Visibility API.
+   Uses !important to override inline animation-play-state if any.
+   ========================================= */
+
+.tab-hidden,
+.tab-hidden::before,
+.tab-hidden::after,
+.tab-hidden *,
+.tab-hidden *::before,
+.tab-hidden *::after {
+  animation-play-state: paused !important;
+}

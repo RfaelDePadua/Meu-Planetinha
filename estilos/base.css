@@ -1,0 +1,423 @@
+/*
+ * base.css — Meu Planetinha Design System Tokens
+ * All CSS custom properties (design tokens) and base element styles.
+ * Fonts load via <link> in HTML — NOT via @import in CSS.
+ *
+ * Required <head> tags for any HTML page using this file:
+ *
+ *   <link rel="preconnect" href="https://fonts.googleapis.com">
+ *   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+ *   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+ *
+ * Refinement (Meu Planetinha — Design System): warmer type pairing
+ * (Baloo 2 + Mulish), a disciplined dark-surface elevation ladder, calmer
+ * nebulae, and layered directional shadows. Token names match the original
+ * codebase so this is a drop-in upgrade.
+ */
+
+:root {
+  /* =========================================================
+     PALETTE — Sorvete Galático accents
+     Vibrant by design — use as accents, never as large fills.
+     ========================================================= */
+  --cor-amarelo-sol:   #FFD43B;  /* sun yellow  — rewards, primary CTA */
+  --cor-rosa-chiclete: #FF6EB4;  /* bubblegum   — decorative highlight */
+  --cor-verde-menta:   #4DFFB4;  /* mint        — success, Naturox */
+  --cor-laranja-tang:  #FF8C42;  /* tangerine   — energy, Calculon */
+  --cor-lilas-algodao: #C084FC;  /* cotton lilac— magic, Letrion */
+  --cor-azul-ceu:      #1A3A8F;  /* sky blue    — deep accents */
+  --cor-indigo:        #2D1B8A;  /* indigo      — nebula depth */
+  --cor-magenta:       #8B1A6B;  /* magenta     — horizon accent */
+  --cor-ciano-globish: #00D4E8;  /* cyan        — Globish */
+
+  /* =========================================================
+     NIGHT-SKY SURFACES — dark elevation ladder
+     A disciplined surface system is the core refinement: instead of
+     stacking nebula gradients everywhere, real cards sit on flat,
+     legible surfaces with hairline borders.
+     ========================================================= */
+  --cor-fundo-base:    #0A0E28;  /* deepest — page & footer floor */
+  --cor-superficie-1:  #11173A;  /* raised panels, nav (scrolled) */
+  --cor-superficie-2:  #19204F;  /* cards, inputs */
+  --cor-superficie-3:  #232C66;  /* hovered / elevated cards */
+  --cor-fundo-header:  #0D1A3A;  /* header solid state */
+  --cor-fundo-footer:  #080B22;  /* footer — anchors the page */
+
+  /* Legacy aliases kept for the live codebase (carousel / nebula washes) */
+  --cor-fundo-topo:      var(--cor-azul-ceu);
+  --cor-fundo-horizonte: var(--cor-magenta);
+
+  /* =========================================================
+     BORDERS / HAIRLINES
+     ========================================================= */
+  --cor-borda:        rgba(255, 255, 255, 0.10);
+  --cor-borda-forte:  rgba(255, 255, 255, 0.20);
+
+  /* =========================================================
+     INK — text levels on dark surfaces
+     ========================================================= */
+  --cor-texto:            #FFFFFF;                    /* headings, high emphasis */
+  --cor-texto-principal:  #FFFFFF;
+  --cor-texto-secundario: rgba(255, 255, 255, 0.72); /* body */
+  --cor-texto-terciario:  rgba(255, 255, 255, 0.50); /* captions, muted */
+  --cor-texto-escuro:     #0D1A3A;                   /* text on light planet fills */
+
+  /* =========================================================
+     SEMANTIC COLORS
+     ========================================================= */
+  --cor-primaria:    var(--cor-amarelo-sol);
+  --cor-secundaria:  var(--cor-rosa-chiclete);
+  --cor-destaque:    var(--cor-verde-menta);
+  --cor-sucesso:     #4DFFB4;
+  --cor-erro:        #FF6B6B;
+  --cor-aviso:       #FFD43B;
+  --cor-foco:        #60A5FA;
+  --cor-botao-hover-escuro: var(--cor-fundo-header);
+
+  /* =========================================
+     PLANET ACCENT TOKENS — 5 planets (color↔subject is a cognitive cue)
+     Each subject owns exactly one hue. Never mix on one screen.
+     ========================================= */
+
+  /* Calculon — Matemática */
+  --planeta-calculon-cor:    #FF8C42;
+  --planeta-calculon-bg:     #FF8C42;
+  --planeta-calculon-texto:  #FFFFFF;
+  --planeta-calculon-acento: #FFD43B;
+
+  /* Letrion — Português */
+  --planeta-letrion-cor:    #C084FC;
+  --planeta-letrion-bg:     #C084FC;
+  --planeta-letrion-texto:  #FFFFFF;
+  --planeta-letrion-acento: #E0B0FF;
+
+  /* Naturox — Ciências */
+  --planeta-naturox-cor:    #4DFFB4;
+  --planeta-naturox-bg:     #4DFFB4;
+  --planeta-naturox-texto:  #0D1A3A;
+  --planeta-naturox-acento: #00D4A0;
+
+  /* Terramund — Geografia */
+  --planeta-terramund-cor:       #D4622A;
+  --planeta-terramund-bg:        #D4622A;
+  --planeta-terramund-texto:     #FFFFFF;
+  --planeta-terramund-acento:    #FF8C42;
+  --planeta-terramund-cor-texto: #E8763A; /* lightened variant for text-on-dark */
+
+  /* Globish — Inglês */
+  --planeta-globish-cor:    #00D4E8;
+  --planeta-globish-bg:     #00D4E8;
+  --planeta-globish-texto:  #0D1A3A;
+  --planeta-globish-acento: #00A3CC;
+
+  /* Planet sphere gradient fallback stops — pre-color-mix browsers (pre-2023).
+     Referenced in carousel-3d.css @supports fallback block. */
+  --planeta-calculon-claro:  #ffb07a;
+  --planeta-calculon-escuro: #994f1f;
+  --planeta-letrion-claro:   #d9b3fd;
+  --planeta-letrion-escuro:  #7040a0;
+  --planeta-naturox-claro:   #8affcf;
+  --planeta-naturox-escuro:  #1a995a;
+  --planeta-terramund-claro: #e88a56;
+  --planeta-terramund-escuro:#7a3615;
+  --planeta-globish-claro:   #5ce8f5;
+  --planeta-globish-escuro:  #007a88;
+
+  /* =========================================
+     TYPOGRAPHY — Baloo 2 (display) + Mulish (body) + Press Start 2P (score)
+     Replaces Fredoka One — warmer, more characterful, less "default".
+     ========================================= */
+  --fonte-titulo: 'Baloo 2', 'Segoe UI', system-ui, cursive;
+  --fonte-corpo:  'Mulish', 'Segoe UI', system-ui, sans-serif;
+  --fonte-score:  'Press Start 2P', monospace;
+
+  /* Weights (Baloo 2 + Mulish are variable) */
+  --peso-regular:  400;
+  --peso-medio:    500;
+  --peso-semibold: 600;
+  --peso-bold:     700;
+  --peso-extra:    800;
+
+  /* Font size scale — 1.25 ratio */
+  --texto-xs:   0.75rem;   /* 12px */
+  --texto-sm:   0.875rem;  /* 14px */
+  --texto-base: 1rem;      /* 16px */
+  --texto-lg:   1.125rem;  /* 18px */
+  --texto-xl:   1.25rem;   /* 20px */
+  --texto-2xl:  1.5rem;    /* 24px */
+  --texto-3xl:  2rem;      /* 32px */
+  --texto-4xl:  2.5rem;    /* 40px */
+  --texto-5xl:  3.25rem;   /* 52px */
+
+  /* Line heights */
+  --altura-apertada: 1.1;
+  --altura-titulo:   1.2;
+  --altura-corpo:    1.6;
+
+  /* Letter spacing */
+  --espacamento-titulo: -0.01em;
+  --espacamento-label:  0.06em;
+
+  /* =========================================
+     SPACING — 8px base grid
+     ========================================= */
+  --espaco-2xs: 0.125rem;  /* 2px */
+  --espaco-xs:  0.25rem;   /* 4px */
+  --espaco-sm:  0.5rem;    /* 8px */
+  --espaco-md:  1rem;      /* 16px */
+  --espaco-lg:  1.5rem;    /* 24px */
+  --espaco-xl:  2rem;      /* 32px */
+  --espaco-2xl: 3rem;      /* 48px */
+  --espaco-3xl: 4rem;      /* 64px */
+  --espaco-4xl: 6rem;      /* 96px — section rhythm */
+
+  /* =========================================
+     LAYOUT
+     ========================================= */
+  --largura-max-conteudo: 1200px;
+  --largura-max-texto:    680px;
+  --nav-altura:           68px;
+
+  /* =========================================
+     BORDER RADII — generous & consistent
+     ========================================= */
+  --borda-raio-sm:     0.5rem;   /* 8px  — chips, small controls */
+  --borda-raio-md:     0.75rem;  /* 12px — buttons, inputs */
+  --borda-raio-lg:     1.25rem;  /* 20px — cards */
+  --borda-raio-xl:     1.75rem;  /* 28px — feature cards, panels */
+  --borda-raio-pilula: 9999px;
+
+  /* =========================================
+     SHADOWS — dark-theme elevation
+     ========================================= */
+  --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --sombra-md: 0 8px 20px -8px rgba(0, 0, 0, 0.55);
+  --sombra-lg: 0 20px 44px -14px rgba(0, 0, 0, 0.60);
+  --sombra-xl: 0 32px 64px -20px rgba(0, 0, 0, 0.65);
+
+  /* Inset top-highlight — gives pills/buttons a subtle 3D lip */
+  --realce-topo: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+
+  /* Glow — reserved for rewards, active CTA, focus celebration */
+  --sombra-brilho: 0 0 24px rgba(255, 212, 59, 0.35);
+
+  /* =========================================
+     MATERIAL — frosted glass (hero panel, sticky nav, in-game HUD)
+     ========================================= */
+  --vidro-fundo: rgba(13, 26, 58, 0.45);
+  --vidro-blur:  blur(14px);
+
+  /* =========================================
+     TRANSITIONS / MOTION
+     ========================================= */
+  --duracao-rapida: 150ms;
+  --duracao-media:  300ms;
+  --duracao-lenta:  500ms;
+  --easing-padrao:  ease;
+  --easing-saida:   cubic-bezier(0.25, 1, 0.5, 1);   /* decelerate-to-rest */
+  --easing-entrada: cubic-bezier(0.4, 0, 0.2, 1);    /* purposeful approach */
+
+  /* =========================================
+     3D & ANIMATION TOKENS (carousel)
+     ========================================= */
+  --perspectiva-3d:        1000px;
+
+  /* Orbit ring parameters (carousel planets) */
+  --orbita-raio:           260px;
+  --orbita-inclinacao:     12deg;
+  --orbita-rotacao-duracao: 600ms;
+  --orbita-easing:          ease-out;
+  --orbita-opacidade-fundo: 0.85;
+  --orbita-blur-fundo:      2.5px;
+  --orbita-blur-side:       0.795px;
+  --orbita-angulo-passo:    72deg;
+
+  /* Drift — slow lateral floating of ambient elements */
+  --anim-drift-duracao:    180s;
+
+  /* Float — gentle vertical bob on planets/cards */
+  --anim-float-duracao:    8s;
+  --anim-float-distancia:  8px;
+
+  /* Sparkle — twinkling star particles */
+  --anim-sparkle-duracao:  3s;
+
+  /* Z-index layers for animated elements */
+  --z-carousel:            10;
+  --z-orbit-arrows:         15;
+  --z-wave:                5;
+}
+
+/* =========================================
+   BASE ELEMENT STYLES
+   ========================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-regular);
+  line-height: var(--altura-corpo);
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  /*
+   * SPACE BACKGROUND — refined.
+   * The original stacked 7 nebula gradients (the "soup" that reads as AI).
+   * Here: a deep night base, TWO restrained nebula blooms, and one indigo
+   * wash. Stars live on body::before / ::after (GPU-composited drift).
+   */
+  background-image:
+    /* Calculon orange bloom — upper right */
+    radial-gradient(ellipse 50% 45% at 82% 8%,  rgba(255, 140, 66, 0.10) 0%, transparent 70%),
+    /* Globish cyan bloom — lower left */
+    radial-gradient(ellipse 55% 50% at 12% 88%, rgba(0, 212, 232, 0.08) 0%, transparent 70%),
+    /* Indigo wash — soft center depth */
+    radial-gradient(ellipse 90% 70% at 50% 30%, rgba(45, 27, 138, 0.35) 0%, transparent 80%);
+
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: clip;    /* prevent 3D carousel / sparkles from causing horizontal scroll */
+}
+
+/* =========================================
+   STARFIELD PSEUDO-ELEMENTS — quiet two-layer field
+   Stars split from body background for GPU-composited drift animation.
+   Each pseudo-element is 2× viewport size for seamless infinite translation.
+   ========================================= */
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200vw;
+  height: 200vh;
+  height: 200dvh; /* dynamic viewport height — handles mobile toolbar */
+  pointer-events: none;
+  z-index: -1;
+
+  /* Near stars: bright, sparse */
+  background-image:
+    radial-gradient(1.5px 1.5px at 40px  70px,  rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px   2px   at 180px 110px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 60px  50px,      rgba(176,196,255,0.6), transparent);
+  background-size:
+    320px 300px,
+    360px 330px,
+    240px 260px;
+  background-repeat: repeat;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200vw;
+  height: 200vh;
+  height: 200dvh;
+  pointer-events: none;
+  z-index: -1;
+
+  /* Far stars: dim, dense */
+  background-image:
+    radial-gradient(1px 1px at 20px  30px,  rgba(255,255,255,0.55), transparent),
+    radial-gradient(1px 1px at 130px 45px,  rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 85px  140px, rgba(255,228,181,0.45), transparent);
+  background-size:
+    180px 200px,
+    220px 240px,
+    260px 280px;
+  background-repeat: repeat;
+}
+
+/* =========================================
+   HEADINGS — Baloo 2
+   ========================================= */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-bold);
+  line-height: var(--altura-titulo);
+  letter-spacing: var(--espacamento-titulo);
+  color: var(--cor-texto);
+}
+
+h1 { font-size: var(--texto-5xl); font-weight: var(--peso-extra); line-height: var(--altura-apertada); }
+h2 { font-size: var(--texto-4xl); }
+h3 { font-size: var(--texto-3xl); }
+h4 { font-size: var(--texto-2xl); }
+h5 { font-size: var(--texto-xl); }
+h6 { font-size: var(--texto-lg); }
+
+a {
+  color: var(--cor-primaria);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--cor-laranja-tang);
+}
+
+/* Uppercase eyebrow label utility */
+.eyebrow {
+  font-family: var(--fonte-corpo);
+  font-weight: var(--peso-bold);
+  font-size: var(--texto-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--espacamento-label);
+  color: var(--cor-texto-terciario);
+}
+
+:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+}
+
+/* Ambient keyframes used by components (PlanetBadge float, sparkle) */
+@keyframes mp-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(calc(-1 * var(--anim-float-distancia, 8px))); }
+}
+@keyframes mp-sparkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50%      { opacity: 1;   transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --orbita-raio: 160px;
+    --perspectiva-3d: 900px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --orbita-raio: 120px;
+    --perspectiva-3d: 800px;
+  }
+}
+
+::selection {
+  background: var(--cor-lilas-algodao);
+  color: var(--cor-texto);
+}

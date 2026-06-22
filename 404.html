@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Página não encontrada — Meu Planetinha: plataforma educacional gamificada para crianças.">
+  <title>Página Não Encontrada — Meu Planetinha</title>
+
+  <!-- Google Fonts: preconnect + stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CSS Load Order (root depth: estilos/...) -->
+  <link rel="stylesheet" href="estilos/reset.css">
+  <link rel="stylesheet" href="estilos/base.css">
+  <link rel="stylesheet" href="estilos/animacoes.css">
+  <link rel="stylesheet" href="estilos/layout.css">
+  <link rel="stylesheet" href="estilos/pages/page-shell.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <link rel="stylesheet" href="components/components.css">
+  <link rel="stylesheet" href="estilos/pages/404.css">
+</head>
+<body class="page-404">
+
+  <!-- Nav component (injected by components.js) -->
+  <div data-component="nav">
+    <noscript>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <div class="nav-container">
+          <a class="nav-logo" href="index.html"><img src="midia/planetinha-mark.svg" alt="" aria-hidden="true" width="26" height="26" style="vertical-align:middle"> Meu Planetinha</a>
+          <div class="nav-links">
+            <a href="explorar/explorar.html">Explorar Jogos</a>
+            <a href="sobre_nos/sobre_nos.html">Sobre Nós</a>
+          </div>
+        </div>
+      </nav>
+    </noscript>
+  </div>
+
+  <!-- Main content -->
+  <main id="main-content" class="page-wrapper">
+    <div class="container">
+
+      <section class="pagina-404" aria-labelledby="titulo-404">
+
+        <!-- Decorative illustration -->
+        <div class="erro-ilustracao" aria-hidden="true">
+          <span class="erro-astronauta"><i class="bi bi-rocket-takeoff"></i></span>
+          <span class="erro-planetas">
+            <i class="bi bi-globe-americas"></i>
+            <i class="bi bi-stars"></i>
+            <i class="bi bi-star-fill"></i>
+          </span>
+        </div>
+
+        <!-- 404 display number -->
+        <p class="codigo-erro" aria-label="Erro 404">404</p>
+
+        <!-- Main headline -->
+        <h1 id="titulo-404" class="titulo-erro">
+          Você se perdeu no espaço!
+        </h1>
+
+        <!-- Supporting copy -->
+        <p class="descricao-erro">
+          Ops! Parece que essa página viajou para uma galáxia muito, muito distante
+          e não conseguimos encontrá-la.
+        </p>
+        <p class="descricao-erro descricao-erro--dica">
+          Não se preocupe — vamos te levar de volta para casa!
+        </p>
+
+        <!-- CTA button back to homepage -->
+        <a href="index.html" class="btn-primario erro-cta">
+          <i class="bi bi-house-door-fill" aria-hidden="true"></i>
+          Voltar para casa
+        </a>
+
+        <!-- Secondary links -->
+        <nav class="erro-nav-secundaria" aria-label="Páginas alternativas">
+          <a href="explorar/explorar.html" class="erro-link-sec">
+            <i class="bi bi-joystick" aria-hidden="true"></i>
+            Explorar Jogos
+          </a>
+          <span class="erro-separador" aria-hidden="true">·</span>
+          <a href="sobre_nos/sobre_nos.html" class="erro-link-sec">
+            <i class="bi bi-people-fill" aria-hidden="true"></i>
+            Sobre Nós
+          </a>
+        </nav>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer component (injected by components.js) -->
+  <div data-component="footer">
+    <noscript>
+      <footer class="site-footer">
+        <div class="container">
+          <p>Meu Planetinha — Explore o universo do aprendizado!</p>
+        </div>
+      </footer>
+    </noscript>
+  </div>
+
+  <!-- Components loader (nav + footer injection) -->
+  <script src="components/components.js"></script>
+  <script src="scripts/animacoes.js"></script>
+
+</body>
+</html>
+

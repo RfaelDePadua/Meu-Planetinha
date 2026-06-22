@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Conheça a equipe por trás do Meu Planetinha — plataforma educacional gamificada para crianças.">
+  <title>Sobre Nós — Meu Planetinha</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CSS Load Order (depth-1: ../estilos/...) -->
+  <link rel="stylesheet" href="../estilos/reset.css">
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/animacoes.css">
+  <link rel="stylesheet" href="../estilos/layout.css">
+  <link rel="stylesheet" href="../estilos/pages/page-shell.css">
+  <link rel="stylesheet" href="../estilos/componentes.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../estilos/pages/sobre_nos.css">
+</head>
+<body class="page-sobre-nos">
+
+  <!-- Nav component -->
+  <div data-component="nav">
+    <noscript>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <div class="nav-container">
+          <a class="nav-logo" href="../index.html"><img src="../midia/planetinha-mark.svg" alt="" aria-hidden="true" width="26" height="26" style="vertical-align:middle"> Meu Planetinha</a>
+          <div class="nav-links">
+            <a href="../explorar/explorar.html">Explorar Jogos</a>
+            <a href="sobre_nos.html" aria-current="page">Sobre Nós</a>
+          </div>
+        </div>
+      </nav>
+    </noscript>
+  </div>
+
+  <!-- Main content -->
+  <main id="main-content" class="page-wrapper">
+    <div class="container">
+
+      <!-- Hero section -->
+      <section class="sobre-hero" aria-labelledby="sobre-titulo">
+        <div class="planet-badge planet-badge--float sobre-hero__badge" data-planeta="naturox" style="--pb-size:120px" aria-label="Naturox">
+          <span class="planet-badge__glow" aria-hidden="true"></span>
+          <span class="planet-badge__ring" aria-hidden="true"></span>
+          <span class="planet-badge__sphere" aria-hidden="true"><i class="bi bi-flower1"></i></span>
+        </div>
+        <span class="eyebrow sobre-hero__eyebrow">Quem somos</span>
+        <h1 id="sobre-titulo" class="sobre-hero__titulo">Sobre Nós</h1>
+        <p class="sobre-hero__descricao">
+          O <strong>Meu Planetinha</strong> é uma plataforma de jogos educacionais desenvolvida
+          como projeto de Atividades Extensionistas do curso de Ciência da Computação do
+          <strong>IFSul de Minas, Campus Passos</strong> (2024), sob orientação do professor
+          Vinícius Alves Silva.<br><br>
+          Nossa missão é ajudar crianças de <strong>6 a 10 anos</strong> a aprenderem de forma
+          leve, com jogos simples e divertidos — porque aprender é uma aventura!
+        </p>
+      </section>
+
+      <!-- Team section -->
+      <section class="sobre-equipe" aria-labelledby="equipe-titulo">
+        <h2 id="equipe-titulo" class="sobre-equipe__titulo">Nossa Equipe</h2>
+        <div class="equipe-grid">
+
+          <article class="membro-card">
+            <div class="avatar" data-planeta="calculon" aria-hidden="true">SM</div>
+            <h3 class="membro-nome">Stanley Melo Costa</h3>
+            <span class="membro-role">Design &amp; Front-end</span>
+          </article>
+
+          <article class="membro-card">
+            <div class="avatar" data-planeta="letrion" aria-hidden="true">RR</div>
+            <h3 class="membro-nome">Robson Ribeiro Filho</h3>
+            <span class="membro-role">Back-end do Website</span>
+          </article>
+
+          <article class="membro-card">
+            <div class="avatar" data-planeta="naturox" aria-hidden="true">RP</div>
+            <h3 class="membro-nome">Rafael de Pádua Oliveira</h3>
+            <span class="membro-role">Back-end dos Jogos</span>
+          </article>
+
+          <article class="membro-card">
+            <div class="avatar" data-planeta="terramund" aria-hidden="true">MT</div>
+            <h3 class="membro-nome">Matheus Terra Wachsmuth</h3>
+            <span class="membro-role">Back-end dos Jogos</span>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Back to home CTA -->
+      <div class="sobre-cta">
+        <a href="../index.html" class="btn-primario">
+          <i class="bi bi-rocket-takeoff" aria-hidden="true"></i>
+          Explorar os Planetas
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer component -->
+  <div data-component="footer">
+    <noscript>
+      <footer class="site-footer">
+        <p>© 2025–2026 Meu Planetinha</p>
+      </footer>
+    </noscript>
+  </div>
+
+  <!-- Component loader -->
+  <script src="../components/components.js"></script>
+  <script src="../scripts/animacoes.js"></script>
+
+</body>
+</html>

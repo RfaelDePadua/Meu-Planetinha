@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore todos os jogos educacionais do Meu Planetinha. Filtre por planeta e descubra atividades de Matemática, Português, Ciências e mais.">
+  <title>Explorar Jogos — Meu Planetinha</title>
+
+  <!-- Google Fonts: preconnect + stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CSS Load Order (do not reorder) -->
+  <link rel="stylesheet" href="../estilos/reset.css">
+  <link rel="stylesheet" href="../estilos/base.css">
+  <link rel="stylesheet" href="../estilos/animacoes.css">
+  <link rel="stylesheet" href="../estilos/layout.css">
+  <link rel="stylesheet" href="../estilos/pages/page-shell.css">
+  <link rel="stylesheet" href="../estilos/componentes.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../estilos/cards.css">
+  <link rel="stylesheet" href="../estilos/pages/explore.css">
+</head>
+<body>
+
+  <!-- Nav component (injected by components.js) -->
+  <div data-component="nav">
+    <noscript>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <div class="nav-container">
+          <a class="nav-logo" href="../index.html"><img src="../midia/planetinha-mark.svg" alt="" aria-hidden="true" width="26" height="26" style="vertical-align:middle"> Meu Planetinha</a>
+          <div class="nav-links">
+            <a href="explorar.html" aria-current="page">Explorar Jogos</a>
+            <a href="../sobre_nos/sobre_nos.html">Sobre Nós</a>
+          </div>
+        </div>
+      </nav>
+    </noscript>
+  </div>
+
+  <!-- Main content -->
+  <main id="main-content" class="page-wrapper">
+
+    <!-- Page heading -->
+    <section class="explore-hero" aria-labelledby="explore-title">
+      <div class="container">
+        <h1 id="explore-title" class="explore-titulo">Explorar Jogos</h1>
+        <p class="explore-subtitulo">Descubra os jogos do universo do aprendizado!</p>
+      </div>
+    </section>
+
+    <!-- Filter bar -->
+    <section class="explore-filter-bar" aria-label="Filtros de planeta">
+      <div class="container">
+        <!-- Desktop: pill buttons rendered by explore.js -->
+        <div id="explore-filters" class="explore-filters" role="toolbar" aria-label="Filtrar por planeta"></div>
+        <!-- Mobile: select dropdown rendered by explore.js -->
+        <div id="explore-filters-mobile" class="explore-filters-mobile"></div>
+      </div>
+    </section>
+
+    <!-- Game card grid -->
+    <section class="explore-games" aria-label="Grade de jogos">
+      <div class="container">
+        <div id="explore-grid" class="game-grid" aria-live="polite"></div>
+        <noscript>
+          <p style="text-align:center;color:rgba(255,255,255,0.75);padding:2rem 1rem">
+            Ative o JavaScript para explorar os jogos disponíveis.
+          </p>
+        </noscript>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer component (injected by components.js) -->
+  <div data-component="footer">
+    <noscript>
+      <footer class="site-footer">
+        <p>© 2025–2026 Meu Planetinha</p>
+      </footer>
+    </noscript>
+  </div>
+
+  <!-- Component loader (nav + footer injection) -->
+  <script src="../components/components.js"></script>
+  <script src="../scripts/animacoes.js"></script>
+  <!-- Game data + card renderer -->
+  <script src="../scripts/games.js"></script>
+  <!-- Explore page logic (filters, cards, filter bar) -->
+  <script src="../scripts/explore.js"></script>
+
+</body>
+</html>

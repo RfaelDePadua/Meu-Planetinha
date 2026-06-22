@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Meu Planetinha: plataforma educacional gamificada para crianças. Explore planetas e aprenda brincando!">
+  <title>Início — Meu Planetinha</title>
+
+  <!-- Google Fonts: preconnect + stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CSS Load Order (do not reorder) -->
+  <link rel="stylesheet" href="estilos/reset.css">
+  <link rel="stylesheet" href="estilos/base.css">
+  <link rel="stylesheet" href="estilos/animacoes.css">
+  <link rel="stylesheet" href="estilos/layout.css">
+  <link rel="stylesheet" href="estilos/pages/page-shell.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <link rel="stylesheet" href="components/components.css">
+  <link rel="stylesheet" href="estilos/pages/homepage.css">
+  <link rel="stylesheet" href="estilos/cards.css">
+</head>
+<body class="page-home">
+
+  <!-- Skip-link omitted here — nav.html provides it -->
+
+  <!-- Nav component (injected by components.js) -->
+  <div data-component="nav">
+    <noscript>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <div class="nav-container">
+          <a class="nav-logo" href="index.html"><img src="midia/planetinha-mark.svg" alt="" aria-hidden="true" width="26" height="26" style="vertical-align:middle"> Meu Planetinha</a>
+          <div class="nav-links">
+            <a href="sobre_nos/sobre_nos.html">Sobre Nós</a>
+          </div>
+        </div>
+      </nav>
+    </noscript>
+  </div>
+
+  <!-- Main content -->
+  <main id="main-content" class="page-wrapper">
+
+    <!-- Hero Section — two-column intro + planet showcase -->
+    <section class="home-hero" data-planeta="calculon" aria-label="Boas-vindas">
+
+      <!-- Left column: intro + CTAs -->
+      <div class="home-hero__intro">
+        <span class="eyebrow">Plataforma de jogos educacionais · 6–10 anos</span>
+        <h1 class="home-hero__title">Bem-vindo ao<br>Meu Planetinha</h1>
+        <p class="home-hero__lead">Cada planeta é uma matéria e uma aventura diferente. Escolha o seu e aprenda brincando!</p>
+        <div class="home-hero__cta">
+          <span class="home-hero__cta-planeta" id="hero-cta-planeta" data-planeta="calculon">
+            <a class="btn-primario" href="explorar/explorar.html">
+              <i class="bi bi-controller" aria-hidden="true"></i> Explorar Jogos
+            </a>
+          </span>
+          <a class="btn-secundario" href="sobre_nos/sobre_nos.html">Sobre o projeto</a>
+        </div>
+      </div>
+
+      <!-- Right column: planet showcase + picker -->
+      <div class="home-hero__showcase">
+
+        <!-- Active planet badge (rebuilt by homepage.js on selection) -->
+        <div class="planet-badge planet-badge--float" id="hero-planet" data-planeta="calculon" style="--pb-size:240px" aria-label="Calculon">
+          <span class="planet-badge__glow" aria-hidden="true"></span>
+          <span class="planet-badge__ring" aria-hidden="true"></span>
+          <img class="planet-badge__img" src="midia/planet-calculon.png" alt="Calculon" width="240" height="240" fetchpriority="high">
+        </div>
+
+        <!-- Active planet info -->
+        <div class="home-hero__planet-info">
+          <span class="eyebrow" id="hero-planet-materia">Matemática</span>
+          <h3 id="hero-planet-nome">Calculon</h3>
+          <p id="hero-planet-convite">Conte estrelas e some pontos!</p>
+        </div>
+
+        <!-- Planet picker -->
+        <div class="home-hero__picker" role="group" aria-label="Escolha um planeta">
+          <button class="home-hero__picker-btn is-active" type="button" data-planeta="calculon" aria-pressed="true" aria-label="Calculon — Matemática">
+            <span class="planet-badge" data-planeta="calculon" style="--pb-size:36px">
+              <span class="planet-badge__glow" aria-hidden="true"></span>
+              <img class="planet-badge__img" src="midia/planet-calculon.png" alt="" width="36" height="36">
+            </span>
+          </button>
+          <button class="home-hero__picker-btn" type="button" data-planeta="letrion" aria-pressed="false" aria-label="Letrion — Português">
+            <span class="planet-badge" data-planeta="letrion" style="--pb-size:36px">
+              <span class="planet-badge__glow" aria-hidden="true"></span>
+              <img class="planet-badge__img" src="midia/planet-letrion.png" alt="" width="36" height="36">
+            </span>
+          </button>
+          <button class="home-hero__picker-btn" type="button" data-planeta="naturox" aria-pressed="false" aria-label="Naturox — Ciências">
+            <span class="planet-badge" data-planeta="naturox" style="--pb-size:36px">
+              <span class="planet-badge__glow" aria-hidden="true"></span>
+              <span class="planet-badge__sphere" aria-hidden="true"><i class="bi bi-flower1"></i></span>
+            </span>
+          </button>
+          <button class="home-hero__picker-btn" type="button" data-planeta="terramund" aria-pressed="false" aria-label="Terramund — Geografia">
+            <span class="planet-badge" data-planeta="terramund" style="--pb-size:36px">
+              <span class="planet-badge__glow" aria-hidden="true"></span>
+              <span class="planet-badge__sphere" aria-hidden="true"><i class="bi bi-globe-americas"></i></span>
+            </span>
+          </button>
+          <button class="home-hero__picker-btn" type="button" data-planeta="globish" aria-pressed="false" aria-label="Globish — Inglês">
+            <span class="planet-badge" data-planeta="globish" style="--pb-size:36px">
+              <span class="planet-badge__glow" aria-hidden="true"></span>
+              <span class="planet-badge__sphere" aria-hidden="true"><i class="bi bi-translate"></i></span>
+            </span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Game Cards -->
+    <section id="jogos" aria-label="Jogos disponíveis">
+      <div class="container">
+        <div class="jogos-header">
+          <h2 class="jogos-titulo" tabindex="-1">Jogos Disponíveis</h2>
+          <a class="jogos-ver-todos" href="explorar/explorar.html">Ver todos <span aria-hidden="true">→</span></a>
+        </div>
+        <div id="game-grid" class="game-grid" aria-live="polite"></div>
+        <noscript>
+          <p style="text-align:center;color:rgba(255,255,255,0.75);padding:2rem 1rem">
+            Ative o JavaScript para ver os jogos disponíveis.
+          </p>
+        </noscript>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer component (injected by components.js) -->
+  <div data-component="footer">
+    <noscript>
+      <footer class="site-footer">
+        <p>© 2025–2026 Meu Planetinha</p>
+      </footer>
+    </noscript>
+  </div>
+
+  <!-- Component loader (nav + footer injection) -->
+  <script src="components/components.js"></script>
+  <script src="scripts/animacoes.js"></script>
+
+  <!-- Homepage-specific JS (scroll behavior + planet picker) -->
+  <script src="scripts/homepage.js"></script>
+  <script src="scripts/games.js"></script>
+
+</body>
+</html>

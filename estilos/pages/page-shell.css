@@ -1,0 +1,27 @@
+/*
+ * page-shell.css — Meu Planetinha Page Shell
+ * Page-wrapper layout and structural helpers.
+ * Depends on: base.css (tokens + background), layout.css (container)
+ * Load AFTER layout.css, BEFORE componentes.css.
+ *
+ * Stars and nebulae are now rendered via layered background-image
+ * on body (in base.css). This file provides structural layout only.
+ *
+ * CSS load order:
+ *   1. reset.css
+ *   2. base.css         ← background lives here
+ *   3. layout.css
+ *   4. page-shell.css   ← this file (layout only)
+ *   5. componentes.css
+ *   6. components/components.css
+ *   7. [page-specific CSS]
+ */
+
+/* ==========================================
+   PAGE WRAPPER — main content flex-grow
+   ========================================== */
+
+.page-wrapper {
+  flex: 1 0 auto;
+  width: 100%;
+}

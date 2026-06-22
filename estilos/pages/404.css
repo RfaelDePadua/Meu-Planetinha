@@ -1,0 +1,181 @@
+/* ==========================================================================
+   estilos/pages/404.css — 404 Page Styles
+   Scoped to .page-404 — no global side effects
+   Depends on: estilos/base.css (design tokens), estilos/pages/page-shell.css
+   ========================================================================== */
+
+/* ----------------------------------------
+   Section: 404 Content Container
+   ---------------------------------------- */
+.page-404 .page-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding-block: var(--espaco-3xl);
+}
+
+.pagina-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--espaco-md);
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+/* ----------------------------------------
+   Section: Decorative Illustration
+   ---------------------------------------- */
+.erro-ilustracao {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: var(--espaco-sm);
+}
+
+.erro-astronauta {
+  font-size: 4rem;
+}
+
+.erro-planetas {
+  font-size: 2rem;
+  letter-spacing: 0.25em;
+}
+
+/* ----------------------------------------
+   Section: 404 Error Code
+   ---------------------------------------- */
+.codigo-erro {
+  font-family: var(--fonte-titulo);        /* Fredoka One */
+  font-size: clamp(5rem, 15vw, 10rem);
+  line-height: 1;
+  color: var(--cor-secundaria);            /* Rosa-Chiclete #FF6EB4 */
+  text-shadow:
+    0 0 40px rgba(255, 110, 180, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+/* ----------------------------------------
+   Section: Error Title
+   ---------------------------------------- */
+.titulo-erro {
+  font-family: var(--fonte-titulo);        /* Fredoka One */
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  color: var(--cor-texto);                 /* #FFFFFF */
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ----------------------------------------
+   Section: Error Description
+   ---------------------------------------- */
+.descricao-erro {
+  font-family: var(--fonte-corpo);         /* Nunito */
+  font-size: var(--texto-base);            /* 1rem */
+  color: var(--cor-texto);
+  opacity: 0.85;
+  max-width: 480px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.descricao-erro--dica {
+  font-weight: 700;
+  opacity: 1;
+  color: var(--cor-texto);
+}
+
+/* ----------------------------------------
+   Section: CTA Button (home link)
+   ---------------------------------------- */
+.erro-cta {
+  margin-top: var(--espaco-lg);
+  gap: var(--espaco-sm);
+  display: inline-flex;
+  align-items: center;
+}
+
+.erro-cta .bi {
+  font-size: 1.1em;
+}
+
+/* ----------------------------------------
+   Section: Secondary Navigation Links
+   ---------------------------------------- */
+.erro-nav-secundaria {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--espaco-sm);
+}
+
+.erro-link-sec {
+  font-family: var(--fonte-corpo);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--cor-texto);
+  text-decoration: none;
+  opacity: 0.75;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  transition: opacity var(--duracao-rapida) var(--easing-padrao);
+}
+
+.erro-link-sec:hover,
+.erro-link-sec:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.erro-separador {
+  color: var(--cor-texto);
+  opacity: 0.4;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* ----------------------------------------
+   Section: Responsive (≤640px mobile)
+   ---------------------------------------- */
+@media (max-width: 640px) {
+  .pagina-404 {
+    gap: var(--espaco-sm);
+    padding-block: var(--espaco-xl);
+  }
+
+  .erro-ilustracao {
+    font-size: 2rem;
+  }
+
+  .erro-astronauta {
+    font-size: 3rem;
+  }
+
+  .erro-planetas {
+    font-size: 1.5rem;
+  }
+
+  .erro-nav-secundaria {
+    gap: var(--espaco-sm);
+  }
+}
+
+/* ----------------------------------------
+   Section: Reduced Motion
+   ---------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .erro-cta,
+  .erro-link-sec {
+    transition: none;
+  }
+}

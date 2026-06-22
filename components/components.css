@@ -1,0 +1,441 @@
+/* components.css — Nav + Footer styles for Meu Planetinha
+ * Load AFTER: reset.css, base.css, layout.css, componentes.css
+ * All var() tokens reference custom properties defined in estilos/base.css.
+ * Do NOT use @import — link directly via <link> in each page <head>.
+ */
+
+/* ==========================================
+   0. PAGE SHELL BASELINE
+   ========================================== */
+
+/* Flex column layout so footer stays at or below the bottom of the viewport.
+ * body { min-height: 100vh } is already defined in base.css.
+ * Here we only add the flex column, and push [data-component="footer"]  
+ * to the bottom. Phase 3 (page-shell.css) will add .page-wrapper. */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer wrapper: flex-shrink 0 and push down via margin-top */
+[data-component="footer"] {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* ==========================================
+   1. PLACEHOLDER / FOUC PREVENTION
+   ========================================== */
+
+/* Reserve space for nav/footer to prevent layout shift during fetch */
+[data-component="nav"] {
+  min-height: 64px;
+}
+/* Match footer bg color so the reserved space blends if content is shorter */
+[data-component="footer"] {
+  min-height: 200px;
+  background: var(--cor-fundo-footer);
+}
+
+/* ==========================================
+   2. SKIP LINK
+   ========================================== */
+
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: var(--espaco-md);
+  z-index: 10000;
+  padding: var(--espaco-sm) var(--espaco-md);
+  background: var(--cor-amarelo-sol);
+  color: var(--cor-texto-escuro);
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  border-radius: var(--borda-raio-md);
+  text-decoration: none;
+}
+
+.skip-link:focus-visible {
+  top: var(--espaco-sm);
+}
+
+/* ==========================================
+   3. SITE NAV — Desktop
+   ========================================== */
+
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  /* Refined: frosted glass on a hairline border (inner pages). */
+  background: var(--vidro-fundo);
+  -webkit-backdrop-filter: var(--vidro-blur);
+  backdrop-filter: var(--vidro-blur);
+  border-bottom: 1px solid var(--cor-borda);
+  padding: var(--espaco-sm) 0;
+  transition: background-color var(--duracao-media) var(--easing-padrao),
+              box-shadow var(--duracao-media) var(--easing-padrao),
+              border-color var(--duracao-media) var(--easing-padrao);
+}
+
+/* Homepage: nav starts transparent, gains solid bg on scroll */
+.page-home .site-nav {
+  background: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* Scrolled state: applied by homepage.js after ~80px of scroll */
+.page-home .site-nav--scrolled {
+  background: var(--cor-fundo-header);
+  border-bottom-color: var(--cor-borda);
+  box-shadow: var(--sombra-md);
+}
+
+.nav-container {
+  max-width: var(--largura-max-conteudo);
+  margin: 0 auto;
+  padding: 0 var(--espaco-md);
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-md);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  text-decoration: none;
+  color: var(--cor-texto);
+}
+
+.nav-logo-icon {
+  display: block;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.nav-logo-text {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-bold);
+  font-size: var(--texto-xl);
+  color: var(--cor-texto);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-lg);
+  margin-left: auto;
+}
+
+.nav-links a {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  color: var(--cor-texto);
+  text-decoration: none;
+  padding: var(--espaco-xs) 0;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--cor-magenta);
+  transition: width var(--duracao-media) var(--easing-padrao);
+}
+
+.nav-links a:hover::after,
+.nav-links a[aria-current="page"]::after {
+  width: 100%;
+}
+
+.nav-links a[aria-current="page"] {
+  color: var(--cor-amarelo-sol);
+}
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espaco-sm) var(--espaco-lg);
+  background: linear-gradient(135deg, var(--cor-amarelo-sol), var(--cor-laranja-tang));
+  color: var(--cor-texto-escuro);
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  border-radius: var(--borda-raio-pilula);
+  text-decoration: none;
+  box-shadow: var(--realce-topo), var(--sombra-md);
+  margin-left: var(--espaco-md);
+  transition: transform var(--duracao-rapida) var(--easing-saida),
+              box-shadow var(--duracao-rapida) var(--easing-saida),
+              filter var(--duracao-rapida) var(--easing-padrao);
+}
+
+.nav-cta:hover {
+  filter: brightness(1.05);
+  color: var(--cor-texto-escuro);
+  transform: translateY(-3px);
+  box-shadow: var(--realce-topo), var(--sombra-lg), var(--sombra-brilho);
+}
+
+.nav-cta:active {
+  transform: translateY(2px);
+  box-shadow: var(--realce-topo), var(--sombra-sm);
+}
+
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--espaco-sm);
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.hamburger-bar {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: var(--cor-texto);
+  border-radius: 2px;
+  margin: 4px 0;
+}
+
+/* Desktop: overlay is never shown */
+.nav-overlay {
+  display: none;
+}
+
+/* ==========================================
+   4. SITE NAV — Mobile (≤640px)
+   ========================================== */
+
+@media (max-width: 640px) {
+  .nav-links {
+    display: none;
+  }
+
+  /* Hide the desktop CTA (the one NOT inside the overlay) */
+  .nav-cta:not(.nav-overlay .nav-cta) {
+    display: none;
+  }
+
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: auto;
+  }
+
+  .nav-overlay {
+    /* Hidden by default; shown when .is-open is added by JS */
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(13, 26, 58, 0.97);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-xl);
+  }
+
+  .nav-overlay.is-open,
+  .nav-overlay[aria-hidden="false"] {
+    display: flex;
+  }
+
+  .nav-overlay-close {
+    position: absolute;
+    top: var(--espaco-md);
+    right: var(--espaco-md);
+    background: none;
+    border: none;
+    color: var(--cor-texto);
+    font-size: var(--texto-2xl);
+    cursor: pointer;
+    padding: var(--espaco-sm);
+  }
+
+  .nav-overlay-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--espaco-xl);
+  }
+
+  .nav-overlay-links a {
+    font-family: var(--fonte-corpo);
+    font-weight: 700;
+    font-size: var(--texto-2xl);
+    color: var(--cor-texto);
+    text-decoration: none;
+    padding: var(--espaco-md);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-overlay .nav-cta {
+    margin-top: var(--espaco-xl);
+    /* gradient/pill styles inherited from .nav-cta above */
+    margin-left: 0;
+  }
+}
+
+/* ==========================================
+   5. SITE FOOTER
+   ========================================== */
+
+.site-footer {
+  position: relative;
+  background: var(--cor-fundo-footer);
+  color: var(--cor-texto);
+  padding: var(--espaco-3xl) 0 var(--espaco-xl);
+}
+
+/* Wavy top border — SVG Bézier wave (Phase 15, replaces clip-path polygon) */
+.wave-divider--footer {
+  position: absolute;
+  top: -47px;               /* wave overlaps into footer by 1px (48 - 1 = 47px offset) */
+  left: 0;
+  width: 100%;
+  height: 48px;
+  z-index: var(--z-wave);
+  pointer-events: none;
+  display: block;
+  line-height: 0;
+  bottom: auto;              /* reset inherited bottom: -1px from base .wave-divider */
+}
+
+.wave-divider--footer path {
+  fill: var(--cor-fundo-footer);
+}
+
+@media (max-width: 640px) {
+  .wave-divider--footer {
+    height: 32px;
+    top: -31px;
+  }
+}
+
+.footer-container {
+  max-width: var(--largura-max-conteudo);
+  margin: 0 auto;
+  padding: 0 var(--espaco-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaco-lg);
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  text-decoration: none;
+  color: var(--cor-texto);
+}
+
+.footer-logo-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.footer-logo-text {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-bold);
+  font-size: var(--texto-lg);
+  color: var(--cor-texto);
+}
+
+.footer-tagline {
+  font-family: var(--fonte-corpo);
+  font-style: italic;
+  font-size: var(--texto-sm);
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--espaco-md);
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-sm);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--cor-texto);
+  text-decoration: underline;
+}
+
+/* Decorative stars container */
+.footer-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.footer-star {
+  position: absolute;
+}
+
+.footer-star--1 {
+  top: 20%;
+  left: 15%;
+  opacity: 0.6;
+}
+
+.footer-star--2 {
+  top: 40%;
+  right: 20%;
+  opacity: 0.4;
+}
+
+.footer-star--3 {
+  bottom: 30%;
+  left: 60%;
+  opacity: 0.5;
+}
+
+.footer-star--4 {
+  top: 60%;
+  right: 40%;
+  opacity: 0.3;
+}
+
+/* Mobile footer layout */
+@media (max-width: 640px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+}

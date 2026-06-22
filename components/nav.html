@@ -1,0 +1,46 @@
+<!-- Skip-to-content link (first element) -->
+<a href="#main-content" class="skip-link">Pular para o conteúdo</a>
+
+<nav class="site-nav" aria-label="Navegação principal">
+  <div class="nav-container">
+
+    <!-- Logo: SVG logomark + site name in Baloo 2 -->
+    <a class="nav-logo" data-href="index.html" aria-label="Meu Planetinha — Página Inicial">
+      <img class="nav-logo-icon" data-src="midia/planetinha-mark.svg" alt="" aria-hidden="true" width="30" height="30">
+      <span class="nav-logo-text">Meu Planetinha</span>
+    </a>
+
+    <!-- Desktop nav links (hidden on mobile) -->
+    <div class="nav-links">
+      <a data-href="index.html">Início</a>
+      <a data-href="sobre_nos/sobre_nos.html">Sobre Nós</a>
+    </div>
+
+    <!-- Desktop CTA button (hidden on mobile) -->
+    <a class="nav-cta" data-href="explorar/explorar.html">
+      <i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Explorar Jogos
+    </a>
+
+    <!-- Hamburger button (visible only on mobile ≤640px) -->
+    <button class="nav-hamburger" type="button"
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+            aria-label="Abrir menu de navegação">
+      <span class="hamburger-bar" aria-hidden="true"></span>
+      <span class="hamburger-bar" aria-hidden="true"></span>
+      <span class="hamburger-bar" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <!-- Mobile overlay menu (hidden by default, shown when hamburger tapped) -->
+  <div class="nav-overlay" id="mobile-nav" aria-hidden="true">
+    <button class="nav-overlay-close" type="button" aria-label="Fechar menu">✕</button>
+    <div class="nav-overlay-links">
+      <a data-href="index.html">Início</a>
+      <a data-href="sobre_nos/sobre_nos.html">Sobre Nós</a>
+    </div>
+    <a class="nav-cta" data-href="explorar/explorar.html">
+      <i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Explorar Jogos
+    </a>
+  </div>
+</nav>

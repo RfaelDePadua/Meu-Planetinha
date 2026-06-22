@@ -1,0 +1,111 @@
+/*
+ * layout.css — Meu Planetinha Layout Utilities
+ * Depends on: base.css (tokens must be loaded first)
+ */
+
+/* =========================================
+   CONTAINER
+   ========================================= */
+
+.container {
+  width: 100%;
+  max-width: var(--largura-max-conteudo);
+  margin-inline: auto;
+  padding-inline: var(--espaco-lg);
+}
+
+.container-texto {
+  width: 100%;
+  max-width: var(--largura-max-texto);
+  margin-inline: auto;
+  padding-inline: var(--espaco-lg);
+}
+
+/* Tighter padding on small screens (mobile) */
+@media (max-width: 640px) {
+  .container,
+  .container-texto {
+    padding-inline: var(--espaco-md);
+  }
+}
+
+/* Wider padding on desktop screens */
+@media (min-width: 1024px) {
+  .container,
+  .container-texto {
+    padding-inline: var(--espaco-xl);
+  }
+}
+
+/* =========================================
+   FLEX UTILITIES
+   ========================================= */
+
+.flex-centro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-entre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-coluna {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.gap-xs  { gap: var(--espaco-xs); }
+.gap-sm  { gap: var(--espaco-sm); }
+.gap-md  { gap: var(--espaco-md); }
+.gap-lg  { gap: var(--espaco-lg); }
+.gap-xl  { gap: var(--espaco-xl); }
+
+/* =========================================
+   TEXT ALIGNMENT
+   ========================================= */
+
+.texto-centro   { text-align: center; }
+.texto-esquerda { text-align: left; }
+.texto-direita  { text-align: right; }
+
+/* =========================================
+   SPACING HELPERS
+   ========================================= */
+
+.mt-sm  { margin-top: var(--espaco-sm); }
+.mt-md  { margin-top: var(--espaco-md); }
+.mt-lg  { margin-top: var(--espaco-lg); }
+.mt-xl  { margin-top: var(--espaco-xl); }
+.mt-2xl { margin-top: var(--espaco-2xl); }
+.mt-3xl { margin-top: var(--espaco-3xl); }
+
+.mb-sm  { margin-bottom: var(--espaco-sm); }
+.mb-md  { margin-bottom: var(--espaco-md); }
+.mb-lg  { margin-bottom: var(--espaco-lg); }
+.mb-xl  { margin-bottom: var(--espaco-xl); }
+.mb-2xl { margin-bottom: var(--espaco-2xl); }
+.mb-3xl { margin-bottom: var(--espaco-3xl); }
+
+/* =========================================
+   ACCESSIBILITY
+   ========================================= */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

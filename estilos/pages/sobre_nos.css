@@ -1,0 +1,149 @@
+/* =============================================================
+   sobre_nos.css — About Us page styles
+   Phase 8
+   Scoped to: .page-sobre-nos, .sobre-*, .equipe-*, .membro-*
+   Depends on: base.css tokens, page-shell.css layout
+   ============================================================= */
+
+/* ── Hero Section ─────────────────────────────────────────── */
+
+.sobre-hero {
+  text-align: center;
+  padding: var(--espaco-2xl) 0 var(--espaco-xl);
+  max-width: 720px;
+  margin: 0 auto var(--espaco-2xl);
+}
+
+.sobre-hero__badge {
+  margin: 0 auto var(--espaco-md);
+}
+
+.sobre-hero__eyebrow {
+  display: block;
+  margin-bottom: var(--espaco-xs);
+}
+
+.sobre-hero__titulo {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--cor-texto-principal);
+  margin-bottom: var(--espaco-lg);
+  line-height: 1.1;
+}
+
+.sobre-hero__descricao {
+  font-family: var(--fonte-corpo);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--cor-texto-secundario);
+  line-height: 1.7;
+  text-align: left;
+}
+
+.sobre-hero__descricao strong {
+  color: var(--cor-texto-principal);
+}
+
+/* ── Team Section ─────────────────────────────────────────── */
+
+.sobre-equipe {
+  margin-bottom: var(--espaco-2xl);
+}
+
+.sobre-equipe__titulo {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--cor-texto-principal);
+  text-align: center;
+  margin-bottom: var(--espaco-xl);
+}
+
+.equipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--espaco-lg);
+}
+
+@media (max-width: 640px) {
+  .equipe-grid {
+    grid-template-columns: 1fr;
+    gap: var(--espaco-md);
+  }
+}
+
+/* ── Member Card ──────────────────────────────────────────── */
+
+.membro-card {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--borda-raio-lg);
+  padding: var(--espaco-xl) var(--espaco-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-sm);
+  transition:
+    transform var(--duracao-media) var(--easing-saida),
+    box-shadow var(--duracao-media) var(--easing-saida);
+}
+
+.membro-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-lg);
+}
+
+/* Avatar styling lives in componentes.css (.avatar) — shared with the
+   design system. A gentle staggered bob is layered on here. */
+.membro-card .avatar {
+  animation: mp-float 6s ease-in-out infinite;
+}
+.membro-card:nth-child(1) .avatar { animation-delay:  0s;   }
+.membro-card:nth-child(2) .avatar { animation-delay: -1.5s; }
+.membro-card:nth-child(3) .avatar { animation-delay: -3s;   }
+.membro-card:nth-child(4) .avatar { animation-delay: -4.5s; }
+
+/* ── Member Info ──────────────────────────────────────────── */
+
+.membro-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 1.1rem;
+  color: var(--cor-texto-principal);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.membro-role {
+  font-family: var(--fonte-corpo);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 2px var(--espaco-sm);
+  display: inline-block;
+}
+
+/* ── Back to Home CTA ─────────────────────────────────────── */
+
+.sobre-cta {
+  text-align: center;
+  padding: var(--espaco-xl) 0 var(--espaco-2xl);
+}
+
+.sobre-cta .btn-primario {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-xs);
+  font-size: 1.05rem;
+}
+
+/* ── Reduced Motion ───────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .membro-card {
+    transition: none;
+  }
+  .membro-card .avatar {
+    animation: none;
+  }
+}
