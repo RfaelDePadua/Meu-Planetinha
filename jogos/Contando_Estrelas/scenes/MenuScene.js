@@ -1,57 +1,64 @@
+import { GAME_W, GAME_H, COLORS, CSS, FONTS, applyShadow } from './theme.js';
+import { makeButton } from './ui.js';
+
 export default class MenuScene extends Phaser.Scene {
   constructor() {
     super('MenuScene');
   }
 
-  preload() {
-    console.log('MenuScene');
-  }
-
   create() {
-    const { width, height } = this.sys.game.config; // Obtenha as dimensões do jogo
-    this.add.image(0, 0, 'fundo_menu').setOrigin(0).setDisplaySize(width, height); // Ajuste a imagem ao espaço do jogo
+    // Fundo parallax (camadas roláveis)
+    this.bgFar = this.add.tileSprite(0, 0, GAME_W, GAME_H, 'bg').setOrigin(0).setAlpha(0.34);
+    this.bgMid = this.add.tileSprite(0, 0, GAME_W, GAME_H, 'stars').setOrigin(0).setAlpha(0.45);
+    this.bgNear = this.add.tileSprite(0, 0, GAME_W, GAME_H, 'stars').setOrigin(0).setAlpha(0.85).setScale(1.5);
 
-    // Adicionar o sprite e reproduzir a animação
-    const astronautinha = this.add.sprite(width / 2, 0, 'astronautinha');
-    astronautinha.play('astronautinha_anim');
+    // Planeta decorativo no canto
+    this.add.image(GAME_W - 30, 120, 'planet').setScale(1.4).setAlpha(0.9);
 
+    // Título
+    const title = this.add.text(GAME_W / 2, 96, 'CONTANDO\nESTRELAS', {
+      fontFamily: FONTS.display, fontStyle: '700', fontSize: '44px',
+      color: CSS.gold, align: 'center', lineSpacing: -6,
+    }).setOrigin(0.5, 0);
+    applyShadow(title, 3);
 
+    // Nave central flutuando
+    const ship = this.add.image(GAME_W / 2, 300, 'player').setScale(128 / 38);
     this.tweens.add({
-      targets: astronautinha,
-      y: height + 64, // Move para fora da tela, abaixo
-      duration: 10000, // Duração da animação em milissegundos
-      ease: 'Linear',
-      repeat: 0, // Não repete
-      yoyo: false // Não volta para a posição inicial
+      targets: ship, y: '-=10', yoyo: true, repeat: -1, duration: 1800, ease: 'Sine.easeInOut',
     });
 
-    const simbolos = this.add.image(0, 0, 'simbolos').setOrigin(0).setDisplaySize(width, height); // Ajuste a imagem ao espaço do jogo
-    const maisSimbolos = this.add.image(-150, 0, 'simbolos').setOrigin(0).setDisplaySize(width, height); // Ajuste a imagem ao espaço do jogo
-    maisSimbolos.flipX = true; // Inverter a imagem horizontalmente
-    maisSimbolos.flipY = true; // Inverter a imagem verticalmente
-    const titulo = this.add.image(0, 0, 'titulo').setOrigin(0).setDisplaySize(width, height); // Ajuste a imagem ao espaço do jogo
-    const botaoJogar = this.add.image(0, 0, 'botao_jogar').setOrigin(0).setDisplaySize(width, height);
-
-    botaoJogar.setInteractive({ useHandCursor: true, pixelPerfect: true });
-    botaoJogar.on('pointerdown', () => {
-      this.fadeOutElements([simbolos, titulo, botaoJogar, astronautinha], () => {
-        this.scene.start('GameScene');
-      });
+    // Botão principal
+    makeButton(this, GAME_W / 2, 478, 'Jogar', {
+      variant: 'primary',
+      onClick: () => this.startGame(),
     });
 
-    // Signal to parent shell that the game is ready
+    // Botões secundários (stubs no MVP)
+    makeButton(this, GAME_W / 2 - 68, 552, 'Som', { variant: 'secondary', fontSize: 16 });
+    makeButton(this, GAME_W / 2 + 78, 552, 'Como Jogar', { variant: 'secondary', fontSize: 16 });
+
+    // Versão
+    this.add.text(GAME_W / 2, GAME_H - 16, 'v2.0', {
+      fontFamily: FONTS.body, fontStyle: '600', fontSize: '11px', color: '#7a5a78',
+    }).setOrigin(0.5);
+
+    // Sinaliza ao shell pai (caso embutido) que o jogo está pronto.
     if (window.parent !== window) {
       window.parent.postMessage('game-ready', '*');
     }
   }
 
-  fadeOutElements(elements, callback) {
-    this.tweens.add({
-      targets: elements,
-      alpha: 0,
-      duration: 300, // Duração da animação em milissegundos
-      ease: 'Power1',
-      onComplete: callback
+  startGame() {
+    this.cameras.main.fadeOut(250, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('TransitionScene', { wave: 1, score: 0, life: 3 });
     });
+  }
+
+  update() {
+    this.bgFar.tilePositionY -= 0.15;
+    this.bgMid.tilePositionY -= 0.3;
+    this.bgNear.tilePositionY -= 0.5;
   }
 }

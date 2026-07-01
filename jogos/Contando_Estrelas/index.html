@@ -2,18 +2,27 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contando Estrelas — Meu Planetinha</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Contando Estrelas</title>
 
-  <!-- Game container styling (minimal — no legacy site chrome) -->
+  <!-- Fontes do jogo: Fredoka (números/contas) + Pixelify Sans (títulos/HUD) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Pixelify+Sans:wght@700&display=swap" rel="stylesheet">
+
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body {overflow: hidden; }
-    #game-container { width: 100%; height: 100vh; height: 100dvh; }
+    html, body { width: 100%; height: 100%; background: #160419; overflow: hidden; }
+    #game-container {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
   </style>
-
-  <!-- Estilos específicos do jogo -->
-  <link rel="stylesheet" type="text/css" href="assets/super-dario-advance-4.css">
 
   <!-- Biblioteca Phaser -->
   <script src="phaser.min.js"></script>
@@ -22,9 +31,6 @@
   <script src="main.js" type="module"></script>
 </head>
 <body>
-
-  <!-- Conteúdo principal -->
   <div id="game-container"></div>
-
 </body>
 </html>

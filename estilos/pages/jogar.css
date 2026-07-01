@@ -236,11 +236,14 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 .game-iframe-wrap {
   position: relative;
-  width: 100%; max-width: 420px;
-  height: calc(100dvh - var(--espaco-2xl));
-  max-height: 780px;
+  /* Mesma proporção do jogo (GAME_W/GAME_H = 320/660) para que a área
+     reservada case exatamente com o canvas e não sobre "letterbox". */
+  aspect-ratio: 320 / 660;
+  height: min(calc(100dvh - var(--espaco-2xl)), 780px);
+  width: auto; max-width: 100%;
 }
 .is-horizontal .game-iframe-wrap {
+  aspect-ratio: auto;
   max-width: 100%; width: 100%; height: 100%; max-height: none;
 }
 
@@ -598,7 +601,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
   .mobile-topbar { display: flex; }
   .state-shell:not(.is-horizontal) .bottom-drawer { display: flex; }
 
-  .game-iframe-wrap { max-width: 100%; height: 100%; max-height: none; }
+  .game-iframe-wrap { aspect-ratio: auto; width: 100%; max-width: 100%; height: 100%; max-height: none; }
   #game-iframe { border-radius: 0; }
   .game-iframe-wrap::after { display: none; }
   .game-loading { border-radius: 0; }

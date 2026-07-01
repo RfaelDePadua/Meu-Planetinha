@@ -1,89 +1,100 @@
+import {
+  ASSET_BASE, GAME_W, GAME_H, COLORS, CSS, FONTS,
+  IMAGES, SHEETS, VFX, createVfxAnims,
+} from './theme.js';
+
 export default class PreloadScene extends Phaser.Scene {
-    constructor() {
-        super('PreloadScene');
+  constructor() {
+    super('PreloadScene');
+  }
+
+  preload() {
+    this.drawProgressBar();
+
+    const path = (f) => `${ASSET_BASE}/${f}`;
+
+    // Sprites estáticos
+    for (const [key, file] of IMAGES) {
+      this.load.image(key, path(file));
     }
 
-    preload() {
-        console.log('PreloadScene');
-        const { width, height } = this.scale;
-
-        this.load.on('progress', (value) => {
-            const loadingImage = this.add.sprite(this.scale.width / 2, this.scale.height / 2, 'loading').setOrigin(0.5);
-            loadingImage.setScale(0.15);
-            loadingImage.play('loading');
-        });
-
-        // Carregar os assets
-        this.load.image('fundo_menu', 'assets/Fundo.png');
-        this.load.image('fumaca', 'assets/Fumacas_Passantes.png');
-        this.load.image('simbolos', 'assets/Simbolos.png');
-        this.load.image('titulo', 'assets/Titulo.png');
-        this.load.image('botao_jogar', 'assets/Botao_Jogar.png');
-        this.load.image('botao_continuar', 'assets/CONTINUAR.png');
-        this.load.image('painel', 'assets/Painel.png');
-        this.load.image('gameover', 'assets/Game_Over.png');
-        
-        this.load.spritesheet('astronautinha', 'assets/Astronautinha.png', { frameWidth: 64, frameHeight: 64 });
-        this.load.spritesheet('player', 'assets/Nave.png', { frameWidth: 1080, frameHeight: 1080 });
-        this.load.spritesheet('inimigo', 'assets/Nave_Inimiga.png', { frameWidth: 1080, frameHeight: 1080 });
-        this.load.spritesheet('explosao', 'assets/Explosao.png', { frameWidth: 80, frameHeight: 60 });
-        this.load.spritesheet('tiro', 'assets/Tiro.png', { frameWidth: 64, frameHeight: 64 });
-
-        this.load.font('super-dario-advance-4', 'assets/super-dario-advance-4.ttf');
-
-        
-
-        // Esperar o carregamento completo
-        this.load.on('complete', () => {
-            this.createAnimations();
-        });
-        this.load.start();
+    // Spritesheets especiais (gema do HUD, chama do motor)
+    for (const [key, file, fw, fh] of SHEETS) {
+      this.load.spritesheet(key, path(file), { frameWidth: fw, frameHeight: fh });
     }
 
-    createAnimations() {
-        // Criar animações
-        this.anims.create({
-            key: 'astronautinha_anim',
-            frames: this.anims.generateFrameNumbers('astronautinha', { start: 0, end: 299 }),
-            frameRate: 30,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'player_anim',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 30,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'inimigo_anim',
-            frames: this.anims.generateFrameNumbers('inimigo', { start: 0, end: 3 }),
-            frameRate: 30,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'explosao_anim',
-            frames: this.anims.generateFrameNumbers('explosao', { start: 0, end: 8 }),
-            frameRate: 15,
-            repeat: 0
-        });
-
-        this.anims.create({
-            key: 'tiro_anim',
-            frames: this.anims.generateFrameNumbers('tiro', { start: 0, end: 1 }),
-            frameRate: 15,
-            repeat: -1
-        });
-
-        // Garantir que as animações foram criadas
-        this.time.delayedCall(100, () => {
-            this.scene.start('MenuScene');
-        });
+    // VFX (tiras horizontais já prontas em pack/vfx)
+    for (const [key, def] of Object.entries(VFX)) {
+      this.load.spritesheet(key, path(`vfx/${def.file}`), {
+        frameWidth: def.fw,
+        frameHeight: def.fh,
+      });
     }
+  }
 
-    create() {
-        // Nada a fazer aqui
+  drawProgressBar() {
+    const cx = GAME_W / 2;
+    const cy = GAME_H / 2;
+
+    this.add.text(cx, cy - 40, 'CONTANDO ESTRELAS', {
+      fontFamily: FONTS.display, fontStyle: '700', fontSize: '16px', color: CSS.gold,
+    }).setOrigin(0.5);
+
+    const barW = 200;
+    const barH = 14;
+    const box = this.add.graphics();
+    box.fillStyle(COLORS.panelPurple, 0.8);
+    box.fillRoundedRect(cx - barW / 2, cy, barW, barH, 6);
+
+    const bar = this.add.graphics();
+    this.load.on('progress', (value) => {
+      bar.clear();
+      bar.fillStyle(COLORS.teal, 1);
+      bar.fillRoundedRect(cx - barW / 2 + 2, cy + 2, (barW - 4) * value, barH - 4, 4);
+    });
+  }
+
+  create() {
+    // A tira boost_heavy_1 é cortada sem espaçamento entre os frames; em escala
+    // não-inteira a borda de um frame amostra 1px do vizinho. Recolhemos as UVs
+    // horizontais em meio téxel para travar cada frame no seu próprio recorte.
+    this.fixFrameBleed('boostFlame');
+
+    this.createAnimations();
+    createVfxAnims(this);
+
+    // Garante que as fontes estejam prontas antes de desenhar texto no menu.
+    const done = () => this.scene.start('MenuScene');
+    if (document.fonts && document.fonts.ready) {
+      Promise.all([
+        document.fonts.load('700 24px "Pixelify Sans"'),
+        document.fonts.load('700 24px "Fredoka"'),
+      ]).catch(() => {}).then(() => document.fonts.ready).then(done, done);
+    } else {
+      done();
     }
+  }
+
+  // Insere meio téxel de margem nas UVs horizontais de cada frame da textura,
+  // evitando que a coluna do frame vizinho "vaze" quando o sprite é escalado.
+  fixFrameBleed(key) {
+    if (!this.textures.exists(key)) return;
+    const tex = this.textures.get(key);
+    const halfTexel = 0.5 / tex.source[0].width;
+    tex.getFrameNames().forEach((name) => {
+      const f = tex.frames[name];
+      f.u0 += halfTexel;
+      f.u1 -= halfTexel;
+    });
+  }
+
+  createAnimations() {
+    // Chama do motor (boost_heavy_1: 3 frames)
+    this.anims.create({
+      key: 'boostFlame',
+      frames: this.anims.generateFrameNumbers('boostFlame', { start: 0, end: 2 }),
+      frameRate: 16,
+      repeat: -1,
+    });
+  }
 }

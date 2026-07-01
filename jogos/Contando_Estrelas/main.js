@@ -1,46 +1,29 @@
 import BootScene from './scenes/BootScene.js';
+import PreloadScene from './scenes/PreloadScene.js';
 import MenuScene from './scenes/MenuScene.js';
 import GameScene from './scenes/GameScene.js';
+import TransitionScene from './scenes/TransitionScene.js';
 import GameOverScene from './scenes/GameOverScene.js';
-import PreloadScene from './scenes/PreloadScene.js';
-
-const aspectRatio = 9 / 16;
-const maxWidth = window.innerWidth * 0.8; // 90% da largura da tela
-const maxHeight = window.innerHeight * 0.8; // 90% da altura da tela
-
-let width, height;
-
-if (maxWidth / maxHeight > aspectRatio) {
-  height = maxHeight;
-  width = height * aspectRatio;
-} else {
-  width = maxWidth;
-  height = width / aspectRatio;
-}
+import { GAME_W, GAME_H } from './scenes/theme.js';
 
 const config = {
   type: Phaser.AUTO,
-  width: width,
-  height: height,
+  width: GAME_W,
+  height: GAME_H,
   parent: 'game-container',
+  backgroundColor: '#160419', // COLORS.bgDark
+  pixelArt: true,
+  roundPixels: true,
   physics: {
     default: 'arcade',
-    arcade: {
-      gravity: { y: 0 },
-      debug: false
-    }
+    arcade: { gravity: { y: 0 }, debug: false },
   },
-  scene: [BootScene, PreloadScene, MenuScene, GameScene, GameOverScene],
-  backgroundColor: '#000000',
   scale: {
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  render: {
-    pixelArt: false,
-    antialias: true,
-    willReadFrequently: true
-  }
+  scene: [BootScene, PreloadScene, MenuScene, GameScene, TransitionScene, GameOverScene],
 };
-  
+
+// eslint-disable-next-line no-unused-vars
 const game = new Phaser.Game(config);

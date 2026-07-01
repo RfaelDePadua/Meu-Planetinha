@@ -14,3 +14,7 @@ node_modules/
 # Ambiente / logs
 .env
 npm-debug.log
+
+# Arquivos de origem / handoff de design (não versionar)
+jogos/Contando_Estrelas/Jogo com Phaser e JavaScript.zip
+jogos/Contando_Estrelas/design_handoff_contando_estrelas/
