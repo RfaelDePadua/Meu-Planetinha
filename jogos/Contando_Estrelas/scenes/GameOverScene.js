@@ -66,6 +66,22 @@ export default class GameOverScene extends Phaser.Scene {
       variant: 'secondary', fontSize: 18,
       onClick: () => this.toMenu(),
     });
+
+    // Envia apenas um resumo da partida para persistência local no portal.
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        source: 'meu-planetinha-game',
+        type: 'game-result',
+        gameId: 'contando-estrelas',
+        payload: {
+          score: this.finalScore,
+          bestCombo: 0,
+          correct: Math.floor(this.finalScore / 10),
+          incorrect: 0,
+          completed: true,
+        },
+      }, '*');
+    }
   }
 
   restart() {

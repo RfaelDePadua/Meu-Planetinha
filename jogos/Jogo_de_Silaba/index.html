@@ -1,31 +1,93 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo de Sílaba — Meu Planetinha</title>
-
-  <!-- Game styling (minimal — no legacy site chrome) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#160f3d">
+  <title>Palavra Parkour — Meu Planetinha</title>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      min-height: 100dvh;
-      overflow: hidden;
-    }
-    canvas { display: block; max-width: 100%; max-height: 100vh; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #100a2e; }
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; touch-action: none; }
+    button { font: inherit; }
+    .game-app { position: relative; width: 100%; height: 100%; display: grid; place-items: center; background: radial-gradient(circle at 50% 20%, #3d2474 0, #160f3d 58%, #09061e 100%); }
+    canvas { display: block; width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16)); max-width: 100%; max-height: 100%; outline: none; }
+    .game-actions { position: absolute; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); display: flex; gap: 8px; z-index: 5; }
+    .icon-btn, .lane-btn { border: 2px solid rgba(255,255,255,.45); color: #fff; background: rgba(30,18,69,.82); box-shadow: 0 4px 0 rgba(7,4,24,.42); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .icon-btn { width: 44px; height: 44px; border-radius: 14px; font-size: 20px; }
+    .icon-btn:active, .lane-btn:active { transform: translateY(2px); box-shadow: none; }
+    .icon-btn:focus-visible, .lane-btn:focus-visible, .start-btn:focus-visible { outline: 4px solid #ffe66d; outline-offset: 2px; }
+    .touch-controls { position: absolute; left: max(12px, env(safe-area-inset-left)); bottom: max(12px, env(safe-area-inset-bottom)); display: grid; gap: 8px; z-index: 5; }
+    .lane-btn { width: 62px; height: 54px; border-radius: 17px; font-size: 26px; font-weight: 900; }
+    .screen { position: absolute; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; background: rgba(9,6,30,.58); backdrop-filter: blur(5px); }
+    .screen[hidden] { display: none; }
+    .panel { width: min(560px, 94vw); max-height: 92vh; overflow: auto; padding: clamp(22px, 5vw, 40px); color: #fff; text-align: center; background: linear-gradient(145deg, rgba(71,44,133,.97), rgba(30,18,69,.98)); border: 3px solid #a78bfa; border-radius: 28px; box-shadow: 0 18px 60px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.16); }
+    .eyebrow { margin: 0 0 8px; color: #67e8f9; font-size: 13px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+    h1, h2 { margin: 0; line-height: 1.03; }
+    h1 { font-size: clamp(35px, 8vw, 62px); color: #ffe66d; text-shadow: 0 5px 0 #6f3c91; }
+    h2 { font-size: clamp(30px, 7vw, 48px); color: #ffe66d; }
+    .lead { margin: 16px auto 20px; max-width: 430px; color: #ede9fe; font-size: clamp(16px, 3vw, 20px); line-height: 1.45; }
+    .how-to { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 24px; }
+    .how-step { padding: 13px 8px; border-radius: 16px; background: rgba(255,255,255,.08); color: #ddd6fe; font-size: 14px; }
+    .how-step strong { display: block; margin-bottom: 5px; color: #fff; font-size: 22px; }
+    .start-btn { min-width: 210px; min-height: 56px; padding: 13px 24px; border: 0; border-radius: 18px; color: #241044; background: linear-gradient(180deg, #ffe66d, #fbbf24); box-shadow: 0 7px 0 #a85d1d; font-weight: 950; font-size: 20px; cursor: pointer; }
+    .start-btn:active { transform: translateY(4px); box-shadow: 0 3px 0 #a85d1d; }
+    .result-stats { display: flex; justify-content: center; gap: 12px; margin: 22px 0 26px; }
+    .result-stat { min-width: 105px; padding: 14px; border-radius: 17px; background: rgba(255,255,255,.09); }
+    .result-stat strong { display: block; color: #67e8f9; font-size: 27px; }
+    .result-stat span { color: #ddd6fe; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (hover: hover) and (pointer: fine) { .touch-controls { opacity: .72; } .lane-btn:hover, .icon-btn:hover { background: rgba(66,43,126,.94); } }
+    @media (max-height: 430px) { .panel { padding: 18px 28px; } .how-to { margin: 12px 0 17px; } .lead { margin: 10px auto 13px; } .start-btn { min-height: 48px; } }
   </style>
-
-  <!-- Biblioteca Phaser -->
-  <script src="phaser.min.js"></script>
 </head>
 <body>
-
-  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <main class="game-app" aria-label="Jogo Palavra Parkour">
+    <canvas id="gameCanvas" width="960" height="540" tabindex="0" aria-label="Percurso de sílabas. Use as setas para escolher a faixa com a sílaba correta."></canvas>
+    <div class="game-actions">
+      <button class="icon-btn" id="sound-btn" type="button" aria-label="Desativar som" title="Som">🔊</button>
+      <button class="icon-btn" id="pause-btn" type="button" aria-label="Pausar" title="Pausar">Ⅱ</button>
+    </div>
+    <div class="touch-controls" aria-label="Controles de movimento">
+      <button class="lane-btn" id="up-btn" type="button" aria-label="Subir uma faixa">▲</button>
+      <button class="lane-btn" id="down-btn" type="button" aria-label="Descer uma faixa">▼</button>
+    </div>
+    <section class="screen" id="start-screen">
+      <div class="panel">
+        <p class="eyebrow">Planeta Letrion</p>
+        <h1>Palavra<br>Parkour</h1>
+        <p class="lead">Corra pelas trilhas de Letrion e escolha a sílaba que completa cada palavra.</p>
+        <div class="how-to" aria-label="Como jogar">
+          <div class="how-step"><strong>1</strong>Observe a palavra</div>
+          <div class="how-step"><strong>↕</strong>Mude de trilha</div>
+          <div class="how-step"><strong>★</strong>Acerte a sílaba</div>
+        </div>
+        <button class="start-btn" id="start-btn" type="button">Começar aventura</button>
+      </div>
+    </section>
+    <section class="screen" id="pause-screen" hidden>
+      <div class="panel">
+        <p class="eyebrow">Uma pausa na aventura</p>
+        <h2>Jogo pausado</h2>
+        <p class="lead">Quando estiver pronto, continue correndo!</p>
+        <button class="start-btn" id="resume-btn" type="button">Continuar</button>
+      </div>
+    </section>
+    <section class="screen" id="result-screen" hidden>
+      <div class="panel">
+        <p class="eyebrow">Percurso concluído</p>
+        <h2 id="result-title">Mandou bem!</h2>
+        <p class="lead" id="result-message"></p>
+        <div class="result-stats">
+          <div class="result-stat"><strong id="result-score">0</strong><span>pontos</span></div>
+          <div class="result-stat"><strong id="result-correct">0/10</strong><span>acertos</span></div>
+          <div class="result-stat"><strong id="result-combo">0</strong><span>melhor combo</span></div>
+        </div>
+        <button class="start-btn" id="replay-btn" type="button">Jogar novamente</button>
+      </div>
+    </section>
+    <p class="sr-only" id="announcer" role="status" aria-live="polite"></p>
+  </main>
   <script src="script.js"></script>
-
 </body>
 </html>

@@ -21,6 +21,7 @@
  *   'pause' | 'resume' | 'mute' | 'unmute' | 'restart'
  * Contrato (jogo → parent):
  *   'game-ready'  (string) — dispensa o overlay de carregamento.
+ *   { source, type: 'game-result', gameId, payload } — salva o resumo local.
  */
 
 (function () {
@@ -78,6 +79,22 @@
 
   function getGamesAPI() {
     return window.MeuPlanetinha && window.MeuPlanetinha.games;
+  }
+
+  function getProgressAPI() {
+    return window.MeuPlanetinha && window.MeuPlanetinha.progress;
+  }
+
+  function renderSavedProgress(progress) {
+    var target = $('lobby-saved-progress');
+    if (!target) return;
+    if (!progress || !progress.sessions) {
+      target.hidden = true;
+      return;
+    }
+    target.textContent = 'Melhor pontuação: ' + progress.bestScore +
+      ' · Aventuras concluídas: ' + progress.sessions;
+    target.hidden = false;
   }
 
   /* ------------------------------------------------
@@ -163,6 +180,9 @@
     renderTutorialSteps($('tutorial-steps-drawer'), g.tutorial, 'step-num');
     $('drawer-sobre-text').textContent = g.sobre || '';
 
+    var progressApi = getProgressAPI();
+    renderSavedProgress(progressApi && progressApi.getGame(g.id));
+
     /* Layout horizontal */
     if (orientacao === 'horizontal') {
       el.shell.classList.add('is-horizontal');
@@ -195,8 +215,19 @@
 
   /* Mensagem do iframe do jogo */
   window.addEventListener('message', function (e) {
-    if (e.source === el.iframe.contentWindow && e.data === 'game-ready') {
+    if (e.source !== el.iframe.contentWindow) return;
+    if (e.data === 'game-ready') {
       dismissGameLoading();
+      return;
+    }
+
+    var data = e.data;
+    if (data && data.source === 'meu-planetinha-game' &&
+        data.type === 'game-result' && data.gameId === game.id) {
+      var progressApi = getProgressAPI();
+      if (progressApi && typeof progressApi.recordSession === 'function') {
+        renderSavedProgress(progressApi.recordSession(game.id, data.payload));
+      }
     }
   });
 

@@ -19,7 +19,7 @@
      + Bootstrap icon is used. */
   var PLANETS = {
     calculon:  { nome: 'Calculon',  materia: 'Matemática', art: 'midia/planet-calculon.png', icon: 'bi-plus-slash-minus', convite: 'Conte estrelas e some pontos!' },
-    letrion:   { nome: 'Letrion',   materia: 'Português',  art: 'midia/planet-letrion.png',  icon: 'bi-fonts',           convite: 'Monte palavras sílaba a sílaba!' },
+    letrion:   { nome: 'Letrion',   materia: 'Português',  art: 'midia/planet-letrion.png',  icon: 'bi-fonts',           convite: 'Corra e complete palavras no parkour!' },
     naturox:   { nome: 'Naturox',   materia: 'Ciências',   art: null,                        icon: 'bi-flower1',         convite: 'Explore a vida e a natureza.' },
     terramund: { nome: 'Terramund', materia: 'Geografia',  art: null,                        icon: 'bi-globe-americas',  convite: 'Viaje pelos continentes.' },
     globish:   { nome: 'Globish',   materia: 'Inglês',     art: null,                        icon: 'bi-translate',       convite: 'Descubra um novo idioma.' }

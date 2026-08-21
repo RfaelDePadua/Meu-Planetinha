@@ -70,6 +70,8 @@
           <ol class="tutorial-steps" id="tutorial-steps-lobby"></ol>
         </div>
 
+        <p class="lobby-saved-progress" id="lobby-saved-progress" hidden></p>
+
         <div class="lobby-progress" aria-hidden="true">
           <div class="lobby-progress-bar" id="lobby-progress-bar"></div>
         </div>
@@ -250,8 +252,9 @@
     </div>
   </div>
 
-  <!-- Scripts: game data → shell controller -->
+  <!-- Scripts: game data → local progress → shell controller -->
   <script src="../scripts/games.js"></script>
+  <script src="../scripts/progress.js"></script>
   <script src="../scripts/jogar.js"></script>
 
 </body>

@@ -27,3 +27,28 @@ const config = {
 
 // eslint-disable-next-line no-unused-vars
 const game = new Phaser.Game(config);
+
+// Contrato compartilhado com a página jogos/jogar.html.
+let shellPaused = false;
+let pageHidden = document.hidden;
+
+function syncLoopState() {
+  if (shellPaused || pageHidden) game.loop.sleep();
+  else game.loop.wake();
+}
+
+window.addEventListener('message', (event) => {
+  const data = event.data;
+  const type = typeof data === 'string' ? data : data && data.type;
+
+  if (type === 'pause') { shellPaused = true; syncLoopState(); }
+  else if (type === 'resume') { shellPaused = false; syncLoopState(); }
+  else if (type === 'mute') game.sound.mute = true;
+  else if (type === 'unmute') game.sound.mute = false;
+  else if (type === 'restart') window.location.reload();
+});
+
+document.addEventListener('visibilitychange', () => {
+  pageHidden = document.hidden;
+  syncLoopState();
+});

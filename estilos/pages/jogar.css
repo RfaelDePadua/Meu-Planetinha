@@ -144,6 +144,17 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
   background: var(--p-cor); transition: width .3s ease;
 }
 
+.lobby-saved-progress {
+  margin: 0;
+  padding: var(--espaco-xs) var(--espaco-sm);
+  border: 1px solid color-mix(in srgb, var(--p-cor) 48%, transparent);
+  border-radius: var(--borda-raio-md);
+  color: var(--cor-texto-secundario);
+  background: color-mix(in srgb, var(--p-cor) 10%, transparent);
+  font-size: var(--texto-sm);
+  font-weight: 700;
+}
+
 /* JOGAR button */
 .jogar-btn {
   display: flex; align-items: center; justify-content: center;

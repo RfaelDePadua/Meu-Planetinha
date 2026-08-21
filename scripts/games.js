@@ -36,19 +36,19 @@
     },
     {
       id: 'jogo-de-silaba',
-      name: 'Jogo de Sílaba',
+      name: 'Palavra Parkour',
       planet: 'letrion',
       subject: 'Português',
       difficulty: 1,
-      cover: 'midia/Jogo_de_silaba.png',
+      cover: null,
       path: 'jogos/Jogo_de_Silaba/index.html',
-      orientacao: 'vertical',
-      sobre: 'Aventure-se no planeta das palavras e domine o poder das sílabas. Uma jornada pelo universo da língua portuguesa!',
+      orientacao: 'horizontal',
+      sobre: 'Corra pelas trilhas de Letrion e escolha a sílaba correta para completar cada palavra. Acerte em sequência para criar combos e recuperar o brilho do planeta!',
       tutorial: [
-        'Uma palavra aparece na tela',
-        'Observe qual sílaba está destacada',
-        'Toque na sílaba correta entre as opções',
-        'Cada acerto te leva mais longe na galáxia das letras!'
+        'Observe a imagem e a palavra incompleta no alto da tela',
+        'Use as setas, as teclas W/S ou toque na tela para mudar de trilha',
+        'Alinhe o robô com a sílaba que completa a palavra',
+        'Acerte em sequência para formar combos e ganhar mais pontos!'
       ]
     }
   ];
