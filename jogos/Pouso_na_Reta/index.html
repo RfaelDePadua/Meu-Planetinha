@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mulish:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../comum/base.css">
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -25,7 +26,7 @@
   <main class="app" id="app" data-estado="inicio">
     <header class="hud">
       <span class="chip" id="hud-etapa">Etapa 1</span>
-      <ol class="pousos" id="hud-pousos" aria-label="Pousos da missão"></ol>
+      <ol class="marcadores" id="hud-pousos" aria-label="Pousos da missão"></ol>
       <span class="chip chip--piloto" id="hud-piloto" hidden></span>
     </header>
 
@@ -107,6 +108,7 @@
     <p class="sr-only" id="anuncio" role="status" aria-live="polite"></p>
   </main>
 
+  <script src="../comum/jogo-base.js"></script>
   <script src="conteudo.js"></script>
   <script src="jogo.js"></script>
 </body>

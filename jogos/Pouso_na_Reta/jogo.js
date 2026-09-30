@@ -80,136 +80,26 @@
     melhorSequencia: 0,
     pontos: 0,
     pausado: false,
-    mudo: false,
-    token: 0            // invalida animações antigas ao reiniciar
+    token: 0           // invalida animações antigas ao reiniciar
   };
 
   function etapaAtual() { return C.ETAPAS[S.etapa - 1]; }
   function maxPista() { return S.item ? S.item.max : 1; }
 
   /* ------------------------------------------------
-     Voz: áudios gerados com voz neural (audio/falas.json → arquivos mp3).
-     Se faltar algum, usa a melhor voz pt-BR do navegador.
+     Voz e sons (jogos/comum/jogo-base.js)
      ------------------------------------------------ */
-  var manifesto = null;
-  var vozNavegador = null;
-  var cacheAudio = {};
-  var falaToken = 0;
-  var audioTocando = null;
+  var Base = window.PlanetinhaJogo;
+  var voz = Base.criarVoz();
+  var falar = voz.falar;
+  var calar = voz.calar;
+  var preCarregar = voz.preCarregar;
+  var som = Base.som;
 
-  function atualizarBotoesOuvir() {
-    var temVoz = Boolean(manifesto || vozNavegador);
-    $('btn-ouvir').hidden = !temVoz;
-    $('btn-ouvir-reflexao').hidden = !temVoz;
-  }
-
-  fetch('audio/falas.json')
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (m) { manifesto = m; atualizarBotoesOuvir(); })
-    .catch(function () { /* sem áudios gravados: fica a voz do navegador */ });
-
-  // Vozes "Natural"/"Online" (Edge) e Google soam bem melhor que as do sistema.
-  function notaDaVoz(v) {
-    return (/^pt[-_]BR/i.test(v.lang) ? 10 : 0) + (/natural|neural|online/i.test(v.name) ? 5 : 0) +
-      (/google/i.test(v.name) ? 3 : 0);
-  }
-
-  function carregarVozes() {
-    var vozes = window.speechSynthesis.getVoices().filter(function (v) { return /^pt/i.test(v.lang); });
-    vozes.sort(function (a, b) { return notaDaVoz(b) - notaDaVoz(a); });
-    vozNavegador = vozes[0] || null;
-    atualizarBotoesOuvir();
-  }
-
-  if ('speechSynthesis' in window) {
-    carregarVozes();
-    window.speechSynthesis.onvoiceschanged = carregarVozes;
-  }
-  atualizarBotoesOuvir();
-
-  function audioDe(fala) {
-    var arquivo = manifesto && manifesto[fala];
-    if (!arquivo) return null;
-    var url = 'audio/' + arquivo;
-    if (!cacheAudio[url]) {
-      cacheAudio[url] = new Audio(url);
-      cacheAudio[url].preload = 'auto';
-    }
-    return cacheAudio[url];
-  }
-
-  function preCarregar(falas) { falas.forEach(function (f) { if (f) audioDe(f); }); }
-
-  function tocar(audio) {
-    return new Promise(function (resolve) {
-      audioTocando = audio;
-      audio.onended = audio.onerror = audio.onpause = function () { resolve(); };
-      try { audio.currentTime = 0; } catch (e) { /* ainda carregando */ }
-      var promessa = audio.play();
-      if (promessa && promessa.catch) promessa.catch(resolve);
-    });
-  }
-
-  function falarNavegador(texto) {
-    if (!vozNavegador) return Promise.resolve();
-    return new Promise(function (resolve) {
-      var fala = new SpeechSynthesisUtterance(texto);
-      fala.voice = vozNavegador;
-      fala.lang = vozNavegador.lang;
-      fala.rate = 0.95;
-      fala.onend = fala.onerror = function () { resolve(); };
-      setTimeout(resolve, 1500 + texto.length * 90); // algumas vozes não avisam o fim
-      window.speechSynthesis.speak(fala);
-    });
-  }
-
-  // Fala uma ou mais frases em sequência; resolve quando termina ou é interrompida.
-  function falar(falas) {
-    falas = [].concat(falas).filter(Boolean);
-    calar();
-    if (S.mudo || !falas.length) return Promise.resolve();
-    var token = falaToken;
-    var audios = falas.map(audioDe);
-    if (!audios.every(Boolean)) return falarNavegador(falas.join(' '));
-    return audios.reduce(function (cadeia, audio) {
-      return cadeia.then(function () { return token === falaToken ? tocar(audio) : null; });
-    }, Promise.resolve());
-  }
-
-  function calar() {
-    falaToken++;
-    if (audioTocando) { audioTocando.pause(); audioTocando = null; }
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  }
-
-  var audio = null;
-
-  function tom(freq, inicio, duracao, tipo, volume) {
-    var osc = audio.createOscillator();
-    var ganho = audio.createGain();
-    osc.type = tipo;
-    osc.frequency.value = freq;
-    ganho.gain.setValueAtTime(0.0001, inicio);
-    ganho.gain.exponentialRampToValueAtTime(volume, inicio + 0.01);
-    ganho.gain.exponentialRampToValueAtTime(0.0001, inicio + duracao);
-    osc.connect(ganho).connect(audio.destination);
-    osc.start(inicio);
-    osc.stop(inicio + duracao + 0.02);
-  }
-
-  function som(nome) {
-    if (S.mudo) return;
-    try {
-      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-      if (audio.state === 'suspended') audio.resume();
-    } catch (e) { return; }
-    var t = audio.currentTime;
-    if (nome === 'pouso') { tom(150, t, 0.12, 'sine', 0.25); tom(95, t + 0.05, 0.2, 'sine', 0.2); }
-    if (nome === 'acerto') [523, 659, 784].forEach(function (f, i) { tom(f, t + i * 0.09, 0.18, 'triangle', 0.16); });
-    if (nome === 'quase') { tom(392, t, 0.14, 'triangle', 0.12); tom(330, t + 0.12, 0.22, 'triangle', 0.1); }
-    if (nome === 'tique') tom(700, t, 0.06, 'sine', 0.08);
-    if (nome === 'etapa') [523, 659, 784, 1047].forEach(function (f, i) { tom(f, t + i * 0.1, 0.2, 'triangle', 0.14); });
-  }
+  voz.aoMudarDisponibilidade(function (disponivel) {
+    $('btn-ouvir').hidden = !disponivel;
+    $('btn-ouvir-reflexao').hidden = !disponivel;
+  });
 
   /* ------------------------------------------------
      Animação (cancelável por token)
@@ -853,22 +743,15 @@
 
     falar([F.fim, novas.length ? F.dominio(novas[novas.length - 1]) : null, F.pergunta]);
 
-    if (window.parent !== window) {
-      window.parent.postMessage({
-        source: 'meu-planetinha-game',
-        type: 'game-result',
-        gameId: GAME_ID,
-        payload: {
-          score: S.pontos,
-          correct: primeira,
-          incorrect: S.total - primeira,
-          bestCombo: S.melhorSequencia,
-          completed: true,
-          etapa: S.etapa,
-          precisao: precisao
-        }
-      }, '*');
-    }
+    portal.enviarResultado(GAME_ID, {
+      score: S.pontos,
+      correct: primeira,
+      incorrect: S.total - primeira,
+      bestCombo: S.melhorSequencia,
+      completed: true,
+      etapa: S.etapa,
+      precisao: precisao
+    });
   }
 
   function voltarAoInicio() {
@@ -988,13 +871,10 @@
   /* ------------------------------------------------
      Comandos da página do portal (contrato compartilhado)
      ------------------------------------------------ */
-  window.addEventListener('message', function (e) {
-    var tipo = typeof e.data === 'string' ? e.data : e.data && e.data.type;
-    if (tipo === 'pause') { S.pausado = true; calar(); $('tela-pausa').hidden = false; }
-    else if (tipo === 'resume') { S.pausado = false; $('tela-pausa').hidden = true; }
-    else if (tipo === 'mute') { S.mudo = true; calar(); }
-    else if (tipo === 'unmute') { S.mudo = false; }
-    else if (tipo === 'restart') { S.pausado = false; $('tela-pausa').hidden = true; voltarAoInicio(); }
+  var portal = Base.conectarPortal({
+    aoPausar: function () { S.pausado = true; $('tela-pausa').hidden = false; },
+    aoContinuar: function () { S.pausado = false; $('tela-pausa').hidden = true; },
+    aoReiniciar: function () { S.pausado = false; $('tela-pausa').hidden = true; voltarAoInicio(); }
   });
 
   if ('ResizeObserver' in window) {
@@ -1006,5 +886,5 @@
   medir();
   voltarAoInicio();
   if (params.get('dupla') === '1') $('btn-dupla').focus({ preventScroll: true });
-  if (window.parent !== window) window.parent.postMessage('game-ready', '*');
+  portal.pronto();
 })();
