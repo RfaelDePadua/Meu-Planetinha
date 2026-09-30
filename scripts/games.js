@@ -18,6 +18,23 @@
 
   var GAME_DATA = [
     {
+      id: 'pouso-na-reta',
+      name: 'Pouso na Reta',
+      planet: 'calculon',
+      subject: 'Matemática',
+      difficulty: 2,
+      cover: null,
+      path: 'jogos/Pouso_na_Reta/index.html',
+      orientacao: 'horizontal',
+      sobre: 'Pilote a nave e pouse no ponto certo da pista: frações, decimais, porcentagens e dinheiro na reta numérica. Para 4º e 5º ano (BNCC EF04MA09, EF04MA10, EF05MA03 a EF05MA06). Dá para jogar sozinho ou em dupla.',
+      tutorial: [
+        'Ouça ou leia o número que aparece no alto',
+        'Arraste a nave (ou use as setas) até o ponto da pista',
+        'Toque em Pousar: o lugar onde a nave pousa é a sua resposta',
+        'Errou? Use a régua para contar as partes e tente de novo'
+      ]
+    },
+    {
       id: 'contando-estrelas',
       name: 'Contando Estrelas',
       planet: 'calculon',
