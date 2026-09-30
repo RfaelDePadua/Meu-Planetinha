@@ -21,11 +21,13 @@
   Gera uma amostra de cada voz pt-BR em ferramentas/amostras-voz/ para escolher.
 
 .EXAMPLE
-  powershell -ExecutionPolicy Bypass -File ferramentas/gerar-falas.ps1 -Voz pt-BR-FranciscaNeural
+  powershell -ExecutionPolicy Bypass -File ferramentas/gerar-falas.ps1
+  Gera o que falta com a voz oficial do projeto (Fábio, escolhida em 30/09/2026).
+  Trocar -Voz regrava todos os áudios.
 #>
 param(
   [string]$Jogo = 'Pouso_na_Reta',
-  [string]$Voz = 'pt-BR-FranciscaNeural',
+  [string]$Voz = 'pt-BR-FabioNeural',
   [string]$Velocidade = '-5%',
   [switch]$Amostras,
   [switch]$Refazer

@@ -53,6 +53,25 @@ Apenas no navegador do computador usado, sem nome nem login: etapa atual,
 acertos por etapa e as estratégias escolhidas na pergunta final. Limpar os
 dados do navegador apaga esse progresso.
 
+## Voz
+
+Todas as falas são áudios gravados uma vez com a voz neural **pt-BR-FabioNeural**
+(Azure Speech, nível gratuito F0) e ficam em `jogos/Pouso_na_Reta/audio/`.
+Assim a voz é a mesma em qualquer computador e funciona sem internet. Se
+faltar algum áudio, o jogo usa a voz do navegador.
+
+Para mudar um texto falado:
+
+1. edite `jogos/Pouso_na_Reta/conteudo.js`;
+2. rode `powershell -ExecutionPolicy Bypass -File ferramentas/servidor-local.ps1`,
+   abra `http://localhost:8080/ferramentas/roteiro-falas.html` e clique em
+   **Salvar no projeto** (a página também serve para professores revisarem
+   todas as frases);
+3. rode `powershell -ExecutionPolicy Bypass -File ferramentas/gerar-falas.ps1`.
+   Ele grava só as frases novas e apaga os áudios que saíram do roteiro.
+
+A chave do Azure fica no arquivo `.env` da raiz, que não vai para o Git.
+
 ## Base na pesquisa
 
 O formato segue o jogo *Catch the Monster* (Fazio, Kennedy & Siegler, 2016),

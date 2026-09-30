@@ -368,7 +368,7 @@
   var FALAS = {
     instrucao: function (item) { return 'Pouse em ' + item.fala + '.'; },
     marco: function (item) { return item.marco ? 'O ponto ' + item.marco.fala + ' já está marcado.' : null; },
-    primeiraVez: function (item) { return 'Arraste a nave até o ponto ' + item.fala + ' e toque em Pousar.'; },
+    primeiraVez: 'Arraste a nave até o ponto certo da pista e toque em Pousar.',
     piloto: function (n) { return 'Piloto ' + extenso(n) + '.'; },
     confirma: function (n) { return 'Piloto ' + extenso(n) + ', você concorda com esse pouso?'; },
     novaEtapa: function (etapa) { return 'Nova etapa: ' + (etapa.nomeFala || etapa.nome) + '!'; },
@@ -391,7 +391,7 @@
   function todasAsFalas() {
     var lista = [];
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
-    add(FALAS.primeiraVez(ETAPAS[0].itens[0]));
+    add(FALAS.primeiraVez);
     ETAPAS.forEach(function (etapa) {
       add(FALAS.novaEtapa(etapa));
       add(FALAS.dominio(etapa));

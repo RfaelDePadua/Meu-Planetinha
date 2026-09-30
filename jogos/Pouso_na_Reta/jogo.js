@@ -584,16 +584,14 @@
     if (S.modo === 'dupla') falas.push(F.piloto(pilotoAtual()));
     if (S.indice === 0 && !save.sessoes) {
       aviso('Arraste a nave ou use as setas. Depois toque em Pousar.');
-      falas.push(F.primeiraVez(S.item));
-    } else {
-      if (S.item.max === 2 && !S.avisouPista2) {
-        S.avisouPista2 = true;
-        aviso('Atenção: agora a pista vai até 2.');
-        falas.push(F.pista2);
-      }
-      falas = falas.concat(falasDoAlvo());
+      falas.push(F.primeiraVez);
     }
-    falar(falas);
+    if (S.item.max === 2 && !S.avisouPista2) {
+      S.avisouPista2 = true;
+      aviso('Atenção: agora a pista vai até 2.');
+      falas.push(F.pista2);
+    }
+    falar(falas.concat(falasDoAlvo()));
 
     // Deixa prontos os áudios que este pouso pode precisar.
     var passos = [];
