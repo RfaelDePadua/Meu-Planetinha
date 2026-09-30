@@ -101,6 +101,8 @@
 .membro-card:nth-child(2) .avatar { animation-delay: -1.5s; }
 .membro-card:nth-child(3) .avatar { animation-delay: -3s;   }
 .membro-card:nth-child(4) .avatar { animation-delay: -4.5s; }
+.membro-card:nth-child(5) .avatar { animation-delay: -2s;   }
+.membro-card:nth-child(6) .avatar { animation-delay: -3.5s; }
 
 /* ── Member Info ──────────────────────────────────────────── */
 
