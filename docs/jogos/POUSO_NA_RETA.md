@@ -55,8 +55,9 @@ dados do navegador apaga esse progresso.
 
 ## Voz
 
-Todas as falas são áudios gravados uma vez com a voz neural **pt-BR-FabioNeural**
-(Azure Speech, nível gratuito F0) e ficam em `jogos/Pouso_na_Reta/audio/`.
+Todas as falas são áudios gravados uma vez com a voz neural
+**pt-BR-MacerioMultilingualNeural**, 8% mais rápida e com tom 5% mais alto para
+soar animada (Azure Speech, nível gratuito F0), e ficam em `jogos/Pouso_na_Reta/audio/`.
 Assim a voz é a mesma em qualquer computador e funciona sem internet. Se
 faltar algum áudio, o jogo usa a voz do navegador.
 
