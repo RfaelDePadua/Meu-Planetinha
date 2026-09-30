@@ -21,6 +21,8 @@ Princípios:
 - Contando Estrelas: MVP funcional de Matemática.
 - Palavra Parkour: primeira versão jogável de Português.
 - Persistência local: resumo de partidas e recordes por jogo.
+- Nave Central: primeiro protótipo com mapa, missões, troféus e personalização do Pingo.
+- Prólogo de Letrion: primeira missão narrativa jogável, conectada ao Palavra Parkour.
 - Contrato compartilhado: pronto, pausa, som, reinício e resultado.
 
 ## Próximos marcos

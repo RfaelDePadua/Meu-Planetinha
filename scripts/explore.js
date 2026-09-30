@@ -255,8 +255,12 @@
     renderFilterButtons();
     renderMobileFilter();
 
-    // 3. Default state: show all (Todos active)
-    // Cards are already all visible after renderCards()
+    // 3. Abre já filtrado quando a Nave Central envia ?planet=slug.
+    var requestedPlanet = new URLSearchParams(window.location.search).get('planet');
+    var knownPlanet = PLANET_INFO.some(function (planet) {
+      return planet.slug === requestedPlanet;
+    });
+    filterCards(knownPlanet ? requestedPlanet : null);
   }
 
   if (document.readyState === 'loading') {

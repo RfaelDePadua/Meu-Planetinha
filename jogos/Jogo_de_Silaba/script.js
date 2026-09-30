@@ -5,7 +5,8 @@
   const W = 960;
   const H = 540;
   const LANES = [226, 338, 450];
-  const ROUND_TOTAL = 10;
+  const STORY_MODE = new URLSearchParams(window.location.search).get('mode') === 'story';
+  const ROUND_TOTAL = STORY_MODE ? 5 : 10;
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
   const ui = {
@@ -184,12 +185,15 @@
     state = 'result';
     const ratio = correct / ROUND_TOTAL;
     document.getElementById('result-title').textContent = ratio === 1 ? 'Percurso perfeito!' : ratio >= 0.7 ? 'Mandou muito bem!' : 'Boa aventura!';
-    document.getElementById('result-message').textContent = ratio >= 0.7
-      ? 'As palavras de Letrion voltaram a brilhar.'
-      : 'Cada tentativa fortalece seu poder das palavras. Vamos outra vez?';
+    document.getElementById('result-message').textContent = STORY_MODE
+      ? 'A ponte de palavras foi restaurada. Voltando para a missão…'
+      : (ratio >= 0.7
+        ? 'As palavras de Letrion voltaram a brilhar.'
+        : 'Cada tentativa fortalece seu poder das palavras. Vamos outra vez?');
     document.getElementById('result-score').textContent = String(score);
     document.getElementById('result-correct').textContent = `${correct}/${ROUND_TOTAL}`;
     document.getElementById('result-combo').textContent = String(bestCombo);
+    ui.replay.hidden = STORY_MODE;
     ui.resultScreen.hidden = false;
     window.parent.postMessage({
       source: 'meu-planetinha-game',
@@ -472,6 +476,12 @@
       setPaused(!paused);
     }
   });
+
+  if (STORY_MODE) {
+    document.querySelector('#start-screen .lead').textContent =
+      'Recupere cinco palavras para restaurar a ponte e continuar a história.';
+    ui.start.textContent = 'Restaurar a ponte';
+  }
 
   ui.start.addEventListener('click', startGame);
   ui.replay.addEventListener('click', startGame);

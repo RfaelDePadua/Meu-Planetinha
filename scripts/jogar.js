@@ -52,6 +52,7 @@
   var isPaused = false;
   var isDrawerOpen = false;
   var loadingTimeout = null;
+  var missionContext = null;
 
   function $(id) { return document.getElementById(id); }
   var el = {};
@@ -75,6 +76,11 @@
 
   function getGameIdFromURL() {
     return new URLSearchParams(location.search).get('game');
+  }
+
+  function getMissionContext() {
+    var mission = new URLSearchParams(location.search).get('mission');
+    return mission === 'letrion-prologo' ? mission : null;
   }
 
   function getGamesAPI() {
@@ -208,7 +214,8 @@
   function loadGameIframe() {
     el.gameLoading.hidden = false;
     el.iframe.hidden = true;
-    el.iframe.src = getBaseURL() + game.path;
+    el.iframe.src = getBaseURL() + game.path +
+      (missionContext ? '?mode=story&build=narrativa-v1' : '');
     // Dispensa quando o jogo sinaliza 'game-ready' (listener abaixo) ou no timeout.
     loadingTimeout = setTimeout(dismissGameLoading, LOADING_TIMEOUT_MS);
   }
@@ -227,6 +234,11 @@
       var progressApi = getProgressAPI();
       if (progressApi && typeof progressApi.recordSession === 'function') {
         renderSavedProgress(progressApi.recordSession(game.id, data.payload));
+      }
+      if (missionContext === 'letrion-prologo') {
+        setTimeout(function () {
+          window.location.href = '../missao-letrion.html?resume=parkour&build=narrativa-v1';
+        }, 1600);
       }
     }
   });
@@ -316,6 +328,10 @@
      Voltar
      ------------------------------------------------ */
   function goBack() {
+    if (missionContext === 'letrion-prologo') {
+      window.location.href = '../missao-letrion.html?build=narrativa-v1';
+      return;
+    }
     if (window.history.length > 1) {
       history.back();
       setTimeout(function () { window.location.href = '../explorar/explorar.html'; }, 400);
@@ -453,14 +469,21 @@
     };
 
     var id = getGameIdFromURL();
+    missionContext = getMissionContext();
     var api = getGamesAPI();
     game = (id && api && typeof api.findGameById === 'function')
       ? api.findGameById(id)
       : null;
 
     if (!game) { showError(); return; }
+    if (missionContext && game.id !== 'jogo-de-silaba') missionContext = null;
 
     populateGame(game);
+    if (missionContext === 'letrion-prologo') {
+      $('back-link').innerHTML = '<i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar à missão';
+      $('sobre-text').textContent = 'Trecho da missão: recupere cinco palavras para restaurar a ponte e continuar a história.';
+      $('jogar-text').textContent = 'ATRAVESSAR A PONTE';
+    }
     bindEvents();
 
     /* Decisão de produto: JOGAR habilita de imediato. A barra de progresso é
@@ -468,7 +491,7 @@
     el.progressBar.style.width = '100%';
     el.jogarBtn.disabled = false;
     el.jogarIcon.className = 'bi bi-play-fill';
-    el.jogarText.textContent = 'JOGAR';
+    el.jogarText.textContent = missionContext ? 'ATRAVESSAR A PONTE' : 'JOGAR';
   }
 
   if (document.readyState === 'loading') {

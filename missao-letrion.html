@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="As palavras que sumiram — primeiro capítulo narrativo do Meu Planetinha.">
+  <title>As palavras que sumiram — Meu Planetinha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos/reset.css">
+  <link rel="stylesheet" href="estilos/base.css">
+  <link rel="stylesheet" href="estilos/layout.css">
+  <link rel="stylesheet" href="estilos/pages/missao-letrion.css">
+</head>
+<body class="page-missao">
+  <header class="mission-topbar">
+    <a class="mission-exit" href="nave.html" aria-label="Voltar para a Nave Central">← <span>Nave Central</span></a>
+    <div class="mission-progress" aria-label="Progresso do capítulo">
+      <span id="mission-step-label">Etapa 1 de 7</span>
+      <span class="mission-progress__track"><span id="mission-progress-bar"></span></span>
+    </div>
+    <span class="mission-chapter">Capítulo 1</span>
+  </header>
+
+  <main class="mission-layout">
+    <section class="mission-stage" id="mission-stage" data-scene="cockpit" aria-label="Cena da história">
+      <div class="stage-stars" aria-hidden="true"></div>
+      <div class="stage-eclipse" aria-hidden="true"></div>
+      <div class="stage-planet" aria-hidden="true"><img src="midia/planet-letrion.png" alt=""></div>
+      <div class="stage-console" aria-hidden="true">
+        <span></span><span></span><span></span>
+        <div class="stage-signal">· · ·</div>
+      </div>
+      <div class="stage-library" aria-hidden="true">
+        <span>ERA UMA VEZ</span><span>PALAVRAS</span><span>HISTÓRIAS</span>
+      </div>
+      <div class="stage-crystal" aria-hidden="true">◆</div>
+
+      <div class="story-character character-pingo is-visible" data-character="pingo" aria-hidden="true">
+        <span class="mini-pingo__antenna"></span>
+        <span class="mini-pingo__head"><i></i><i></i><b></b></span>
+        <span class="mini-pingo__body"></span>
+      </div>
+      <div class="story-character character-iris" data-character="iris" aria-hidden="true">
+        <span class="iris-halo">✦</span><span class="iris-face">Í</span><span class="iris-cloak"></span>
+      </div>
+      <div class="story-character character-risco" data-character="risco" aria-hidden="true">
+        <span class="risco-body"><i></i><i></i></span><span class="risco-drop"></span>
+      </div>
+    </section>
+
+    <section class="story-panel" aria-labelledby="scene-title">
+      <div class="story-panel__header">
+        <span class="scene-kicker" id="scene-kicker">Prólogo · Órbita de Letrion</span>
+        <h1 id="scene-title">Um sinal na escuridão</h1>
+      </div>
+
+      <div class="dialogue-card" id="dialogue-card">
+        <span class="dialogue-avatar" id="dialogue-avatar" aria-hidden="true">🤖</span>
+        <div>
+          <strong id="dialogue-speaker">Pingo</strong>
+          <p id="dialogue-text">Você acordou! Eu sou Pingo, robô de manutenção e, desde agora, seu companheiro de bordo.</p>
+        </div>
+      </div>
+
+      <div class="story-interaction" id="story-interaction"></div>
+      <p class="story-feedback" id="story-feedback" role="status" aria-live="polite"></p>
+
+      <div class="story-actions" id="story-actions">
+        <button class="story-btn story-btn--primary" id="story-continue" type="button">Abrir transmissão <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+  </main>
+
+  <script src="scripts/progress.js?v=3"></script>
+  <script src="scripts/missao-letrion.js?v=3"></script>
+</body>
+</html>

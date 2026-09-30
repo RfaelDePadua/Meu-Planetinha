@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A Nave Central do Meu Planetinha reúne missões, troféus, planetas e o progresso da criança.">
+  <title>Nave Central — Meu Planetinha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Mulish:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="estilos/reset.css">
+  <link rel="stylesheet" href="estilos/base.css">
+  <link rel="stylesheet" href="estilos/animacoes.css">
+  <link rel="stylesheet" href="estilos/layout.css">
+  <link rel="stylesheet" href="estilos/pages/page-shell.css">
+  <link rel="stylesheet" href="estilos/componentes.css">
+  <link rel="stylesheet" href="components/components.css">
+  <link rel="stylesheet" href="estilos/pages/nave.css">
+</head>
+<body class="page-nave">
+  <div data-component="nav">
+    <noscript>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <div class="nav-container">
+          <a class="nav-logo" href="index.html">Meu Planetinha</a>
+          <div class="nav-links">
+            <a href="explorar/explorar.html">Explorar Jogos</a>
+            <a href="nave.html" aria-current="page">Nave Central</a>
+          </div>
+        </div>
+      </nav>
+    </noscript>
+  </div>
+
+  <main id="main-content" class="page-wrapper nave-page">
+    <section class="nave-hero" aria-labelledby="nave-title">
+      <div class="container nave-hero__grid">
+        <div class="nave-hero__copy">
+          <span class="eyebrow nave-eyebrow">Base de operações</span>
+          <h1 id="nave-title">Nave Central</h1>
+          <p>Veja suas conquistas, escolha a próxima missão e prepare o Pingo para explorar os planetas do conhecimento.</p>
+          <div class="nave-balance" aria-label="Saldo de Estrelas de exploração">
+            <span aria-hidden="true">★</span>
+            <strong id="exploration-stars">0</strong>
+            <span>Estrelas de exploração</span>
+          </div>
+        </div>
+
+        <div class="pingo-console" aria-labelledby="pingo-title">
+          <div class="pingo-stage" id="pingo-stage" data-color="ciano" aria-hidden="true">
+            <span class="pingo-antenna"></span>
+            <span class="pingo-head">
+              <span class="pingo-screen"><i></i><i></i></span>
+              <span class="pingo-mouth"></span>
+            </span>
+            <span class="pingo-body"></span>
+          </div>
+          <div class="pingo-console__content">
+            <span class="eyebrow">Companheiro de bordo</span>
+            <h2 id="pingo-title">Pingo</h2>
+            <p id="pingo-message" role="status">Sistemas prontos! Vamos escolher uma missão?</p>
+            <fieldset class="pingo-colors">
+              <legend>Cor das luzes</legend>
+              <button type="button" class="pingo-color is-active" data-pingo-color="ciano" aria-label="Luzes ciano" aria-pressed="true"></button>
+              <button type="button" class="pingo-color" data-pingo-color="rosa" aria-label="Luzes rosa" aria-pressed="false"></button>
+              <button type="button" class="pingo-color" data-pingo-color="amarelo" aria-label="Luzes amarelas" aria-pressed="false"></button>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="nave-section" aria-labelledby="map-title">
+      <div class="container">
+        <div class="nave-section__heading">
+          <div>
+            <span class="eyebrow">Mapa estelar</span>
+            <h2 id="map-title">Escolha um destino</h2>
+          </div>
+          <a class="nave-text-link" href="explorar/explorar.html">Ver todos os jogos <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="planet-map">
+          <a class="planet-destination is-open" data-planeta="calculon" href="explorar/explorar.html?planet=calculon">
+            <img src="midia/planet-calculon.png" alt="" width="112" height="112">
+            <span><strong>Calculon</strong><small>Matemática · disponível</small></span>
+          </a>
+          <a class="planet-destination is-open" data-planeta="letrion" href="explorar/explorar.html?planet=letrion">
+            <img src="midia/planet-letrion.png" alt="" width="112" height="112">
+            <span><strong>Letrion</strong><small>Português · disponível</small></span>
+          </a>
+          <div class="planet-destination is-locked" data-planeta="naturox" aria-label="Naturox, Ciências, em breve">
+            <span class="planet-orb">🌱</span>
+            <span><strong>Naturox</strong><small>Ciências · em breve</small></span>
+          </div>
+          <div class="planet-destination is-locked" data-planeta="terramund" aria-label="Terramund, Geografia, em breve">
+            <span class="planet-orb">🌎</span>
+            <span><strong>Terramund</strong><small>Geografia · em breve</small></span>
+          </div>
+          <div class="planet-destination is-locked" data-planeta="globish" aria-label="Globish, Inglês, em breve">
+            <span class="planet-orb">💬</span>
+            <span><strong>Globish</strong><small>Inglês · em breve</small></span>
+          </div>
+        </div>
+
+        <article class="story-mission" id="story-mission">
+          <div class="story-mission__art" aria-hidden="true">
+            <span class="story-mission__eclipse"></span>
+            <img src="midia/planet-letrion.png" alt="" width="130" height="130">
+            <span class="story-mission__crystal">◆</span>
+          </div>
+          <div class="story-mission__copy">
+            <span class="eyebrow">Capítulo 1 · Missão narrativa</span>
+            <h3>As palavras que sumiram</h3>
+            <p>Uma mensagem quebrada chega de Letrion. Viaje com Pingo, conheça Mestra Íris e descubra o que está apagando as histórias do planeta.</p>
+            <div class="story-mission__meta">
+              <span id="story-mission-status">Nova missão</span>
+              <span>★ 25</span>
+            </div>
+          </div>
+          <a class="story-mission__cta" id="story-mission-cta" href="missao-letrion.html?build=narrativa-v1">Iniciar capítulo <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="nave-section nave-dashboard" aria-label="Painéis da nave">
+      <div class="container nave-dashboard__grid">
+        <article class="nave-panel" aria-labelledby="missions-title">
+          <div class="nave-panel__header">
+            <span class="nave-panel__icon" aria-hidden="true">◎</span>
+            <div><span class="eyebrow">Painel de missões</span><h2 id="missions-title">Próximos objetivos</h2></div>
+          </div>
+          <div class="mission-list" id="mission-list"></div>
+        </article>
+
+        <article class="nave-panel" aria-labelledby="trophies-title">
+          <div class="nave-panel__header">
+            <span class="nave-panel__icon" aria-hidden="true">♛</span>
+            <div><span class="eyebrow">Sala de troféus</span><h2 id="trophies-title">Conquistas</h2></div>
+          </div>
+          <div class="trophy-grid" id="trophy-grid"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="nave-section nave-progress" aria-labelledby="progress-title">
+      <div class="container">
+        <div class="nave-section__heading">
+          <div><span class="eyebrow">Diário de bordo</span><h2 id="progress-title">Seu progresso</h2></div>
+        </div>
+        <div class="progress-grid" id="progress-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <div data-component="footer">
+    <noscript><footer class="site-footer"><p>© 2026 Meu Planetinha</p></footer></noscript>
+  </div>
+
+  <script src="components/components.js"></script>
+  <script src="scripts/progress.js?v=3"></script>
+  <script src="scripts/nave.js?v=3"></script>
+</body>
+</html>

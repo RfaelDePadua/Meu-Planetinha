@@ -11,7 +11,12 @@
   var STORAGE_KEY = 'meu-planetinha.progress.v1';
 
   function emptyState() {
-    return { version: 1, games: {} };
+    return {
+      version: 1,
+      games: {},
+      profile: { companionColor: 'ciano' },
+      narratives: {}
+    };
   }
 
   function read() {
@@ -67,9 +72,84 @@
     return read().games[gameId] || null;
   }
 
+  function getProfile() {
+    var profile = read().profile || {};
+    return { companionColor: profile.companionColor || 'ciano' };
+  }
+
+  function updateProfile(changes) {
+    var state = read();
+    var previous = state.profile || {};
+    state.profile = {
+      companionColor: changes && changes.companionColor
+        ? String(changes.companionColor)
+        : (previous.companionColor || 'ciano')
+    };
+    write(state);
+    return getProfile();
+  }
+
+  function getNarrative(narrativeId) {
+    var narratives = read().narratives || {};
+    return narratives[narrativeId] || null;
+  }
+
+  function saveNarrative(narrativeId, changes) {
+    if (!narrativeId || !changes || typeof changes !== 'object') return null;
+    var state = read();
+    state.narratives = state.narratives || {};
+    var previous = state.narratives[narrativeId] || {};
+    var next = Object.assign({}, previous, changes, {
+      updatedAt: new Date().toISOString()
+    });
+
+    if (changes.completed && !previous.completedAt) {
+      next.completedAt = new Date().toISOString();
+    }
+
+    state.narratives[narrativeId] = next;
+    write(state);
+    return next;
+  }
+
+  function getSummary() {
+    var state = read();
+    var games = state.games;
+    var ids = Object.keys(games);
+    var summary = ids.reduce(function (total, id) {
+      var game = games[id] || {};
+      total.sessions += asCount(game.sessions);
+      total.totalCorrect += asCount(game.totalCorrect);
+      total.totalIncorrect += asCount(game.totalIncorrect);
+      total.bestCombo = Math.max(total.bestCombo, asCount(game.bestCombo));
+      if (asCount(game.sessions) > 0) total.gamesPlayed += 1;
+      return total;
+    }, { sessions: 0, totalCorrect: 0, totalIncorrect: 0, bestCombo: 0, gamesPlayed: 0 });
+
+    // Cada acerto vale uma estrela; concluir uma partida concede cinco extras.
+    // As recompensas das missões são calculadas a partir do progresso salvo,
+    // portanto continuam disponíveis sem conta e sem conexão com a internet.
+    var letrion = games['jogo-de-silaba'] || {};
+    summary.missionBonus = 0;
+    if (asCount(letrion.sessions) >= 1) summary.missionBonus += 5;
+    if (asCount(letrion.totalCorrect) >= 10) summary.missionBonus += 10;
+    if (summary.gamesPlayed >= 2) summary.missionBonus += 15;
+
+    var prologue = (state.narratives || {})['letrion-prologo'] || {};
+    summary.narrativeBonus = prologue.completed ? 25 : 0;
+    summary.explorationStars = summary.totalCorrect + summary.sessions * 5 +
+      summary.missionBonus + summary.narrativeBonus;
+    return summary;
+  }
+
   window.MeuPlanetinha = window.MeuPlanetinha || {};
   window.MeuPlanetinha.progress = {
     getGame: getGame,
-    recordSession: recordSession
+    getNarrative: getNarrative,
+    getProfile: getProfile,
+    getSummary: getSummary,
+    recordSession: recordSession,
+    saveNarrative: saveNarrative,
+    updateProfile: updateProfile
   };
 })();
