@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0E28">
+  <title>Detetive de Letrion — Meu Planetinha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mulish:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../comum/base.css">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-som" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-pensar" viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-4 12.7V18h8v-2.3A7 7 0 0 0 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 21h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-texto" viewBox="0 0 24 24"><path d="M5 6h14M5 10h14M5 14h9M5 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-chute" viewBox="0 0 24 24"><path d="M9 9a3 3 0 1 1 4 2.8c-.8.4-1 .9-1 1.7V15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="18.5" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <main class="app" id="app" data-estado="inicio">
+    <header class="hud">
+      <span class="chip" id="hud-caso">Caso 1</span>
+      <ol class="marcadores" id="hud-marcadores" aria-label="Mistérios da missão"></ol>
+      <span class="chip chip--piloto" id="hud-detetive" hidden></span>
+    </header>
+
+    <div class="mesa">
+      <article class="texto" aria-labelledby="texto-titulo">
+        <header class="texto__topo">
+          <div>
+            <span class="texto__genero" id="texto-genero"></span>
+            <h2 class="texto__titulo" id="texto-titulo"></h2>
+          </div>
+          <button class="btn-ler" id="btn-ler" type="button">
+            <svg><use href="#i-som"/></svg><span>Ouvir o texto</span>
+          </button>
+        </header>
+        <div class="texto__corpo" id="texto-corpo"></div>
+      </article>
+
+      <section class="misterio" aria-labelledby="misterio-pergunta">
+        <p class="misterio__tipo" id="misterio-tipo"></p>
+        <div class="misterio__pergunta">
+          <h3 id="misterio-pergunta"></h3>
+          <button class="btn-icone btn-icone--mini" id="btn-ouvir" type="button" aria-label="Ouvir a pergunta e as respostas">
+            <svg><use href="#i-som"/></svg>
+          </button>
+        </div>
+        <p class="misterio__pistas" id="misterio-pistas"></p>
+        <div class="opcoes" id="opcoes" role="radiogroup" aria-label="Respostas"></div>
+      </section>
+
+      <p class="aviso" id="aviso" hidden></p>
+    </div>
+
+    <footer class="controles">
+      <div id="controles-acao">
+        <button class="btn-principal" id="btn-resolver" type="button" disabled>Resolver</button>
+      </div>
+      <div class="controles__confirma" id="controles-confirma" hidden>
+        <p id="confirma-texto"></p>
+        <button class="btn-secundario" id="btn-mudar" type="button">Mudar</button>
+        <button class="btn-principal" id="btn-confirmar" type="button">Sim, resolver</button>
+      </div>
+      <div class="controles__feedback" id="controles-feedback" hidden>
+        <div class="feedback__texto">
+          <strong id="feedback-titulo"></strong>
+          <span id="feedback-texto"></span>
+        </div>
+        <button class="btn-principal" id="btn-seguir" type="button">Continuar</button>
+      </div>
+    </footer>
+
+    <!-- Tela inicial -->
+    <section class="tela" id="tela-inicio" aria-labelledby="titulo-inicio">
+      <div class="painel">
+        <p class="painel__planeta">Letrion · Português</p>
+        <h1 id="titulo-inicio">Detetive de Letrion</h1>
+        <p class="painel__lead">Todo bom detetive prova o que diz. Leia o caso, marque as frases que são pistas e resolva o mistério.</p>
+        <p class="painel__etapa" id="inicio-nivel"></p>
+        <div class="painel__acoes">
+          <button class="btn-principal" id="btn-solo" type="button">Jogar sozinho</button>
+          <button class="btn-secundario" id="btn-dupla" type="button">Jogar em dupla</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tela final -->
+    <section class="tela" id="tela-fim" hidden aria-labelledby="titulo-fim">
+      <div class="painel painel--fim">
+        <h2 id="titulo-fim">Missão concluída!</h2>
+        <div class="resumo" id="fim-resumo"></div>
+        <p class="dominio-novo" id="fim-dominio-novo" hidden></p>
+        <ul class="etapas" id="fim-tipos"></ul>
+        <div class="reflexao" id="fim-reflexao">
+          <p class="reflexao__pergunta">
+            Como você encontrou as pistas?
+            <button class="btn-icone btn-icone--mini" id="btn-ouvir-reflexao" type="button" aria-label="Ouvir a pergunta"><svg><use href="#i-som"/></svg></button>
+          </p>
+          <div class="reflexao__opcoes" id="fim-opcoes"></div>
+        </div>
+        <p class="reflexao__obrigado" id="fim-obrigado" hidden>Boa! Conte para o seu professor como você fez.</p>
+        <div class="painel__acoes">
+          <button class="btn-principal" id="btn-de-novo" type="button">Jogar de novo</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tela" id="tela-pausa" hidden>
+      <div class="painel"><h2>Pausado</h2></div>
+    </section>
+
+    <p class="sr-only" id="anuncio" role="status" aria-live="polite"></p>
+  </main>
+
+  <script src="../comum/jogo-base.js"></script>
+  <script src="conteudo.js"></script>
+  <script src="jogo.js"></script>
+</body>
+</html>

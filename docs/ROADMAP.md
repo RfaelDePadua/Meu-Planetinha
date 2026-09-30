@@ -25,6 +25,12 @@ educativos ([PESQUISA_JOGOS.md](PESQUISA_JOGOS.md)). Princípios:
 - **Pouso na Reta** (Calculon): primeiro jogo no novo modelo. Frações,
   decimais, porcentagens e dinheiro na reta numérica, em 5 etapas BNCC.
   Guia do professor: [jogos/POUSO_NA_RETA.md](jogos/POUSO_NA_RETA.md).
+- **Detetive de Letrion** (Letrion): leitura com busca de evidências. A
+  criança resolve mistérios sobre casos curtos marcando as frases que provam
+  a resposta; 12 casos em 3 níveis (textos em rascunho, aguardando revisão
+  docente). Guia: [jogos/DETETIVE_DE_LETRION.md](jogos/DETETIVE_DE_LETRION.md).
+- Voz: falas gravadas com voz neural do Azure (Macerio), iguais em qualquer
+  computador e sem internet; peças comuns dos jogos em `jogos/comum/`.
 - Contando Estrelas e Palavra Parkour: jogos do modelo antigo (pergunta por
   cima de ação), mantidos no catálogo até serem substituídos.
 - Nave Central e prólogo de Letrion: protótipos do ciclo anterior. A economia
@@ -40,22 +46,22 @@ Um jogo principal por matéria prioritária, depois dois complementares.
 | # | Jogo | Planeta | Habilidades BNCC | Por que |
 |---|---|---|---|---|
 | 1 | **Pouso na Reta** ✅ | Calculon | EF04MA09/10, EF05MA03–06 | Números racionais são o maior gargalo do SAEB em Matemática; reta numérica tem a evidência mais forte. |
-| 2 | **Detetive de Letrion** | Letrion | EF15LP03, EF35LP03–05 | Inferência é o gargalo em Português. A criança responde e precisa tocar nas frases do texto que provam a resposta. |
+| 2 | **Detetive de Letrion** ✅ | Letrion | EF15LP03, EF35LP03–06 | Inferência é o gargalo em Português. A criança responde e precisa tocar nas frases do texto que provam a resposta. |
 | 3 | **Teia Viva** | Naturox | EF04CI04–06, EF05CI03 | Montar a teia alimentar, prever o efeito de um evento (seca, caça) e simular. |
 | 4 | Fábrica de Palavras | Letrion | EF04LP08, EF05LP08, EF04LP01, EF05LP01 | Ortografia pela morfologia: radical + sufixo (belo → beleza). |
 | 5 | Carga da Frota | Calculon | EF04MA06/07, EF05MA08/12 | Problemas de multiplicação e divisão montando o esquema antes de calcular. |
 
 ## Próximos marcos
 
-1. **Validar o Pouso na Reta** com professores e 3 a 5 crianças: compreensão
-   sem ajuda, tolerâncias, voz, uso em dupla. Aplicar pré e pós-teste curtos.
-2. **Detetive de Letrion:** escrever 12 a 15 casos curtos (fábula, notícia,
-   tirinha, carta) com revisão docente; construir o jogo.
+1. **Validar o Pouso na Reta e o Detetive de Letrion** com professores e 3 a 5
+   crianças: compreensão sem ajuda, tolerâncias, voz, uso em dupla. Os
+   professores revisam os textos do Detetive. Aplicar pré e pós-teste curtos.
+2. **Teia Viva** (Naturox, Ciências), para ter um jogo por matéria prioritária.
 3. **Mapa de domínio** no lugar da Nave Central: mostrar o que a criança já
    sabe em cada planeta, sem economia de estrelas.
 4. **Painel do professor:** resumo dos erros mais comuns da turma no
    dispositivo, para orientar a conversa depois do jogo.
-5. **Teia Viva.**
+5. Mais casos no Detetive (fato × opinião, conjunções — EF05LP07).
 6. Aposentar Contando Estrelas e Palavra Parkour quando houver substitutos.
 7. Sincronização opcional (Firebase) só se as escolas precisarem continuar o
    progresso em outro computador: conta do responsável, perfis por apelido e

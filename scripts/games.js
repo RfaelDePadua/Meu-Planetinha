@@ -35,6 +35,23 @@
       ]
     },
     {
+      id: 'detetive-de-letrion',
+      name: 'Detetive de Letrion',
+      planet: 'letrion',
+      subject: 'Português',
+      difficulty: 2,
+      cover: null,
+      path: 'jogos/Detetive_de_Letrion/index.html',
+      orientacao: 'horizontal',
+      sobre: 'Leia casos curtos (bilhetes, fábulas, notícias, tirinhas, cartas) e resolva os mistérios. Todo bom detetive prova o que diz: marque as frases do texto que são pistas. Para 4º e 5º ano (BNCC EF15LP03, EF35LP03 a EF35LP06). Dá para jogar sozinho ou em dupla.',
+      tutorial: [
+        'Leia o caso (ou toque em "Ouvir o texto")',
+        'Toque nas frases do texto que provam a resposta',
+        'Escolha a resposta e toque em Resolver',
+        'Errou? Siga a dica: ela mostra onde procurar'
+      ]
+    },
+    {
       id: 'contando-estrelas',
       name: 'Contando Estrelas',
       planet: 'calculon',
