@@ -18,3 +18,6 @@ npm-debug.log
 # Arquivos de origem / handoff de design (não versionar)
 jogos/Contando_Estrelas/Jogo com Phaser e JavaScript.zip
 jogos/Contando_Estrelas/design_handoff_contando_estrelas/
+
+# Amostras de voz geradas localmente (ferramentas/gerar-falas.ps1 -Amostras)
+ferramentas/amostras-voz/

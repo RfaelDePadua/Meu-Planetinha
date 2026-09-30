@@ -14,6 +14,7 @@
   'use strict';
 
   var C = window.PousoConteudo;
+  var F = C.FALAS;
   var GAME_ID = 'pouso-na-reta';
   var SAVE_KEY = 'meu-planetinha.pouso-na-reta.v1';
   var NS = 'http://www.w3.org/2000/svg';
@@ -87,37 +88,97 @@
   function maxPista() { return S.item ? S.item.max : 1; }
 
   /* ------------------------------------------------
-     Voz (pt-BR) e sons sintetizados
+     Voz: áudios gerados com voz neural (audio/falas.json → arquivos mp3).
+     Se faltar algum, usa a melhor voz pt-BR do navegador.
      ------------------------------------------------ */
-  var voz = null;
+  var manifesto = null;
+  var vozNavegador = null;
+  var cacheAudio = {};
+  var falaToken = 0;
+  var audioTocando = null;
+
+  function atualizarBotoesOuvir() {
+    var temVoz = Boolean(manifesto || vozNavegador);
+    $('btn-ouvir').hidden = !temVoz;
+    $('btn-ouvir-reflexao').hidden = !temVoz;
+  }
+
+  fetch('audio/falas.json')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (m) { manifesto = m; atualizarBotoesOuvir(); })
+    .catch(function () { /* sem áudios gravados: fica a voz do navegador */ });
+
+  // Vozes "Natural"/"Online" (Edge) e Google soam bem melhor que as do sistema.
+  function notaDaVoz(v) {
+    return (/^pt[-_]BR/i.test(v.lang) ? 10 : 0) + (/natural|neural|online/i.test(v.name) ? 5 : 0) +
+      (/google/i.test(v.name) ? 3 : 0);
+  }
 
   function carregarVozes() {
-    var vozes = window.speechSynthesis.getVoices();
-    voz = vozes.find(function (v) { return /^pt[-_]BR/i.test(v.lang); }) ||
-      vozes.find(function (v) { return /^pt/i.test(v.lang); }) || null;
-    $('btn-ouvir').hidden = !voz;
-    $('btn-ouvir-reflexao').hidden = !voz;
+    var vozes = window.speechSynthesis.getVoices().filter(function (v) { return /^pt/i.test(v.lang); });
+    vozes.sort(function (a, b) { return notaDaVoz(b) - notaDaVoz(a); });
+    vozNavegador = vozes[0] || null;
+    atualizarBotoesOuvir();
   }
 
   if ('speechSynthesis' in window) {
     carregarVozes();
     window.speechSynthesis.onvoiceschanged = carregarVozes;
-  } else {
-    $('btn-ouvir').hidden = true;
-    $('btn-ouvir-reflexao').hidden = true;
+  }
+  atualizarBotoesOuvir();
+
+  function audioDe(fala) {
+    var arquivo = manifesto && manifesto[fala];
+    if (!arquivo) return null;
+    var url = 'audio/' + arquivo;
+    if (!cacheAudio[url]) {
+      cacheAudio[url] = new Audio(url);
+      cacheAudio[url].preload = 'auto';
+    }
+    return cacheAudio[url];
   }
 
-  function falar(texto) {
-    if (!voz || S.mudo || !texto) return;
-    window.speechSynthesis.cancel();
-    var fala = new SpeechSynthesisUtterance(texto);
-    fala.voice = voz;
-    fala.lang = voz.lang;
-    fala.rate = 0.95;
-    window.speechSynthesis.speak(fala);
+  function preCarregar(falas) { falas.forEach(function (f) { if (f) audioDe(f); }); }
+
+  function tocar(audio) {
+    return new Promise(function (resolve) {
+      audioTocando = audio;
+      audio.onended = audio.onerror = audio.onpause = function () { resolve(); };
+      try { audio.currentTime = 0; } catch (e) { /* ainda carregando */ }
+      var promessa = audio.play();
+      if (promessa && promessa.catch) promessa.catch(resolve);
+    });
+  }
+
+  function falarNavegador(texto) {
+    if (!vozNavegador) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var fala = new SpeechSynthesisUtterance(texto);
+      fala.voice = vozNavegador;
+      fala.lang = vozNavegador.lang;
+      fala.rate = 0.95;
+      fala.onend = fala.onerror = function () { resolve(); };
+      setTimeout(resolve, 1500 + texto.length * 90); // algumas vozes não avisam o fim
+      window.speechSynthesis.speak(fala);
+    });
+  }
+
+  // Fala uma ou mais frases em sequência; resolve quando termina ou é interrompida.
+  function falar(falas) {
+    falas = [].concat(falas).filter(Boolean);
+    calar();
+    if (S.mudo || !falas.length) return Promise.resolve();
+    var token = falaToken;
+    var audios = falas.map(audioDe);
+    if (!audios.every(Boolean)) return falarNavegador(falas.join(' '));
+    return audios.reduce(function (cadeia, audio) {
+      return cadeia.then(function () { return token === falaToken ? tocar(audio) : null; });
+    }, Promise.resolve());
   }
 
   function calar() {
+    falaToken++;
+    if (audioTocando) { audioTocando.pause(); audioTocando = null; }
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   }
 
@@ -519,25 +580,29 @@
     mostrarControles('mira');
     cena.focus({ preventScroll: true });
 
-    var fala = (falaAntes ? falaAntes + ' ' : '') + 'Pouse em ' + S.item.fala + '.';
-    if (S.item.marco) fala += ' O ponto ' + S.item.marco.fala + ' já está marcado.';
+    var falas = [falaAntes];
+    if (S.modo === 'dupla') falas.push(F.piloto(pilotoAtual()));
     if (S.indice === 0 && !save.sessoes) {
       aviso('Arraste a nave ou use as setas. Depois toque em Pousar.');
-      fala = 'Arraste a nave até o ponto ' + S.item.fala + ' e toque em Pousar.';
-    } else if (S.item.max === 2 && !S.avisouPista2) {
-      S.avisouPista2 = true;
-      aviso('Atenção: agora a pista vai até 2.');
-      fala = 'Agora a pista vai até dois. ' + fala;
+      falas.push(F.primeiraVez(S.item));
+    } else {
+      if (S.item.max === 2 && !S.avisouPista2) {
+        S.avisouPista2 = true;
+        aviso('Atenção: agora a pista vai até 2.');
+        falas.push(F.pista2);
+      }
+      falas = falas.concat(falasDoAlvo());
     }
-    if (S.modo === 'dupla') fala = 'Piloto ' + pilotoAtual() + '. ' + fala;
-    falar(fala);
+    falar(falas);
+
+    // Deixa prontos os áudios que este pouso pode precisar.
+    var passos = [];
+    for (var k = 1; k <= S.item.passos; k++) passos.push(C.falaPasso(S.item, k));
+    preCarregar(passos.concat(C.dica(S.item, S.item.valor > S.item.max / 2 ? 0 : S.item.max).falas,
+      [C.explicacao(S.item).fala]));
   }
 
-  function falaDoAlvo() {
-    var fala = 'Pouse em ' + S.item.fala + '.';
-    if (S.item.marco) fala += ' O ponto ' + S.item.marco.fala + ' já está marcado.';
-    return fala;
-  }
+  function falasDoAlvo() { return [F.instrucao(S.item), F.marco(S.item)]; }
 
   function moverPara(v) {
     S.naveV = clamp(v, 0, maxPista());
@@ -552,7 +617,7 @@
       $('confirma-texto').textContent = 'Piloto ' + copiloto + ', você concorda?';
       mostrarControles('confirma');
       $('btn-confirmar').focus({ preventScroll: true });
-      falar('Piloto ' + copiloto + ', você concorda com esse pouso?');
+      falar(F.confirma(copiloto));
       return;
     }
     pousar();
@@ -592,18 +657,21 @@
     atualizarHUD();
   }
 
-  // Revela a régua e conta as partes até o alvo.
-  function contarPartes(intervalo, comSom) {
+  // Revela a régua e conta as partes até o alvo. Na demonstração (`narrar`),
+  // cada parte é falada e a contagem espera a fala terminar.
+  function contarPartes(intervalo, narrar) {
     S.reguaVisivel = true;
     S.contagem = 0;
     desenharCena();
     var passos = S.item.passos;
     var cadeia = Promise.resolve();
     for (var k = 1; k <= passos; k++) {
-      cadeia = cadeia.then(function () { return esperar(intervalo); }).then(function () {
+      cadeia = cadeia.then(function () {
         S.contagem += 1;
-        if (comSom) som('tique');
         desenharCena();
+        if (!narrar) return esperar(intervalo);
+        som('tique');
+        return Promise.all([falar(C.falaPasso(S.item, S.contagem)), esperar(intervalo)]);
       });
     }
     return cadeia.then(function () {
@@ -620,7 +688,7 @@
     if (comRegua) titulo = erro <= PERFEITO ? 'Perfeito, com a régua!' : 'Boa, com a régua!';
     var explicacao = C.explicacao(S.item);
     mostrarFeedback('acerto', titulo, '', null);
-    falar(titulo + ' ' + explicacao.fala);
+    falar([F.titulo(titulo), explicacao.fala]);
     contarPartes(S.item.passos > 6 ? 90 : 160, false).then(function () {
       definirEstado('feedback');
       mostrarFeedback('acerto', titulo, explicacao.texto, rotuloProximo(), proximo);
@@ -638,7 +706,7 @@
       var titulo = S.naveV > S.item.valor ? 'Passou do ponto' : 'Ficou antes do ponto';
       var dica = C.dica(S.item, S.naveV);
       mostrarFeedback('quase', titulo, dica.texto, 'Tentar de novo', tentarDeNovo);
-      falar(titulo + '. ' + dica.fala);
+      falar([F.titulo(titulo)].concat(dica.falas));
       return;
     }
 
@@ -647,14 +715,15 @@
     S.fantasma = S.naveV;
     mostrarFeedback('demo', 'Vamos ver juntos', 'Olhe a régua enquanto contamos.', null);
     var token = S.token;
-    var passos = [];
-    for (var k = 1; k <= S.item.passos; k++) passos.push(C.falaPasso(S.item, k));
     var explicacao = C.explicacao(S.item);
 
-    animar(380, function (p) { S.naveY = 1 - p; desenharNave(); })
+    Promise.all([
+      falar(F.titulo('Vamos ver juntos')),
+      animar(380, function (p) { S.naveY = 1 - p; desenharNave(); })
+    ])
       .then(function () {
-        falar(passos.join(', ') + '.');
-        return contarPartes(passos.length > 6 ? 520 : 700, true);
+        if (token !== S.token) return null;
+        return contarPartes(S.item.passos > 6 ? 450 : 600, true);
       })
       .then(function () {
         var inicio = S.naveV;
@@ -684,7 +753,7 @@
       desenharNave();
       mostrarControles('mira');
       cena.focus({ preventScroll: true });
-      falar('Use a régua. ' + falaDoAlvo());
+      falar([F.usarRegua].concat(falasDoAlvo()));
     });
   }
 
@@ -714,10 +783,10 @@
     if (mudanca === 'sobe') {
       som('etapa');
       aviso('Nova etapa: ' + etapaAtual().nome + '!');
-      fala = 'Nova etapa: ' + etapaAtual().nome + '!';
+      fala = F.novaEtapa(etapaAtual());
     } else if (mudanca === 'desce') {
       aviso('Vamos treinar mais um pouco: ' + etapaAtual().nome + '.');
-      fala = 'Vamos treinar mais um pouco.';
+      fala = F.treinar;
     }
     iniciarPouso(fala);
   }
@@ -784,9 +853,7 @@
     $('tela-fim').hidden = false;
     $('btn-de-novo').focus({ preventScroll: true });
 
-    falar('Missão concluída! Você acertou ' + primeira + ' de ' + S.total + ' de primeira. ' +
-      (novas.length ? 'Agora você sabe ' + novas[novas.length - 1].dominio + '! ' : '') +
-      'Como você decidiu onde pousar?');
+    falar([F.fim, novas.length ? F.dominio(novas[novas.length - 1]) : null, F.pergunta]);
 
     if (window.parent !== window) {
       window.parent.postMessage({
@@ -892,28 +959,32 @@
   $('btn-seguir').addEventListener('click', function () {
     if (S.estado === 'feedback' && acaoSeguir) acaoSeguir();
   });
-  $('btn-ouvir').addEventListener('click', function () { if (S.item) falar(falaDoAlvo()); });
+  $('btn-ouvir').addEventListener('click', function () { if (S.item) falar(falasDoAlvo()); });
   $('btn-solo').addEventListener('click', function () { iniciarSessao('solo'); });
   $('btn-dupla').addEventListener('click', function () { iniciarSessao('dupla'); });
   $('btn-de-novo').addEventListener('click', voltarAoInicio);
 
+  // Pergunta de autoexplicação: opções vêm do conteúdo (mesmo texto na tela e na voz).
   $('btn-ouvir-reflexao').addEventListener('click', function () {
-    var opcoes = Array.prototype.map.call(document.querySelectorAll('[data-estrategia]'),
-      function (b) { return b.textContent.trim(); });
-    falar('Como você decidiu onde pousar? ' + opcoes.join('. ') + '.');
+    falar([F.pergunta].concat(C.ESTRATEGIAS.map(F.estrategia)));
   });
-  document.querySelectorAll('[data-estrategia]').forEach(function (botao) {
+  C.ESTRATEGIAS.forEach(function (estrategia) {
+    var botao = document.createElement('button');
+    botao.type = 'button';
+    botao.dataset.estrategia = estrategia.id;
+    botao.innerHTML = '<svg><use href="#' + estrategia.icone + '"/></svg>';
+    botao.appendChild(document.createTextNode(estrategia.texto));
     botao.addEventListener('click', function () {
-      var chaveEstrategia = botao.dataset.estrategia;
-      save.estrategias[chaveEstrategia] = (save.estrategias[chaveEstrategia] || 0) + 1;
+      save.estrategias[estrategia.id] = (save.estrategias[estrategia.id] || 0) + 1;
       gravarSave();
       document.querySelectorAll('[data-estrategia]').forEach(function (b) {
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
       });
       $('fim-obrigado').hidden = false;
-      falar('Boa! Conte para o seu professor como você fez.');
+      falar(F.obrigado);
     });
+    $('fim-opcoes').appendChild(botao);
   });
 
   /* ------------------------------------------------

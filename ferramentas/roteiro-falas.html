@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Roteiro de falas — ferramenta</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 860px; margin: 32px auto; padding: 0 16px; line-height: 1.5; }
+    textarea { width: 100%; height: 420px; font: 13px/1.4 ui-monospace, Consolas, monospace; }
+    button { font: inherit; padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h1>Roteiro de falas</h1>
+  <p>
+    Lista todas as frases que o jogo pode falar. Baixe o arquivo, salve em
+    <code>jogos/&lt;Jogo&gt;/audio/roteiro.json</code> e rode
+    <code>ferramentas/gerar-falas.ps1</code> para gerar os áudios.
+  </p>
+  <p>Jogo: <strong id="jogo"></strong> · <span id="resumo"></span></p>
+  <button id="salvar" type="button">Salvar no projeto</button>
+  <button id="baixar" type="button">Baixar roteiro.json</button>
+  <span id="status"></span>
+  <textarea id="saida" readonly></textarea>
+
+  <script>
+    (function () {
+      var jogo = new URLSearchParams(location.search).get('jogo') || 'Pouso_na_Reta';
+      document.getElementById('jogo').textContent = jogo;
+      var script = document.createElement('script');
+      script.src = '../jogos/' + encodeURIComponent(jogo) + '/conteudo.js';
+      script.onload = function () {
+        var modulo = Object.keys(window).map(function (k) { return window[k]; })
+          .find(function (v) { return v && typeof v.todasAsFalas === 'function'; });
+        var falas = modulo.todasAsFalas();
+        var json = JSON.stringify(falas, null, 2);
+        var caracteres = falas.reduce(function (s, f) { return s + f.length; }, 0);
+        document.getElementById('saida').value = json;
+        document.getElementById('resumo').textContent = falas.length + ' frases, ' + caracteres + ' caracteres';
+        // Só funciona com ferramentas/servidor-local.ps1; fora dele, use "Baixar".
+        document.getElementById('salvar').onclick = function () {
+          var status = document.getElementById('status');
+          fetch('../jogos/' + encodeURIComponent(jogo) + '/audio/roteiro.json', {
+            method: 'PUT', body: json, headers: { 'Content-Type': 'application/json' }
+          }).then(function (r) { return r.text().then(function (t) { status.textContent = r.ok ? t : 'Não salvou (' + r.status + '). Use "Baixar".'; }); })
+            .catch(function () { status.textContent = 'Não salvou. Use "Baixar".'; });
+        };
+        document.getElementById('baixar').onclick = function () {
+          var link = document.createElement('a');
+          link.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+          link.download = 'roteiro.json';
+          link.click();
+        };
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+</body>
+</html>
