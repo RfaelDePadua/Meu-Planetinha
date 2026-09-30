@@ -2,8 +2,8 @@
 
 ## Visão do produto
 
-Meu Planetinha será um universo de aventuras educativas para crianças de 6 a
-10 anos. Cada planeta representa uma área do conhecimento, mas deve funcionar
+Meu Planetinha será um universo de aventuras educativas para estudantes do 4º e
+5º ano do Ensino Fundamental (9 a 11 anos), alinhado à BNCC. Cada planeta representa uma área do conhecimento, mas deve funcionar
 como um lugar com personagens, desafios e progressão — não apenas como um
 filtro de matérias.
 
