@@ -209,6 +209,59 @@ Para priorizar por escola, consultar QEdu, Painel SAEB e PROEB/SIMAVE (Passos).
 
 ---
 
+### Geografia (Terramund)
+
+Levantamento complementar de 30/09/2026.
+
+- **Habilidades BNCC** (unidade "Formas de representação e pensamento espacial",
+  conferidas no PDF oficial, p. 376–379): EF04GE09 (direções cardeais na
+  localização de componentes das paisagens), EF04GE10 (comparar tipos de
+  mapas), EF05GE08 (transformações de paisagens em fotografias e imagens de
+  satélite), EF05GE09 (hierarquia entre cidades em mapas temáticos).
+  Pré-requisitos: EF03GE06 (bi e tridimensional) e EF03GE07 (legendas).
+  Pontes com Matemática: EF04MA16 (deslocamentos em malhas) e EF05MA14
+  (coordenadas). Escala só aparece formalmente no 6º ano (EF06GE08). **[A]**
+- **Habilidade espacial é treinável.** Uttal et al. (2013), *Psychological
+  Bulletin* 139(2), doi:10.1037/a0028446: 217 estudos, g = 0,47, efeito
+  duradouro e transferível; jogos funcionam tanto quanto cursos. A maioria
+  treina rotação mental, não leitura de mapa. Hawes, Gilligan-Lee & Mix
+  (2022), *Developmental Psychology* 58(1), doi:10.1037/dev0001281: treino
+  espacial melhora Matemática (g = 0,28). **[A]**
+- **A dificuldade das crianças está na correspondência mapa–espaço.** Liben &
+  Downs (1993), *Developmental Psychology* 29(4): crianças de 5–12 anos erram
+  muito mais com o mapa girado do que alinhado. Liben (2009), *Current
+  Directions* 18(6): ler mapa exige o domínio simbólico (legenda) e o espacial
+  (ponto de vista, orientação). Kastens & Liben (2007), *Cognition and
+  Instruction* 25(1): alunos de 4º ano que explicitavam a pista usada erraram
+  menos. **[A]/[M]**
+- **Implicação:** muitas tentativas curtas, variar a orientação do mapa (girar
+  o Norte) e o ponto de vista, pedir que a criança diga qual pista usou.
+
+### Inglês (Globish)
+
+- **A BNCC não tem Língua Inglesa no 4º e 5º ano:** os códigos começam em
+  EF06LI e a LDB (art. 26 §5º) prevê a oferta a partir do 6º ano. O Currículo
+  Referência de Minas Gerais também só tem inglês do 6º ao 9º ano. **[A]**
+- **Referência adotada:** Currículo da Cidade de São Paulo — Língua Inglesa
+  (SME, 2ª ed., 2019), que tem objetivos para os anos iniciais (ex.: EF04LI10,
+  reconhecer palavras por imagens em jogos; EF05LI02, compreender instruções
+  orais; EF05LI15, imperativo em comandos). São códigos **municipais**, não da
+  BNCC. Nível calibrado pelo CEFR Pre-A1 e vocabulário da lista Cambridge
+  Pre A1 Starters. **[M]**
+- **Jogos digitais ajudam a aprender vocabulário em língua estrangeira.** Tsai
+  & Tsai (2018), *Computers & Education* 125, doi:10.1016/j.compedu.2018.06.020;
+  Thompson & von Gillern (2020), *Educational Research Review* 30. **[M]**
+- **Prática espaçada e imagem + som.** Kim & Webb (2022), *Language Learning*
+  72(1), doi:10.1111/lang.12479: prática espaçada supera a concentrada.
+  Andrä et al. (2020), *Educational Psychology Review* 32(3),
+  doi:10.1007/s10648-020-09527-z: crianças de 8 anos aprendendo inglês
+  lembraram mais palavras, até 6 meses depois, quando o áudio vinha com imagem
+  ou gesto. Fazio & Marsh (2019), *Current Directions* 28(2): recuperar da
+  memória com esforço (mas com sucesso) beneficia crianças. **[A]**
+- **Implicação:** áudio primeiro, resposta sem escrita — a criança ouve um
+  comando em inglês e age sobre uma imagem (tocar, arrastar). Instruções em
+  português; inglês lento e sempre com imagem; revisão espaçada dos itens.
+
 ## 4. Regras de design do Meu Planetinha
 
 1. **Teste do brócolis:** se o jogo continua jogável sem o conteúdo, refazer.

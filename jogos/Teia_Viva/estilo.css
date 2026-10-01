@@ -1,0 +1,140 @@
+/* Teia Viva — o que é só deste jogo (o comum está em ../comum/base.css). */
+
+:root { --planeta: #4DFFB4; }
+
+.app { grid-template-rows: auto auto 1fr auto; }
+[data-estado="inicio"] .enunciado,
+[data-estado="inicio"] .campo { visibility: hidden; }
+
+/* ── Enunciado ───────────────────────────────────────── */
+.enunciado { padding: 8px 16px 0; text-align: center; }
+.enunciado__tipo {
+  display: inline-block;
+  margin: 0 0 4px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(77, 255, 180, 0.14);
+  color: var(--menta);
+  font-size: 14px;
+  font-weight: 800;
+}
+.enunciado__linha { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.enunciado__texto {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(19px, 2.4vw, 24px);
+  line-height: 1.2;
+}
+.enunciado__texto .evento {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 12px;
+  background: rgba(255, 184, 77, 0.16);
+  color: var(--ambar);
+}
+
+/* ── Campo (setas em SVG por baixo, cartas por cima) ─── */
+.campo { position: relative; min-height: 260px; margin: 6px 12px 0; }
+.setas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cartas { position: absolute; inset: 0; pointer-events: none; }
+
+.seta { fill: none; stroke-width: 4; stroke-linecap: round; }
+.seta--pronta { stroke: #C7D2FE; }
+.seta--usuario { stroke: var(--amarelo); }
+.seta--errada { stroke: #FF6B6B; stroke-dasharray: 8 6; }
+.seta--certa { stroke: var(--menta); }
+.seta--demo { stroke: var(--ciano); stroke-width: 5; }
+.seta--materia { stroke: #D6B48A; stroke-dasharray: 3 7; }
+.seta--caminho { stroke: var(--ambar); stroke-width: 7; }
+.seta-alvo { fill: none; stroke: transparent; stroke-width: 22; pointer-events: stroke; cursor: pointer; }
+
+.carta {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--carta-l, 100px);
+  padding: 6px 4px 5px;
+  border: 3px solid transparent;
+  border-radius: 18px;
+  background: #F1F5EC;
+  color: #1C2A1A;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  font: inherit;
+}
+.carta svg { width: 46px; height: 46px; }
+.carta__nome { font-size: 13px; font-weight: 800; line-height: 1.1; text-align: center; }
+.carta--sol { background: #FFF7D6; }
+.carta--naovivo, .carta--decompositor { background: #EFE6DA; }
+.carta.selecionada { border-color: var(--amarelo); box-shadow: 0 0 0 4px rgba(255, 212, 59, 0.35), 0 4px 0 rgba(0, 0, 0, 0.35); }
+.carta.pulsar { animation: pulsar 0.9s ease-in-out 3; }
+.carta.apagada { opacity: 0.45; }
+@keyframes pulsar { 50% { box-shadow: 0 0 0 8px rgba(103, 232, 249, 0.55); } }
+[data-estado="feedback"] .carta,
+[data-estado="simulando"] .carta { cursor: default; }
+
+/* Evento no ser atingido */
+.carta__evento {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ambar);
+  color: #2A1A05;
+}
+.carta__evento svg { width: 18px; height: 18px; }
+
+/* População (barrinhas) durante a simulação */
+.populacao { display: flex; gap: 2px; margin-top: 4px; }
+.populacao span { width: 12px; height: 7px; border-radius: 2px; background: #CBD5C0; transition: background-color 0.3s; }
+.populacao span.cheia { background: #16A34A; }
+.populacao.desce span.cheia { background: #DC2626; }
+
+/* Previsão: três botões dentro da carta perguntada */
+.previsao {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+}
+.previsao button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--borda);
+  border-radius: 12px;
+  background: var(--superficie-2);
+  color: var(--texto);
+}
+.previsao button svg { width: 20px; height: 20px; }
+.previsao button[aria-pressed="true"] { border-color: var(--amarelo); background: var(--amarelo); color: #2A1A05; }
+.previsao.certa button[aria-pressed="true"] { border-color: var(--menta); background: var(--menta); color: #04261A; }
+.previsao.errada button[aria-pressed="true"] { border-color: #FF6B6B; background: #FF6B6B; color: #2A0505; }
+.previsao .resposta-real { box-shadow: 0 0 0 3px var(--menta); }
+.previsao button:disabled { cursor: default; }
+
+.legenda {
+  margin: 2px 0 0;
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+.campo .aviso { top: auto; bottom: 4px; }
+
+.campo--em-pe { min-height: 640px; }
+
+@media (max-width: 640px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .carta { --carta-l: 78px; padding: 4px 2px; border-radius: 14px; }
+  .carta svg { width: 34px; height: 34px; }
+  .carta__nome { font-size: 11px; }
+  .previsao button { width: 30px; height: 30px; border-radius: 9px; }
+}

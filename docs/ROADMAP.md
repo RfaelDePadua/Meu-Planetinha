@@ -20,56 +20,47 @@ educativos ([PESQUISA_JOGOS.md](PESQUISA_JOGOS.md)). Princípios:
 - jogo em dupla no mesmo computador e conversa com o professor depois;
 - sem login e sem dados pessoais; progresso salvo no próprio dispositivo.
 
-## Estado atual
+## Um jogo por planeta (meta institucional: 3 a 5 jogos)
 
-- **Pouso na Reta** (Calculon): primeiro jogo no novo modelo. Frações,
-  decimais, porcentagens e dinheiro na reta numérica, em 5 etapas BNCC.
-  Guia do professor: [jogos/POUSO_NA_RETA.md](jogos/POUSO_NA_RETA.md).
-- **Detetive de Letrion** (Letrion): leitura com busca de evidências. A
-  criança resolve mistérios sobre casos curtos marcando as frases que provam
-  a resposta; 12 casos em 3 níveis (textos em rascunho, aguardando revisão
-  docente). Guia: [jogos/DETETIVE_DE_LETRION.md](jogos/DETETIVE_DE_LETRION.md).
-- Voz: falas gravadas com voz neural do Azure (Macerio), iguais em qualquer
-  computador e sem internet; peças comuns dos jogos em `jogos/comum/`.
+| Planeta | Jogo | Habilidades | Estado |
+|---|---|---|---|
+| Calculon · Matemática | **Pouso na Reta** — pousar a nave no ponto da reta numérica | BNCC EF04MA09/10, EF05MA03–06 | ✅ pronto ([guia](jogos/POUSO_NA_RETA.md)) |
+| Letrion · Português | **Detetive de Letrion** — resolver mistérios marcando as frases que provam a resposta | BNCC EF15LP03, EF35LP03–06 | ✅ pronto; textos aguardam revisão docente ([guia](jogos/DETETIVE_DE_LETRION.md)) |
+| Naturox · Ciências | **Teia Viva** — montar teias alimentares e prever o efeito de mudanças | BNCC EF04CI04–06 | ✅ pronto; conteúdo aguarda revisão docente ([guia](jogos/TEIA_VIVA.md)) |
+| Terramund · Geografia | **Rumo Certo** — cumprir missões num mapa usando rosa dos ventos e legenda; o mapa gira e o Norte muda de lugar | BNCC EF04GE09, EF04GE10, EF03GE07, EF04MA16 | a fazer |
+| Globish · Inglês | **Listen & Do** — ouvir um comando em inglês e executá-lo numa cena ("Put the red ball under the bed") | Currículo da Cidade SP EF04LI10, EF05LI02, EF05LI15; CEFR Pre-A1 (a BNCC só tem inglês a partir do 6º ano) | a fazer |
+
+A fundamentação de cada um está em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
+
+Também no repositório:
+
+- voz: falas gravadas com voz neural do Azure (Macerio), iguais em qualquer
+  computador e sem internet (`ferramentas/gerar-falas.ps1`);
+- peças comuns dos jogos em `jogos/comum/` (voz, sons, contrato com o portal,
+  visual);
 - Contando Estrelas e Palavra Parkour: jogos do modelo antigo (pergunta por
-  cima de ação), mantidos no catálogo até serem substituídos.
+  cima de ação), mantidos no catálogo até a repaginação do portal;
 - Nave Central e prólogo de Letrion: protótipos do ciclo anterior. A economia
-  de estrelas e troféus contraria a pesquisa sobre recompensas e será
-  refeita como mapa de domínio.
-- Infraestrutura mantida: página de jogo com contrato por `postMessage`
-  (pronto, pausa, som, reinício, resultado) e progresso local (`progress.js`).
+  de estrelas e troféus contraria a pesquisa sobre recompensas e será refeita
+  como mapa de domínio.
 
-## Portfólio de jogos (meta institucional: 3 a 5)
+## Calendário até fevereiro de 2027
 
-Um jogo principal por matéria prioritária, depois dois complementares.
+As janelas de teste nas escolas são outubro–meados de dezembro e fevereiro.
 
-| # | Jogo | Planeta | Habilidades BNCC | Por que |
-|---|---|---|---|---|
-| 1 | **Pouso na Reta** ✅ | Calculon | EF04MA09/10, EF05MA03–06 | Números racionais são o maior gargalo do SAEB em Matemática; reta numérica tem a evidência mais forte. |
-| 2 | **Detetive de Letrion** ✅ | Letrion | EF15LP03, EF35LP03–06 | Inferência é o gargalo em Português. A criança responde e precisa tocar nas frases do texto que provam a resposta. |
-| 3 | **Teia Viva** | Naturox | EF04CI04–06, EF05CI03 | Montar a teia alimentar, prever o efeito de um evento (seca, caça) e simular. |
-| 4 | Fábrica de Palavras | Letrion | EF04LP08, EF05LP08, EF04LP01, EF05LP01 | Ortografia pela morfologia: radical + sufixo (belo → beleza). |
-| 5 | Carga da Frota | Calculon | EF04MA06/07, EF05MA08/12 | Problemas de multiplicação e divisão montando o esquema antes de calcular. |
-
-## Próximos marcos
-
-1. **Validar o Pouso na Reta e o Detetive de Letrion** com professores e 3 a 5
-   crianças: compreensão sem ajuda, tolerâncias, voz, uso em dupla. Os
-   professores revisam os textos do Detetive. Aplicar pré e pós-teste curtos.
-2. **Teia Viva** (Naturox, Ciências), para ter um jogo por matéria prioritária.
-3. **Mapa de domínio** no lugar da Nave Central: mostrar o que a criança já
-   sabe em cada planeta, sem economia de estrelas.
-4. **Painel do professor:** resumo dos erros mais comuns da turma no
-   dispositivo, para orientar a conversa depois do jogo.
-5. Mais casos no Detetive (fato × opinião, conjunções — EF05LP07).
-6. Aposentar Contando Estrelas e Palavra Parkour quando houver substitutos.
-7. Sincronização opcional (Firebase) só se as escolas precisarem continuar o
-   progresso em outro computador: conta do responsável, perfis por apelido e
-   apenas resumos de progresso.
+| Mês | Desenvolvimento | Escolas e equipe |
+|---|---|---|
+| Outubro | Teia Viva ✅; **Rumo Certo** (Terramund) | Publicar o site; professores revisam os três primeiros jogos |
+| Novembro | **Listen & Do** (Globish) | Primeiros testes nas escolas, com pré e pós-teste curtos |
+| Dezembro | Portal repaginado: mapa de domínio no lugar da Nave; aposentar os jogos antigos | Últimos testes antes das férias |
+| Janeiro | Ajustes a partir dos testes; painel do professor | Guias do professor, relatório |
+| Fevereiro | — | Visitas com os 5 jogos e relatório final |
 
 ## Decisões pendentes
 
 - Confirmar com o coordenador e a equipe a repaginação e o portfólio acima.
-- Definir as escolas e turmas para o teste do Pouso na Reta.
+- Onde publicar: repositório próprio no GitHub ou acesso ao repositório atual.
+- Definir as escolas e turmas para os testes.
 - Decidir se o prólogo narrativo (O Eclipse dos Cinco Planetas) continua. A
   pesquisa indica que narrativa longa não melhora a aprendizagem.
+

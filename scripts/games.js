@@ -52,6 +52,23 @@
       ]
     },
     {
+      id: 'teia-viva',
+      name: 'Teia Viva',
+      planet: 'naturox',
+      subject: 'Ciências',
+      difficulty: 2,
+      cover: null,
+      path: 'jogos/Teia_Viva/index.html',
+      orientacao: 'horizontal',
+      sobre: 'Monte as cadeias e teias alimentares do Cerrado ligando quem é comido a quem come. Depois preveja o que acontece quando algo muda (uma seca, a caça, o sumiço dos fungos) e veja a simulação. Para 4º e 5º ano (BNCC EF04CI04, EF04CI05, EF04CI06). Dá para jogar sozinho ou em dupla.',
+      tutorial: [
+        'Toque em um ser vivo e depois em quem come ele: a seta mostra para onde vai a energia',
+        'Toque em Conferir para ver se a teia está certa',
+        'Nas tarefas "E se…?", preveja se cada ser marcado aumenta, diminui ou fica igual',
+        'Veja a simulação e siga as setas destacadas para entender o que aconteceu'
+      ]
+    },
+    {
       id: 'contando-estrelas',
       name: 'Contando Estrelas',
       planet: 'calculon',

@@ -1,0 +1,341 @@
+/**
+ * conteudo.js — seres vivos, teias e cenários da Teia Viva (sem DOM).
+ *
+ * Seta A → B quer dizer: a energia vai de A para B (B come A). É a convenção
+ * dos livros de Ciências, e a inversão da seta é um erro comum que o jogo
+ * explica em particular.
+ *
+ * Os resultados dos cenários "E se...?" são escritos à mão (não calculados)
+ * para garantir que cada pergunta tenha uma resposta ecologicamente clara.
+ * RASCUNHO: revisar com professores de Ciências.
+ */
+(function (global) {
+  'use strict';
+
+  /* ------------------------------------------------
+     Seres (e componentes não vivos). `o` é o nome com artigo.
+     ------------------------------------------------ */
+  var SERES = {
+    sol: { nome: 'Sol', o: 'o Sol', tipo: 'sol' },
+    capim: { nome: 'Capim', o: 'o capim', tipo: 'produtor' },
+    pequizeiro: { nome: 'Pequizeiro', o: 'o pequizeiro', tipo: 'produtor' },
+    lobeira: { nome: 'Lobeira', o: 'a lobeira', tipo: 'produtor' },
+    algas: { nome: 'Algas', o: 'as algas', tipo: 'produtor' },
+    gafanhoto: { nome: 'Gafanhoto', o: 'o gafanhoto', tipo: 'consumidor' },
+    lagarta: { nome: 'Lagarta', o: 'a lagarta', tipo: 'consumidor' },
+    prea: { nome: 'Preá', o: 'o preá', tipo: 'consumidor' },
+    sapo: { nome: 'Sapo', o: 'o sapo', tipo: 'consumidor' },
+    bemtevi: { nome: 'Bem-te-vi', o: 'o bem-te-vi', tipo: 'consumidor' },
+    cobra: { nome: 'Cobra', o: 'a cobra', tipo: 'consumidor' },
+    seriema: { nome: 'Seriema', o: 'a seriema', tipo: 'consumidor' },
+    gaviao: { nome: 'Gavião', o: 'o gavião', tipo: 'consumidor' },
+    loboguara: { nome: 'Lobo-guará', o: 'o lobo-guará', tipo: 'consumidor' },
+    lambari: { nome: 'Lambari', o: 'o lambari', tipo: 'consumidor' },
+    traira: { nome: 'Traíra', o: 'a traíra', tipo: 'consumidor' },
+    garca: { nome: 'Garça', o: 'a garça', tipo: 'consumidor' },
+    fungos: { nome: 'Fungos e bactérias', o: 'os fungos e bactérias', tipo: 'decompositor' },
+    restos: { nome: 'Restos e folhas mortas', o: 'os restos e folhas mortas', tipo: 'naovivo' },
+    solo: { nome: 'Nutrientes do solo', o: 'os nutrientes do solo', tipo: 'naovivo' }
+  };
+
+  function maiuscula(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  /* ------------------------------------------------
+     Teias usadas nos cenários (todas as setas verdadeiras)
+     ------------------------------------------------ */
+  var TEIAS = {
+    campo: {
+      nome: 'Campo do Cerrado',
+      seres: ['sol', 'capim', 'gafanhoto', 'prea', 'sapo', 'cobra', 'gaviao'],
+      setas: [['sol', 'capim'], ['capim', 'gafanhoto'], ['capim', 'prea'], ['gafanhoto', 'sapo'],
+        ['sapo', 'cobra'], ['prea', 'cobra'], ['cobra', 'gaviao'], ['prea', 'gaviao']]
+    },
+    lobo: {
+      nome: 'Cerrado do lobo-guará',
+      seres: ['sol', 'capim', 'lobeira', 'gafanhoto', 'prea', 'seriema', 'loboguara'],
+      setas: [['sol', 'capim'], ['sol', 'lobeira'], ['capim', 'gafanhoto'], ['capim', 'prea'],
+        ['gafanhoto', 'seriema'], ['prea', 'loboguara'], ['lobeira', 'loboguara']]
+    },
+    lagoa: {
+      nome: 'Lagoa',
+      seres: ['sol', 'algas', 'lambari', 'traira', 'garca'],
+      setas: [['sol', 'algas'], ['algas', 'lambari'], ['lambari', 'traira'], ['lambari', 'garca'], ['traira', 'garca']]
+    },
+    solo: {
+      nome: 'Ciclo no solo',
+      seres: ['sol', 'capim', 'gafanhoto', 'sapo', 'restos', 'fungos', 'solo'],
+      setas: [['sol', 'capim'], ['capim', 'gafanhoto'], ['gafanhoto', 'sapo'],
+        ['capim', 'restos'], ['gafanhoto', 'restos'], ['sapo', 'restos'], ['restos', 'fungos'], ['fungos', 'solo'], ['solo', 'capim']],
+      // Setas da matéria (tracejadas): o caminho que volta para o solo.
+      materia: [['capim', 'restos'], ['gafanhoto', 'restos'], ['sapo', 'restos'], ['restos', 'fungos'], ['fungos', 'solo'], ['solo', 'capim']]
+    }
+  };
+
+  /* ------------------------------------------------
+     Etapas. Itens de montar: `seres` + `setas` certas; `prontas` já vêm
+     desenhadas. Itens "E se": teia + evento + perguntas com resultado.
+     ------------------------------------------------ */
+  var ETAPAS = [
+    {
+      id: 1, nome: 'Cadeias alimentares', bncc: 'EF04CI04', modo: 'montar',
+      dominio: 'montar cadeias alimentares começando pelo Sol',
+      itens: [
+        { seres: ['sol', 'capim', 'gafanhoto', 'sapo', 'cobra'] },
+        { seres: ['sol', 'pequizeiro', 'lagarta', 'bemtevi', 'gaviao'] },
+        { seres: ['sol', 'algas', 'lambari', 'garca'] },
+        { seres: ['sol', 'capim', 'prea', 'cobra', 'gaviao'] },
+        { seres: ['sol', 'lobeira', 'loboguara'] }
+      ].map(function (item) {
+        item.setas = item.seres.slice(1).map(function (s, i) { return [item.seres[i], s]; });
+        item.embaralhar = true;
+        return item;
+      })
+    },
+    {
+      id: 2, nome: 'Teias alimentares', bncc: 'EF04CI04', modo: 'montar',
+      dominio: 'completar teias alimentares com vários caminhos',
+      itens: [
+        { teia: 'campo', faltam: [['capim', 'prea'], ['sapo', 'cobra'], ['prea', 'gaviao']] },
+        { teia: 'campo', faltam: [['capim', 'gafanhoto'], ['gafanhoto', 'sapo'], ['cobra', 'gaviao']] },
+        { teia: 'lobo', faltam: [['lobeira', 'loboguara'], ['prea', 'loboguara'], ['gafanhoto', 'seriema']] },
+        { teia: 'lagoa', faltam: [['algas', 'lambari'], ['traira', 'garca']] }
+      ]
+    },
+    {
+      id: 3, nome: 'E se…? Efeito direto', bncc: 'EF04CI04', modo: 'prever',
+      dominio: 'prever o que acontece com quem come ou é comido',
+      itens: [
+        {
+          teia: 'campo', alvo: 'capim', direcao: 'desce', evento: 'Uma seca deixou pouco capim no campo.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'desce', explicacao: 'O gafanhoto come capim. Com pouco capim, falta comida e os gafanhotos diminuem.', caminho: [['capim', 'gafanhoto']] },
+            { ser: 'prea', resposta: 'desce', explicacao: 'O preá também come capim. Com menos comida, os preás diminuem.', caminho: [['capim', 'prea']] }
+          ]
+        },
+        {
+          teia: 'campo', alvo: 'sapo', direcao: 'sobe', evento: 'Muitos sapos chegaram de uma lagoa vizinha.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'desce', explicacao: 'O sapo come gafanhotos. Com mais sapos caçando, os gafanhotos diminuem.', caminho: [['gafanhoto', 'sapo']] },
+            { ser: 'cobra', resposta: 'sobe', explicacao: 'A cobra come sapos. Com mais sapos, sobra comida e as cobras aumentam.', caminho: [['sapo', 'cobra']] }
+          ]
+        },
+        {
+          teia: 'lobo', alvo: 'lobeira', direcao: 'sobe', evento: 'As lobeiras deram muitos frutos este ano.',
+          perguntas: [
+            { ser: 'loboguara', resposta: 'sobe', explicacao: 'O lobo-guará come o fruto da lobeira. Com mais frutos, os lobos-guará têm mais comida e aumentam.', caminho: [['lobeira', 'loboguara']] }
+          ]
+        },
+        {
+          teia: 'lagoa', alvo: 'traira', direcao: 'desce', evento: 'Pescadores tiraram muitas traíras da lagoa.',
+          perguntas: [
+            { ser: 'lambari', resposta: 'sobe', explicacao: 'A traíra come lambaris. Com menos traíras caçando, os lambaris aumentam.', caminho: [['lambari', 'traira']] }
+          ]
+        }
+      ]
+    },
+    {
+      id: 4, nome: 'E se…? Efeito em cadeia', bncc: 'EF04CI04', modo: 'prever',
+      dominio: 'seguir as setas para prever efeitos em cadeia',
+      itens: [
+        {
+          teia: 'campo', alvo: 'gaviao', direcao: 'desce', evento: 'Caçadores levaram muitos gaviões do campo.',
+          perguntas: [
+            { ser: 'cobra', resposta: 'sobe', explicacao: 'O gavião come cobras. Com menos gaviões, as cobras aumentam.', caminho: [['cobra', 'gaviao']] },
+            { ser: 'sapo', resposta: 'desce', explicacao: 'Com mais cobras, mais sapos são comidos. Os sapos diminuem.', caminho: [['cobra', 'gaviao'], ['sapo', 'cobra']] },
+            { ser: 'gafanhoto', resposta: 'sobe', explicacao: 'Com menos sapos, sobram gafanhotos. Um efeito puxa o outro pelas setas.', caminho: [['cobra', 'gaviao'], ['sapo', 'cobra'], ['gafanhoto', 'sapo']] }
+          ]
+        },
+        {
+          teia: 'campo', alvo: 'gafanhoto', direcao: 'sobe', evento: 'Uma praga de gafanhotos apareceu no campo.',
+          perguntas: [
+            { ser: 'capim', resposta: 'desce', explicacao: 'Os gafanhotos comem capim. Com muitos gafanhotos, o capim diminui.', caminho: [['capim', 'gafanhoto']] },
+            { ser: 'sapo', resposta: 'sobe', explicacao: 'O sapo come gafanhotos. Com mais comida, os sapos aumentam.', caminho: [['gafanhoto', 'sapo']] },
+            { ser: 'prea', resposta: 'desce', explicacao: 'O preá não come gafanhotos, mas come capim. Com menos capim, os preás diminuem.', caminho: [['capim', 'gafanhoto'], ['capim', 'prea']] }
+          ]
+        },
+        {
+          teia: 'lobo', alvo: 'lobeira', direcao: 'sobe', evento: 'As lobeiras deram muitos frutos este ano.',
+          perguntas: [
+            { ser: 'loboguara', resposta: 'sobe', explicacao: 'O lobo-guará come o fruto da lobeira. Com mais comida, os lobos-guará aumentam.', caminho: [['lobeira', 'loboguara']] },
+            { ser: 'prea', resposta: 'desce', explicacao: 'O lobo-guará também come preás. Com mais lobos-guará, mais preás são comidos.', caminho: [['lobeira', 'loboguara'], ['prea', 'loboguara']] }
+          ]
+        },
+        {
+          teia: 'lagoa', alvo: 'traira', direcao: 'desce', evento: 'Pescadores tiraram muitas traíras da lagoa.',
+          perguntas: [
+            { ser: 'lambari', resposta: 'sobe', explicacao: 'A traíra come lambaris. Com menos traíras, os lambaris aumentam.', caminho: [['lambari', 'traira']] },
+            { ser: 'algas', resposta: 'desce', explicacao: 'Com mais lambaris comendo algas, as algas diminuem.', caminho: [['lambari', 'traira'], ['algas', 'lambari']] }
+          ]
+        }
+      ]
+    },
+    {
+      id: 5, nome: 'Decompositores e o solo', bncc: 'EF04CI05 · EF04CI06', modo: 'prever',
+      dominio: 'explicar o papel dos fungos e bactérias no solo',
+      itens: [
+        {
+          teia: 'solo', alvo: 'fungos', direcao: 'desce', evento: 'Os fungos e bactérias do solo sumiram.',
+          perguntas: [
+            { ser: 'restos', resposta: 'sobe', explicacao: 'Os fungos e bactérias decompõem os restos. Sem eles, os restos e folhas mortas se acumulam.', caminho: [['restos', 'fungos']] },
+            { ser: 'solo', resposta: 'desce', explicacao: 'É a decomposição que devolve nutrientes para o solo. Sem ela, o solo fica pobre.', caminho: [['restos', 'fungos'], ['fungos', 'solo']] },
+            { ser: 'capim', resposta: 'desce', explicacao: 'O capim precisa dos nutrientes do solo para crescer. Com o solo pobre, o capim diminui.', caminho: [['fungos', 'solo'], ['solo', 'capim']] }
+          ]
+        },
+        {
+          teia: 'solo', alvo: 'restos', direcao: 'sobe', evento: 'No fim da seca, caíram muitas folhas no chão.',
+          perguntas: [
+            { ser: 'fungos', resposta: 'sobe', explicacao: 'As folhas mortas são o alimento dos fungos e bactérias. Com mais folhas, eles aumentam.', caminho: [['restos', 'fungos']] },
+            { ser: 'solo', resposta: 'sobe', explicacao: 'Decompondo as folhas, os fungos e bactérias devolvem mais nutrientes para o solo.', caminho: [['restos', 'fungos'], ['fungos', 'solo']] }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // Resolve a teia de cada item de montar e marca as setas que já vêm prontas.
+  ETAPAS.forEach(function (etapa) {
+    etapa.itens.forEach(function (item) {
+      if (!item.teia) return;
+      var teia = TEIAS[item.teia];
+      item.seres = teia.seres;
+      if (etapa.modo === 'montar') {
+        item.setas = teia.setas;
+        item.prontas = teia.setas.filter(function (s) {
+          return !item.faltam.some(function (f) { return f[0] === s[0] && f[1] === s[1]; });
+        });
+      } else {
+        item.setas = teia.setas;
+        item.materia = teia.materia || [];
+        // A simulação só mexe no ser atingido e nos seres perguntados (a cadeia
+        // de causa), para não mostrar efeitos ambíguos nos outros.
+        item.efeitos = {};
+        item.efeitos[item.alvo] = item.direcao;
+        item.perguntas.forEach(function (p) { item.efeitos[p.ser] = p.resposta; });
+      }
+    });
+  });
+
+  /* ------------------------------------------------
+     Textos gerados (a mesma frase serve para tela e voz: sem símbolos)
+     ------------------------------------------------ */
+  function ehProdutor(id) { return SERES[id].tipo === 'produtor'; }
+
+  // Explica por que a seta A → B está errada.
+  function erroSeta(a, b, setasCertas) {
+    var A = SERES[a];
+    var B = SERES[b];
+    var invertida = setasCertas.some(function (s) { return s[0] === b && s[1] === a; });
+    if (b === 'sol') {
+      return invertida
+        ? 'Seta ao contrário: a energia sai do Sol e vai para ' + A.o + '.'
+        : 'Ninguém alimenta o Sol. A energia sai do Sol e vai para as plantas.';
+    }
+    if (invertida) {
+      return 'Seta ao contrário: é ' + A.o + ' que come ' + B.o + '. A seta vai de quem é comido para quem come.';
+    }
+    if (a === 'sol') return maiuscula(B.o) + ' não se alimenta da luz do Sol. Só as plantas e as algas usam a luz do Sol para produzir alimento.';
+    if (ehProdutor(b)) return maiuscula(B.o) + ' não come outros seres. As plantas e as algas produzem o próprio alimento com a luz do Sol.';
+    return maiuscula(B.o) + ' não come ' + A.o + '.';
+  }
+
+  function quemCome(id) { return id === 'sol' ? 'Quem usa a luz do Sol?' : 'Quem come ' + SERES[id].o + '?'; }
+
+  // "o capim" → "do capim"; "as algas" → "das algas"
+  function de(id) { return SERES[id].o.replace(/^(o|a|os|as) /, 'd$1 '); }
+
+  // "A energia vai do Sol para o capim, do capim para o gafanhoto e do gafanhoto para o sapo."
+  function explicacaoCadeia(setas) {
+    var partes = setas.map(function (s) { return de(s[0]) + ' para ' + SERES[s[1]].o; });
+    var ultima = partes.pop();
+    return 'A energia vai ' + (partes.length ? partes.join(', ') + ' e ' : '') + ultima + '.';
+  }
+
+  var DIRECOES = {
+    sobe: { texto: 'Aumenta', fala: 'aumenta' },
+    desce: { texto: 'Diminui', fala: 'diminui' },
+    igual: { texto: 'Igual', fala: 'fica igual' }
+  };
+
+  var ESTRATEGIAS = [
+    { id: 'setas', icone: 'i-seta', texto: 'Segui as setas, uma de cada vez' },
+    { id: 'comida', icone: 'i-folha', texto: 'Pensei em quem come quem' },
+    { id: 'lembrei', icone: 'i-pensar', texto: 'Lembrei de algo que já vi na natureza' },
+    { id: 'chute', icone: 'i-chute', texto: 'Chutei' }
+  ];
+
+  var FALAS = {
+    instrucaoMontar: 'Toque em um ser vivo e depois em quem come ele. A seta mostra para onde vai a energia.',
+    instrucaoCadeia: 'Monte a cadeia alimentar começando pelo Sol.',
+    instrucaoTeia: 'Complete a teia: faltam algumas setas.',
+    instrucaoPrever: 'Para cada ser marcado, diga se ele vai aumentar, diminuir ou ficar igual. Depois veja o que acontece.',
+    faltaSeta: function (n) { return n === 1 ? 'Ainda falta uma seta.' : 'Ainda faltam ' + ['', '', 'duas', 'três', 'quatro', 'cinco'][n] + ' setas.'; },
+    dicaMontar: 'Comece pelo Sol: quem usa a luz do Sol? Depois, quem come essa planta?',
+    certo: 'Teia certinha!',
+    certoCadeia: 'Cadeia certinha!',
+    certoDica: 'Certo, com a dica!',
+    previsaoCerta: 'Você previu tudo certo!',
+    previsaoParte: 'Veja o que aconteceu de verdade.',
+    vamosVer: 'Vamos ver juntos.',
+    temErrada: 'Tem seta errada.',
+    quaseLa: 'Quase lá.',
+    naturalista: function (n) { return 'Naturalista ' + ['', 'um', 'dois'][n] + '.'; },
+    confirma: function (n) { return 'Naturalista ' + ['', 'um', 'dois'][n] + ', você concorda?'; },
+    novaEtapa: function (etapa) { return 'Nova etapa: ' + etapa.nome.replace('…', '') + '!'; },
+    treinar: 'Vamos treinar mais um pouco.',
+    fim: 'Missão concluída!',
+    dominio: function (etapa) { return 'Agora você sabe ' + etapa.dominio + '!'; },
+    pergunta: 'Como você fez as suas previsões?',
+    obrigado: 'Boa! Conte para o seu professor como você fez.',
+    estrategia: function (e) { return e.texto + '.'; },
+    evento: function (item) { return item.evento; },
+    previsao: function (ser, dir) { return maiuscula(SERES[ser].o) + ' ' + DIRECOES[dir].fala + '.'; }
+  };
+
+  // Todas as frases que o jogo pode falar: o roteiro para gerar os áudios.
+  function todasAsFalas() {
+    var lista = [];
+    function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
+    ['instrucaoMontar', 'instrucaoCadeia', 'instrucaoTeia', 'instrucaoPrever', 'dicaMontar', 'certo', 'certoCadeia', 'certoDica',
+      'previsaoCerta', 'previsaoParte', 'vamosVer', 'temErrada', 'quaseLa', 'treinar', 'fim', 'pergunta', 'obrigado']
+      .forEach(function (k) { add(FALAS[k]); });
+    [1, 2, 3, 4, 5].forEach(function (n) { add(FALAS.faltaSeta(n)); });
+    [1, 2].forEach(function (n) { add(FALAS.naturalista(n)); add(FALAS.confirma(n)); });
+    ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
+    ETAPAS.forEach(function (etapa) {
+      add(FALAS.novaEtapa(etapa));
+      add(FALAS.dominio(etapa));
+      etapa.itens.forEach(function (item) {
+        if (etapa.modo === 'montar') {
+          item.seres.forEach(function (a) {
+            item.seres.forEach(function (b) {
+              if (a === b) return;
+              var certa = item.setas.some(function (s) { return s[0] === a && s[1] === b; });
+              if (!certa) add(erroSeta(a, b, item.setas));
+            });
+            add(quemCome(a));
+          });
+          add(explicacaoCadeia(item.faltam || item.setas));
+        } else {
+          add(item.evento);
+          item.perguntas.forEach(function (p) {
+            add(p.explicacao);
+            Object.keys(DIRECOES).forEach(function (d) { add(FALAS.previsao(p.ser, d)); });
+          });
+        }
+      });
+    });
+    return lista;
+  }
+
+  global.TeiaConteudo = {
+    DIRECOES: DIRECOES,
+    ESTRATEGIAS: ESTRATEGIAS,
+    ETAPAS: ETAPAS,
+    FALAS: FALAS,
+    SERES: SERES,
+    erroSeta: erroSeta,
+    explicacaoCadeia: explicacaoCadeia,
+    quemCome: quemCome,
+    todasAsFalas: todasAsFalas
+  };
+})(window);
