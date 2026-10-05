@@ -1,0 +1,85 @@
+/* Folhas para imprimir (avaliação e observação): preto no branco, A4. */
+
+@page { size: A4; margin: 14mm; }
+@page paisagem { size: A4 landscape; margin: 10mm; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #E5E7EB;
+  color: #000;
+  font-family: 'Mulish', Arial, sans-serif;
+  font-size: 12.5pt;
+  line-height: 1.45;
+}
+main {
+  max-width: 190mm;
+  margin: 12px auto 32px;
+  padding: 14mm;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+main.paisagem { max-width: 277mm; padding: 10mm; }
+
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #11173A;
+  color: #fff;
+  font-weight: 700;
+}
+.barra a { color: #FFD43B; }
+.barra button {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #FFD43B;
+  color: #2A1A05;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+h1 { margin: 2px 0 8px; font-size: 18pt; }
+h2 { margin: 18px 0 8px; padding-bottom: 3px; border-bottom: 1.5px solid #000; font-size: 14pt; }
+.projeto { margin: 0; font-size: 9.5pt; letter-spacing: 0.06em; text-transform: uppercase; }
+.campos { display: flex; gap: 18px; flex-wrap: wrap; }
+.campo { display: flex; align-items: flex-end; gap: 6px; flex: 1; min-width: 45mm; }
+.campo .linha { flex: 1; min-width: 22mm; border-bottom: 1px solid #000; height: 1.2em; }
+
+.questao { margin: 10px 0 14px; break-inside: avoid; }
+.enunciado { margin: 0 0 4px; font-weight: 700; }
+.reta svg { display: block; width: 112mm; height: 24mm; margin: 2mm 0 0 4mm; }
+.alternativas { margin: 2px 0; padding-left: 8mm; list-style: none; }
+.alternativas li { margin: 3px 0; }
+.prova { margin: 6px 0 0 8mm; }
+.instrucao { margin: 0 0 4px; font-style: italic; }
+.texto { margin: 0 0 12px; padding: 8px 8px 8px 12mm; border: 1px solid #000; }
+.texto li { margin: 2px 0; }
+.caixas { margin: 6px 0; font-weight: 700; letter-spacing: 0.03em; }
+.linha-resposta { height: 10mm; margin: 0; border-bottom: 1px solid #000; }
+
+.regras p { margin: 0 0 6px; }
+.gabarito { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+.gabarito th, .gabarito td { padding: 4px 8px; border: 1px solid #000; text-align: left; vertical-align: top; }
+.gabarito th { width: 12mm; }
+
+/* Observação */
+.observacao { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+.observacao th, .observacao td { padding: 4px 6px; border: 1px solid #000; vertical-align: top; text-align: left; }
+.observacao td { height: 22mm; }
+.legenda { margin: 6px 0 0; font-size: 10pt; }
+
+.lista-materiais li { margin: 6px 0; }
+
+@media print {
+  body { background: #fff; }
+  .tela-apenas { display: none !important; }
+  main { margin: 0; padding: 0; max-width: none; box-shadow: none; }
+  main.paisagem { page: paisagem; }
+  .nova-pagina { break-before: page; }
+}

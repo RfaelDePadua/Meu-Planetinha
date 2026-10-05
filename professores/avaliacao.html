@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Avaliação — Meu Planetinha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="impressao.css">
+</head>
+<body>
+  <nav class="tela-apenas barra">
+    <a href="index.html">← Materiais do professor</a>
+    <span>
+      <a href="?forma=A">Forma A (pré)</a> ·
+      <a href="?forma=B">Forma B (pós)</a> ·
+      <a href="?forma=gabarito">Gabarito</a>
+    </span>
+    <button type="button" onclick="window.print()">Imprimir</button>
+  </nav>
+
+  <main id="folha"></main>
+
+  <script>
+    /**
+     * Pré-teste (Forma A) e pós-teste (Forma B) com itens paralelos, e gabarito.
+     * Textos e situações diferentes dos jogos, para medir transferência.
+     * Reta numérica: 100 mm na impressão (CSS em mm); corrigir com régua.
+     */
+    (function () {
+      'use strict';
+
+      var FORMAS = {
+        A: {
+          retas: [
+            { n: '1/4', max: 1, mm: 25 }, { n: '3/5', max: 1, mm: 60 },
+            { n: '0,7', max: 1, mm: 70 }, { n: '3/2', max: 2, mm: 75 }
+          ],
+          maior: ['3/8', '1/2'], maiorCerta: '1/2',
+          equivalente: { de: '1/2', opcoes: ['2/4', '2/3', '1/4'], certa: '2/4' },
+          texto: [
+            'Ana chegou da escola e encontrou a porta da cozinha aberta.',
+            'Em cima da mesa, o bolo que a avó tinha feito estava pela metade, e havia farelo no chão até a janela.',
+            'No quintal, o cachorro Biscoito lambia o focinho e balançava o rabo.',
+            'Quando a avó chegou, Ana apontou para o quintal e disse: — Acho que já sei quem provou o bolo!',
+            'A avó riu e disse que o bolo estava irresistível.'
+          ],
+          leitura: [
+            { p: 'Onde estava o bolo?', o: ['Em cima da mesa', 'No quintal', 'Na janela'], certa: 0, prova: true, gab: 'Frase 2 (“Em cima da mesa, o bolo…”).' },
+            { p: 'Quem, provavelmente, comeu parte do bolo?', o: ['A avó', 'O cachorro Biscoito', 'A Ana'], certa: 1, prova: true, gab: 'Frase 2 (farelo até a janela) ou frase 3 (Biscoito lambia o focinho).' },
+            { p: 'No texto, “irresistível” quer dizer:', o: ['difícil de recusar', 'muito duro', 'estragado'], certa: 0 }
+          ],
+          cadeia: ['sapo', 'Sol', 'gafanhoto', 'capim'], cadeiaCerta: 'Sol → capim → gafanhoto → sapo',
+          eSe: { t: 'Numa lagoa, as garças comem peixes e os peixes comem algas. Se as garças sumirem, o que acontece com os peixes?', certa: 'aumentam', gab: 'Aumentam: menos garças comendo peixes.' },
+          decomp: { p: 'Para que servem os fungos e bactérias do solo?', o: ['Decompõem restos e devolvem nutrientes ao solo', 'Produzem alimento com a luz do Sol', 'Comem os animais vivos'], certa: 0 }
+        },
+        B: {
+          retas: [
+            { n: '1/5', max: 1, mm: 20 }, { n: '2/3', max: 1, mm: 66.7 },
+            { n: '0,3', max: 1, mm: 30 }, { n: '5/4', max: 2, mm: 62.5 }
+          ],
+          maior: ['2/5', '1/2'], maiorCerta: '1/2',
+          equivalente: { de: '3/4', opcoes: ['3/8', '6/8', '4/3'], certa: '6/8' },
+          texto: [
+            'Pedro treinou a semana inteira para a corrida da escola.',
+            'No dia da prova, acordou cedo, tomou café e amarrou bem o tênis.',
+            'Na largada, suas pernas tremiam e ele não parava de olhar para a plateia.',
+            'Quando o apito tocou, ele correu o mais rápido que pôde e chegou em segundo lugar.',
+            'Ao receber a medalha, Pedro estava exausto, mas sorria de orelha a orelha.'
+          ],
+          leitura: [
+            { p: 'O que Pedro fez antes de sair de casa?', o: ['Tomou café e amarrou o tênis', 'Recebeu a medalha', 'Olhou para a plateia'], certa: 0, prova: true, gab: 'Frase 2 (“acordou cedo, tomou café…”).' },
+            { p: 'Como Pedro se sentia na largada?', o: ['Com sono', 'Nervoso', 'Com raiva'], certa: 1, prova: true, gab: 'Frase 3 (pernas tremiam, olhava para a plateia).' },
+            { p: 'No texto, “exausto” quer dizer:', o: ['muito cansado', 'muito triste', 'muito rápido'], certa: 0 }
+          ],
+          cadeia: ['passarinho', 'lagarta', 'Sol', 'folhas'], cadeiaCerta: 'Sol → folhas → lagarta → passarinho',
+          eSe: { t: 'No campo, as cobras comem ratos e os ratos comem sementes. Se muitas cobras forem caçadas, o que acontece com os ratos?', certa: 'aumentam', gab: 'Aumentam: menos cobras comendo ratos.' },
+          decomp: { p: 'Se não houvesse fungos e bactérias, o que aconteceria com as folhas caídas no chão?', o: ['Iriam se acumular', 'Virariam terra mais rápido', 'Voariam para longe'], certa: 0 }
+        }
+      };
+
+      function el(tag, classe, texto) {
+        var no = document.createElement(tag);
+        if (classe) no.className = classe;
+        if (texto !== undefined) no.textContent = texto;
+        return no;
+      }
+
+      function reta(max) {
+        var marcas = '<line x1="0" y1="10" x2="100" y2="10" stroke="#000" stroke-width="0.6"/>' +
+          '<line x1="0" y1="5" x2="0" y2="15" stroke="#000" stroke-width="0.6"/>' +
+          '<line x1="100" y1="5" x2="100" y2="15" stroke="#000" stroke-width="0.6"/>' +
+          '<text x="0" y="22" font-size="5" text-anchor="middle">0</text>' +
+          '<text x="100" y="22" font-size="5" text-anchor="middle">' + max + '</text>';
+        if (max === 2) {
+          marcas += '<line x1="50" y1="5" x2="50" y2="15" stroke="#000" stroke-width="0.6"/>' +
+            '<text x="50" y="22" font-size="5" text-anchor="middle">1</text>';
+        }
+        var caixa = el('div', 'reta');
+        caixa.innerHTML = '<svg viewBox="-6 0 112 24" aria-hidden="true">' + marcas + '</svg>';
+        return caixa;
+      }
+
+      function cabecalho(titulo) {
+        var c = el('header', 'cabecalho');
+        c.appendChild(el('p', 'projeto', 'Meu Planetinha · IFSULDEMINAS Campus Passos'));
+        c.appendChild(el('h1', '', titulo));
+        var campos = el('div', 'campos');
+        ['Número da chamada', 'Turma', 'Data'].forEach(function (rotulo) {
+          var campo = el('span', 'campo');
+          campo.appendChild(el('span', '', rotulo + ':'));
+          campo.appendChild(el('span', 'linha'));
+          campos.appendChild(campo);
+        });
+        c.appendChild(campos);
+        return c;
+      }
+
+      function questao(numero, enunciado) {
+        var q = el('section', 'questao');
+        q.appendChild(el('p', 'enunciado', numero + '. ' + enunciado));
+        return q;
+      }
+
+      function alternativas(q, opcoes) {
+        var lista = el('ul', 'alternativas');
+        opcoes.forEach(function (o) { lista.appendChild(el('li', '', '( ) ' + o)); });
+        q.appendChild(lista);
+      }
+
+      function montarForma(letra) {
+        var F = FORMAS[letra];
+        var folha = document.getElementById('folha');
+        folha.appendChild(cabecalho('Avaliação — Forma ' + letra + (letra === 'A' ? ' (antes dos jogos)' : ' (depois dos jogos)')));
+        var n = 0;
+
+        folha.appendChild(el('h2', '', 'Parte 1 · Matemática'));
+        F.retas.forEach(function (r) {
+          var q = questao(++n, 'Marque com um tracinho onde fica o número ' + r.n + ' na reta.');
+          q.appendChild(reta(r.max));
+          folha.appendChild(q);
+        });
+        var q5 = questao(++n, 'Circule o número maior: ' + F.maior[0] + ' ou ' + F.maior[1] + '.');
+        folha.appendChild(q5);
+        var q6 = questao(++n, 'Circule a fração que fica no mesmo ponto da reta que ' + F.equivalente.de + ': ' +
+          F.equivalente.opcoes.join('   ·   '));
+        folha.appendChild(q6);
+
+        var quebra = el('h2', 'nova-pagina', 'Parte 2 · Português');
+        folha.appendChild(quebra);
+        folha.appendChild(el('p', 'instrucao', 'Leia o texto. As frases estão numeradas.'));
+        var texto = el('ol', 'texto');
+        F.texto.forEach(function (f) { texto.appendChild(el('li', '', f)); });
+        folha.appendChild(texto);
+        F.leitura.forEach(function (item) {
+          var q = questao(++n, item.p);
+          alternativas(q, item.o);
+          if (item.prova) q.appendChild(el('p', 'prova', 'Escreva o número da frase que prova a sua resposta: ______'));
+          folha.appendChild(q);
+        });
+
+        folha.appendChild(el('h2', 'nova-pagina', 'Parte 3 · Ciências'));
+        var q10 = questao(++n, 'Escreva os seres na ordem da cadeia alimentar, começando pelo que dá a energia. Use setas (→).');
+        q10.appendChild(el('p', 'caixas', F.cadeia.join('      ')));
+        q10.appendChild(el('p', 'linha-resposta', ''));
+        folha.appendChild(q10);
+        var q11 = questao(++n, F.eSe.t);
+        alternativas(q11, ['Aumentam', 'Diminuem', 'Ficam iguais']);
+        q11.appendChild(el('p', 'prova', 'Por quê? ________________________________________________'));
+        folha.appendChild(q11);
+        var q12 = questao(++n, F.decomp.p);
+        alternativas(q12, F.decomp.o);
+        folha.appendChild(q12);
+      }
+
+      function montarGabarito() {
+        var folha = document.getElementById('folha');
+        var c = el('header', 'cabecalho');
+        c.appendChild(el('p', 'projeto', 'Meu Planetinha · para o professor'));
+        c.appendChild(el('h1', '', 'Gabarito e correção'));
+        folha.appendChild(c);
+        var regras = el('div', 'regras');
+        regras.innerHTML =
+          '<p><strong>Retas (questões 1 a 4):</strong> meça com régua, em milímetros, a distância entre o tracinho e a posição certa. ' +
+          'Conte como acerto até <strong>7 mm</strong> de distância e anote também a distância medida: a média das distâncias da turma, antes e depois, é a melhor medida de progresso.</p>' +
+          '<p><strong>Questões 7 e 8:</strong> 1 ponto pela alternativa certa e 1 ponto pela frase que prova (qualquer frase indicada no gabarito).</p>' +
+          '<p><strong>Questão 10:</strong> 2 pontos para a ordem completa com setas no sentido certo; 1 ponto para a ordem certa com setas invertidas.</p>' +
+          '<p><strong>Questão 11:</strong> 1 ponto pela alternativa, 1 ponto por uma explicação que use a relação de alimentação.</p>' +
+          '<p>As demais valem 1 ponto. Use as duas formas com a mesma turma: a A antes da primeira sessão de jogo e a B depois da última.</p>';
+        folha.appendChild(regras);
+
+        ['A', 'B'].forEach(function (letra) {
+          var F = FORMAS[letra];
+          folha.appendChild(el('h2', '', 'Forma ' + letra));
+          var t = el('table', 'gabarito');
+          var linhas = [];
+          F.retas.forEach(function (r, i) {
+            linhas.push([String(i + 1), r.n + ' — ' + String(r.mm).replace('.', ',') + ' mm a partir do 0']);
+          });
+          linhas.push(['5', F.maiorCerta]);
+          linhas.push(['6', F.equivalente.certa]);
+          F.leitura.forEach(function (item, i) {
+            linhas.push([String(7 + i), item.o[item.certa] + (item.gab ? ' · ' + item.gab : '')]);
+          });
+          linhas.push(['10', F.cadeiaCerta]);
+          linhas.push(['11', F.eSe.gab]);
+          linhas.push(['12', F.decomp.o[F.decomp.certa]]);
+          linhas.forEach(function (l) {
+            var tr = el('tr');
+            tr.appendChild(el('th', '', l[0]));
+            tr.appendChild(el('td', '', l[1]));
+            t.appendChild(tr);
+          });
+          folha.appendChild(t);
+        });
+      }
+
+      var forma = (new URLSearchParams(location.search).get('forma') || 'A').toUpperCase();
+      if (forma === 'GABARITO') montarGabarito();
+      else montarForma(FORMAS[forma] ? forma : 'A');
+    })();
+  </script>
+</body>
+</html>
