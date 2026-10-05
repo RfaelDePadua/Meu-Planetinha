@@ -62,6 +62,7 @@ h2 { margin: 18px 0 8px; padding-bottom: 3px; border-bottom: 1.5px solid #000; f
 .texto li { margin: 2px 0; }
 .caixas { margin: 6px 0; font-weight: 700; letter-spacing: 0.03em; }
 .linha-resposta { height: 10mm; margin: 0; border-bottom: 1px solid #000; }
+.mini-mapa svg { display: block; width: 110mm; margin: 2mm 0 0 4mm; font-family: Arial, sans-serif; }
 
 .regras p { margin: 0 0 6px; }
 .gabarito { width: 100%; border-collapse: collapse; margin-bottom: 8px; }

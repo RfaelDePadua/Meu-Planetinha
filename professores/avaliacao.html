@@ -54,7 +54,11 @@
           ],
           cadeia: ['sapo', 'Sol', 'gafanhoto', 'capim'], cadeiaCerta: 'Sol → capim → gafanhoto → sapo',
           eSe: { t: 'Numa lagoa, as garças comem peixes e os peixes comem algas. Se as garças sumirem, o que acontece com os peixes?', certa: 'aumentam', gab: 'Aumentam: menos garças comendo peixes.' },
-          decomp: { p: 'Para que servem os fungos e bactérias do solo?', o: ['Decompõem restos e devolvem nutrientes ao solo', 'Produzem alimento com a luz do Sol', 'Comem os animais vivos'], certa: 0 }
+          decomp: { p: 'Para que servem os fungos e bactérias do solo?', o: ['Decompõem restos e devolvem nutrientes ao solo', 'Produzem alimento com a luz do Sol', 'Comem os animais vivos'], certa: 0 },
+          mapas: [
+            { norte: 'cima', lugares: { cima: 'Escola', baixo: 'Mercado', direita: 'Casa', esquerda: 'Hospital' }, pergunta: 'a leste', certa: 'Casa' },
+            { norte: 'esquerda', lugares: { cima: 'Correio', baixo: 'Escola', direita: 'Padaria', esquerda: 'Biblioteca' }, pergunta: 'ao norte', certa: 'Biblioteca' }
+          ]
         },
         B: {
           retas: [
@@ -77,9 +81,49 @@
           ],
           cadeia: ['passarinho', 'lagarta', 'Sol', 'folhas'], cadeiaCerta: 'Sol → folhas → lagarta → passarinho',
           eSe: { t: 'No campo, as cobras comem ratos e os ratos comem sementes. Se muitas cobras forem caçadas, o que acontece com os ratos?', certa: 'aumentam', gab: 'Aumentam: menos cobras comendo ratos.' },
-          decomp: { p: 'Se não houvesse fungos e bactérias, o que aconteceria com as folhas caídas no chão?', o: ['Iriam se acumular', 'Virariam terra mais rápido', 'Voariam para longe'], certa: 0 }
+          decomp: { p: 'Se não houvesse fungos e bactérias, o que aconteceria com as folhas caídas no chão?', o: ['Iriam se acumular', 'Virariam terra mais rápido', 'Voariam para longe'], certa: 0 },
+          mapas: [
+            { norte: 'cima', lugares: { cima: 'Mercado', baixo: 'Casa', direita: 'Hospital', esquerda: 'Escola' }, pergunta: 'a oeste', certa: 'Escola' },
+            { norte: 'direita', lugares: { cima: 'Padaria', baixo: 'Correio', direita: 'Biblioteca', esquerda: 'Escola' }, pergunta: 'ao sul', certa: 'Escola' }
+          ]
         }
       };
+
+      // Mini-mapa 3×3: a praça no centro, um lugar de cada lado e a rosa dos
+      // ventos com o Norte apontando para `norte` (cima, esquerda ou direita).
+      function miniMapa(mapa) {
+        var L = 24;
+        var pos = { cima: [1, 0], baixo: [1, 2], esquerda: [0, 1], direita: [2, 1] };
+        var s = '';
+        for (var i = 0; i <= 3; i++) {
+          s += '<line x1="' + i * L + '" y1="0" x2="' + i * L + '" y2="' + 3 * L + '" stroke="#999" stroke-width="0.4"/>';
+          s += '<line x1="0" y1="' + i * L + '" x2="' + 3 * L + '" y2="' + i * L + '" stroke="#999" stroke-width="0.4"/>';
+        }
+        var rotulo = function (texto, cx, cy, negrito) {
+          return '<text x="' + cx + '" y="' + cy + '" font-size="4.2" text-anchor="middle" dominant-baseline="central"' +
+            (negrito ? ' font-weight="800"' : '') + '>' + texto + '</text>';
+        };
+        s += rotulo('PRAÇA', 1.5 * L, 1.5 * L, true);
+        Object.keys(mapa.lugares).forEach(function (lado) {
+          s += rotulo(mapa.lugares[lado], (pos[lado][0] + 0.5) * L, (pos[lado][1] + 0.5) * L);
+        });
+        // Rosa: ângulo do Norte na tela (cima = 0°, direita = 90°, esquerda = 270°)
+        var ang = { cima: 0, direita: 90, esquerda: 270 }[mapa.norte];
+        var cx = 3 * L + 20;
+        var cy = 1.5 * L;
+        var letras = [['N', 0], ['L', 90], ['S', 180], ['O', 270]];
+        s += '<circle cx="' + cx + '" cy="' + cy + '" r="1.3"/>';
+        letras.forEach(function (l) {
+          var a = (ang + l[1]) * Math.PI / 180;
+          var x2 = cx + Math.sin(a) * 9;
+          var y2 = cy - Math.cos(a) * 9;
+          s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#000" stroke-width="' + (l[0] === 'N' ? 1.4 : 0.6) + '"/>';
+          s += rotulo(l[0], cx + Math.sin(a) * 13, cy - Math.cos(a) * 13, l[0] === 'N');
+        });
+        var caixa = el('div', 'mini-mapa');
+        caixa.innerHTML = '<svg viewBox="-2 -2 ' + (3 * L + 38) + ' ' + (3 * L + 4) + '" aria-hidden="true">' + s + '</svg>';
+        return caixa;
+      }
 
       function el(tag, classe, texto) {
         var no = document.createElement(tag);
@@ -173,6 +217,14 @@
         var q12 = questao(++n, F.decomp.p);
         alternativas(q12, F.decomp.o);
         folha.appendChild(q12);
+
+        folha.appendChild(el('h2', '', 'Parte 4 · Geografia'));
+        F.mapas.forEach(function (m, i) {
+          var q = questao(++n, 'Use a rosa dos ventos' + (i ? ' (cuidado: o mapa está virado)' : '') +
+            '. Circule o lugar que fica ' + m.pergunta + ' da praça.');
+          q.appendChild(miniMapa(m));
+          folha.appendChild(q);
+        });
       }
 
       function montarGabarito() {
@@ -207,6 +259,9 @@
           linhas.push(['10', F.cadeiaCerta]);
           linhas.push(['11', F.eSe.gab]);
           linhas.push(['12', F.decomp.o[F.decomp.certa]]);
+          F.mapas.forEach(function (m, i) {
+            linhas.push([String(13 + i), m.certa + ' (Norte ' + (m.norte === 'cima' ? 'para cima' : 'para a ' + m.norte) + ')']);
+          });
           linhas.forEach(function (l) {
             var tr = el('tr');
             tr.appendChild(el('th', '', l[0]));

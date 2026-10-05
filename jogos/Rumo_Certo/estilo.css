@@ -1,0 +1,107 @@
+/* Rumo Certo — o que é só deste jogo (o comum está em ../comum/base.css). */
+
+:root { --planeta: #FB923C; }
+
+.app { grid-template-rows: auto auto 1fr auto; }
+[data-estado="inicio"] .enunciado,
+[data-estado="inicio"] .mesa { visibility: hidden; }
+
+/* ── Enunciado ───────────────────────────────────────── */
+.enunciado { padding: 8px 16px 0; text-align: center; }
+.enunciado__tipo {
+  display: inline-block;
+  margin: 0 0 4px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(251, 146, 60, 0.16);
+  color: var(--planeta);
+  font-size: 14px;
+  font-weight: 800;
+}
+.enunciado__linha { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.enunciado__texto {
+  max-width: 820px;
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(18px, 2.3vw, 23px);
+  line-height: 1.2;
+}
+
+/* ── Mapa e legenda ──────────────────────────────────── */
+.mesa {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  min-height: 0;
+  padding: 8px 16px 0;
+}
+.mapa-caixa { position: relative; min-height: 220px; }
+.mapa { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mapa-caixa .aviso { top: auto; bottom: 6px; }
+
+.chao { fill: #E7F3D8; stroke: #6B8F4E; stroke-width: 3; }
+.margem { fill: #F4EFE2; stroke: #6B8F4E; stroke-width: 3; }
+.malha { stroke: #B9CDA3; stroke-width: 1.5; }
+.agua { fill: #7CC4F0; }
+.trilha { fill: #F59E0B; opacity: 0.55; }
+.rota-certa { fill: none; stroke: #0891B2; stroke-width: 7; stroke-dasharray: 2 12; stroke-linecap: round; }
+.seta-dica { fill: none; stroke: #0891B2; stroke-width: 6; stroke-linecap: round; }
+.rosa-braco { fill: #1E293B; }
+.rosa-braco--menor { fill: #64748B; }
+.rosa-letra { font-family: var(--fonte-titulo); font-size: 22px; font-weight: 800; fill: #1E293B; }
+.rosa-letra--n { fill: #B91C1C; }
+.rosa-letra--menor { font-size: 13px; fill: #475569; }
+.rosa-explorador path { fill: none; stroke: #B91C1C; stroke-width: 4; stroke-linecap: round; }
+.rosa-explorador text { font-family: var(--fonte-titulo); font-size: 17px; font-weight: 800; fill: #B91C1C; }
+
+.lugar { cursor: default; outline: none; }
+.lugar__fundo { fill: transparent; stroke: transparent; stroke-width: 4; }
+[data-estado="procurando"] .lugar { cursor: pointer; }
+[data-estado="procurando"] .lugar:hover .lugar__fundo,
+.lugar:focus-visible .lugar__fundo { fill: rgba(255, 212, 59, 0.35); }
+.lugar.referencia .lugar__fundo { fill: rgba(8, 145, 178, 0.18); stroke: #0891B2; }
+.lugar.errado .lugar__fundo { fill: rgba(255, 107, 107, 0.25); stroke: #DC2626; }
+.lugar.certo .lugar__fundo { fill: rgba(77, 255, 180, 0.35); stroke: #059669; }
+
+.legenda {
+  align-self: start;
+  max-height: 100%;
+  overflow: auto;
+  padding: 10px 12px;
+  border: 2px solid var(--borda);
+  border-radius: 16px;
+  background: #F4EFE2;
+  color: #1E293B;
+}
+.legenda h2 { margin: 0 0 6px; font-family: var(--fonte-titulo); font-size: 17px; }
+.legenda ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.legenda li { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.legenda svg { width: 30px; height: 30px; flex: none; }
+.legenda .amostra-agua { width: 30px; height: 18px; border-radius: 4px; background: #7CC4F0; flex: none; }
+
+/* ── Controles ───────────────────────────────────────── */
+.dica-toque { margin: 0; color: var(--texto-2); font-weight: 800; }
+.direcoes { display: flex; gap: 8px; }
+.btn-direcao {
+  min-width: 92px;
+  min-height: 60px;
+  padding: 8px 12px;
+  border: 2px solid var(--borda);
+  border-radius: 16px;
+  background: var(--superficie-2);
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+  font-weight: 800;
+}
+.btn-direcao:active { background: var(--superficie); transform: translateY(2px); }
+.btn-direcao:disabled { opacity: 0.5; }
+
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .mesa { grid-template-columns: 1fr; }
+  .mapa-caixa { min-height: 62vw; }
+  .legenda ul { grid-template-columns: repeat(2, 1fr); }
+  .controles > div { flex-wrap: wrap; }
+  .btn-direcao { min-width: 70px; font-size: 17px; }
+}

@@ -21,7 +21,7 @@
     calculon:  { nome: 'Calculon',  materia: 'Matemática', art: 'midia/planet-calculon.png', icon: 'bi-plus-slash-minus', convite: 'Pouse a nave no ponto certo da reta!' },
     letrion:   { nome: 'Letrion',   materia: 'Português',  art: 'midia/planet-letrion.png',  icon: 'bi-fonts',           convite: 'Resolva mistérios com as pistas do texto!' },
     naturox:   { nome: 'Naturox',   materia: 'Ciências',   art: null,                        icon: 'bi-flower1',         convite: 'Descubra por onde a energia passa no Cerrado!' },
-    terramund: { nome: 'Terramund', materia: 'Geografia',  art: null,                        icon: 'bi-globe-americas',  convite: 'Em breve: missões no mapa.' },
+    terramund: { nome: 'Terramund', materia: 'Geografia',  art: null,                        icon: 'bi-globe-americas',  convite: 'Use a rosa dos ventos para cumprir missões no mapa!' },
     globish:   { nome: 'Globish',   materia: 'Inglês',     art: null,                        icon: 'bi-translate',       convite: 'Em breve: ouça e faça em inglês.' }
   };
 

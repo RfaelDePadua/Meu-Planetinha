@@ -68,6 +68,23 @@
         'Veja a simulação e siga as setas destacadas para entender o que aconteceu'
       ]
     },
+    {
+      id: 'rumo-certo',
+      name: 'Rumo Certo',
+      planet: 'terramund',
+      subject: 'Geografia',
+      difficulty: 2,
+      cover: null,
+      path: 'jogos/Rumo_Certo/index.html',
+      orientacao: 'horizontal',
+      sobre: 'Cumpra missões num mapa usando a rosa dos ventos e a legenda: encontre lugares, leve o explorador e siga rotas. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Para 4º e 5º ano (BNCC EF04GE09, EF04GE10, EF03GE07). Dá para jogar sozinho ou em dupla.',
+      tutorial: [
+        'Ouça a missão e olhe a rosa dos ventos do mapa',
+        'Para encontrar, toque no lugar certo; para andar, use os botões Norte, Sul, Leste e Oeste',
+        'Use a legenda para saber o que cada símbolo é',
+        'Errou? A dica mostra a direção a partir do lugar de referência'
+      ]
+    },
     // Jogos do modelo antigo (pergunta por cima de ação), fora das listas desde
     // a repaginação de 2026. Ver docs/ROADMAP.md.
     {
