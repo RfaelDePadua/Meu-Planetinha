@@ -21,3 +21,6 @@ jogos/Contando_Estrelas/design_handoff_contando_estrelas/
 
 # Amostras de voz geradas localmente (ferramentas/gerar-falas.ps1 -Amostras)
 ferramentas/amostras-voz/
+
+# Cópia limpa do site para publicar (gerada a partir do Git)
+.publicar/
