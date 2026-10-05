@@ -68,8 +68,11 @@
         'Veja a simulação e siga as setas destacadas para entender o que aconteceu'
       ]
     },
+    // Jogos do modelo antigo (pergunta por cima de ação), fora das listas desde
+    // a repaginação de 2026. Ver docs/ROADMAP.md.
     {
       id: 'contando-estrelas',
+      arquivado: true,
       name: 'Contando Estrelas',
       planet: 'calculon',
       subject: 'Matemática',
@@ -87,6 +90,7 @@
     },
     {
       id: 'jogo-de-silaba',
+      arquivado: true,
       name: 'Palavra Parkour',
       planet: 'letrion',
       subject: 'Português',
@@ -266,6 +270,8 @@
 
     var html = '';
     for (var i = 0; i < GAME_DATA.length; i++) {
+      // Jogos arquivados não aparecem nas listas, mas o link direto continua valendo.
+      if (GAME_DATA[i].arquivado) continue;
       html += createCard(GAME_DATA[i], basePath);
     }
     /* Append "Em Breve" placeholder as the last card */

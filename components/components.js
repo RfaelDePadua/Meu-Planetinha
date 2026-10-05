@@ -197,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
           '<span class="nav-logo-text">Meu Planetinha</span></a>' +
           '<div class="nav-links">' +
           '<a href="' + BASE_URL + 'index.html">Início</a>' +
-          '<a href="' + BASE_URL + 'nave.html">Nave Central</a>' +
           '<a href="' + BASE_URL + 'explorar/explorar.html">Explorar Jogos</a>' +
           '<a href="' + BASE_URL + 'sobre_nos/sobre_nos.html">Sobre Nós</a>' +
           '</div></div></nav>';
