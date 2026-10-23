@@ -40,14 +40,29 @@ self.addEventListener('fetch', function (e) {
 
 // Também acha "pasta/index.html" guardado como "pasta/" (o Netlify redireciona
 // um para o outro) e ignora parâmetros como ?game=… ou ?v=3.
+// O Netlify também redireciona as pastas para minúsculas (/jogos/Rumo_Certo/ →
+// /jogos/rumo_certo/) e serve os dois: por isso tenta o endereço em minúsculas.
+function candidatos(href) {
+  var url = new URL(href);
+  var lista = [url.href];
+  if (/\/index\.html$/.test(url.pathname)) lista.push(url.origin + url.pathname.replace(/index\.html$/, ''));
+  else if (/\/$/.test(url.pathname)) lista.push(url.origin + url.pathname + 'index.html');
+  lista.slice().forEach(function (u) {
+    var v = new URL(u);
+    var minusculo = v.origin + v.pathname.toLowerCase() + v.search;
+    if (lista.indexOf(minusculo) === -1) lista.push(minusculo);
+  });
+  return lista;
+}
+
 function guardado(req) {
-  var url = new URL(req.url);
-  var alternativa = /\/index\.html$/.test(url.pathname) ? url.href.replace(/index\.html(\?.*)?$/, '') :
-    (/\/$/.test(url.pathname) ? url.origin + url.pathname + 'index.html' : null);
+  var lista = candidatos(req.url);
   return caches.match(req).then(function (r) {
-    return r || caches.match(req, { ignoreSearch: true });
-  }).then(function (r) {
-    return r || (alternativa ? caches.match(alternativa, { ignoreSearch: true }) : undefined);
+    return lista.reduce(function (cadeia, u) {
+      return cadeia.then(function (achado) {
+        return achado || caches.match(u).then(function (x) { return x || caches.match(u, { ignoreSearch: true }); });
+      });
+    }, Promise.resolve(r));
   });
 }
 
@@ -87,6 +102,10 @@ function guardadoPrimeiro(req) {
 // arquivo inteiro; aqui ela é recortada no trecho pedido (resposta 206).
 function audio(req) {
   return caches.match(req.url).then(function (inteiro) {
+    if (inteiro) return inteiro;
+    var u = new URL(req.url);
+    return caches.match(u.origin + u.pathname.toLowerCase());
+  }).then(function (inteiro) {
     if (!inteiro) {
       return fetch(req).then(function (resp) {
         if (!req.headers.get('range')) guardar(req.url, resp);
