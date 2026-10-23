@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Registro das jogadas — Meu Planetinha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="impressao.css">
+  <style>
+    .acoes { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+    .acoes button {
+      padding: 10px 18px; border: 2px solid #11173A; border-radius: 10px;
+      background: #FFD43B; color: #2A1A05; font: inherit; font-weight: 800; cursor: pointer;
+    }
+    .acoes button.secundario { background: #fff; color: #11173A; }
+    .acoes button:disabled { opacity: 0.5; cursor: default; }
+    .aviso-tela { margin: 8px 0; font-weight: 700; }
+    .resumo-tabela { width: 100%; border-collapse: collapse; margin: 8px 0 16px; font-size: 11pt; }
+    .resumo-tabela th, .resumo-tabela td { padding: 4px 8px; border: 1px solid #000; text-align: left; }
+    .colunas dt { font-weight: 800; }
+    .colunas dd { margin: 0 0 6px 0; }
+  </style>
+</head>
+<body>
+  <nav class="tela-apenas barra">
+    <a href="index.html">← Materiais do professor</a>
+  </nav>
+  <main>
+    <p class="projeto">Meu Planetinha · para o professor</p>
+    <h1>Registro das jogadas</h1>
+    <p>Os jogos guardam, só neste aparelho, uma linha para cada tarefa resolvida: etapa, se acertou de primeira,
+      quantas dicas usou e quanto tempo levou. Não há nomes: a dupla aparece pelo código digitado em
+      "Para o professor › Nova dupla", na tela inicial de cada jogo.</p>
+    <p><strong>No fim de cada sessão</strong>, baixe a planilha em cada aparelho (pen drive ou e-mail da escola).
+      Computadores de laboratório costumam apagar tudo ao reiniciar.</p>
+
+    <p class="aviso-tela" id="estado" role="status"></p>
+    <div class="acoes">
+      <button type="button" id="btn-baixar">Baixar planilha (CSV)</button>
+      <button type="button" class="secundario" id="btn-apagar">Apagar o registro deste aparelho</button>
+    </div>
+
+    <h2>Resumo deste aparelho</h2>
+    <div id="resumo"></div>
+
+    <h2>O que tem em cada coluna</h2>
+    <dl class="colunas">
+      <dt>data, hora</dt><dd>Quando a tarefa terminou.</dd>
+      <dt>aparelho</dt><dd>Código sorteado para este navegador, para juntar planilhas de vários computadores.</dd>
+      <dt>dupla</dt><dd>Código digitado em "Nova dupla" (vazio se ninguém digitou).</dd>
+      <dt>sessao</dt><dd>Uma partida, do "Jogar" até a tela final.</dd>
+      <dt>jogo, modo</dt><dd>Qual jogo e se foi "solo" ou "dupla".</dd>
+      <dt>registro</dt><dd>"item" para cada tarefa; "fim" para o fim da partida (com a etapa final e a resposta de "Como você descobriu?").</dd>
+      <dt>etapa</dt><dd>Etapa do jogo (no Detetive, o nível).</dd>
+      <dt>item</dt><dd>Qual tarefa: o número da pista (Pouso), o caso e o tipo de mistério (Detetive), a teia (Teia Viva) ou a missão (Rumo Certo).</dd>
+      <dt>resultado</dt><dd>"primeira" (acertou na primeira tentativa), "dica" (acertou depois de dica) ou "demo" (o jogo demonstrou).
+        Nas tarefas "E se…?" da Teia Viva: "primeira", "parcial" ou "errou".</dd>
+      <dt>tentativas, dicas</dt><dd>Quantas vezes conferiu e quantas camadas de dica recebeu.</dd>
+      <dt>erro</dt><dd>Pouso na Reta: distância do primeiro pouso até o ponto certo, em % da pista.
+        Detetive: o que estava errado em cada tentativa ("resposta" ou "pista").
+        Teia Viva: setas erradas (montar) ou previsões erradas (E se…?).
+        Rumo Certo: lugares errados tocados, passos que afastaram do destino ou paradas erradas.</dd>
+      <dt>tempo_s</dt><dd>Segundos do início da tarefa até a resposta certa ou a demonstração.</dd>
+      <dt>estrategia</dt><dd>Resposta da pergunta final (só na linha "fim").</dd>
+    </dl>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var CHAVE = 'meu-planetinha.registro.v1';
+      var NOMES = {
+        'pouso-na-reta': 'Pouso na Reta', 'detetive-de-letrion': 'Detetive de Letrion',
+        'teia-viva': 'Teia Viva', 'rumo-certo': 'Rumo Certo'
+      };
+      var COLUNAS = ['data', 'hora', 'aparelho', 'dupla', 'sessao', 'jogo', 'modo', 'registro', 'etapa', 'item',
+        'resultado', 'tentativas', 'dicas', 'erro', 'tempo_s', 'estrategia'];
+
+      function $(id) { return document.getElementById(id); }
+
+      function ler() {
+        try {
+          var lista = JSON.parse(localStorage.getItem(CHAVE));
+          return Array.isArray(lista) ? lista : [];
+        } catch (e) { return []; }
+      }
+
+      function doisDigitos(n) { return ('0' + n).slice(-2); }
+      function dataDe(ms) { var d = new Date(ms); return d.getFullYear() + '-' + doisDigitos(d.getMonth() + 1) + '-' + doisDigitos(d.getDate()); }
+      function horaDe(ms) { var d = new Date(ms); return doisDigitos(d.getHours()) + ':' + doisDigitos(d.getMinutes()) + ':' + doisDigitos(d.getSeconds()); }
+
+      // CSV no padrão brasileiro do Excel: ponto e vírgula e vírgula decimal.
+      function celula(valor) {
+        if (valor === undefined || valor === null) return '';
+        var texto = typeof valor === 'number' ? String(valor).replace('.', ',') : String(valor);
+        return /[;"\n\r]/.test(texto) ? '"' + texto.replace(/"/g, '""') + '"' : texto;
+      }
+
+      function csv(lista) {
+        var linhas = [COLUNAS.join(';')];
+        lista.forEach(function (l) {
+          var completa = Object.assign({ data: dataDe(l.t), hora: horaDe(l.t) }, l);
+          linhas.push(COLUNAS.map(function (c) { return celula(completa[c]); }).join(';'));
+        });
+        return '﻿' + linhas.join('\r\n') + '\r\n';
+      }
+
+      function baixar() {
+        var lista = ler();
+        if (!lista.length) return;
+        var aparelho = lista[lista.length - 1].aparelho || 'aparelho';
+        var blob = new Blob([csv(lista)], { type: 'text/csv;charset=utf-8' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'meu-planetinha-registro-' + aparelho + '-' + dataDe(Date.now()) + '.csv';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function () { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
+        $('estado').textContent = 'Planilha baixada: ' + link.download;
+      }
+
+      function apagar() {
+        if (!window.confirm('Apagar todas as ' + ler().length + ' linhas do registro deste aparelho? ' +
+          'Baixe a planilha antes. Isso não pode ser desfeito.')) return;
+        try { localStorage.removeItem(CHAVE); } catch (e) { /* nada a apagar */ }
+        mostrar();
+        $('estado').textContent = 'Registro apagado.';
+      }
+
+      function mostrar() {
+        var lista = ler();
+        var itens = lista.filter(function (l) { return l.registro === 'item'; });
+        var sessoes = {};
+        var duplas = {};
+        lista.forEach(function (l) {
+          if (l.sessao) sessoes[l.sessao] = true;
+          duplas[l.dupla || '(sem código)'] = true;
+        });
+        $('btn-baixar').disabled = !lista.length;
+        $('btn-apagar').disabled = !lista.length;
+        var resumo = $('resumo');
+        resumo.textContent = '';
+        if (!lista.length) {
+          resumo.textContent = 'Ainda não há jogadas registradas neste aparelho.';
+          return;
+        }
+        var p = document.createElement('p');
+        p.textContent = itens.length + ' tarefas em ' + Object.keys(sessoes).length + ' partidas, de ' +
+          dataDe(lista[0].t).split('-').reverse().join('/') + ' a ' +
+          dataDe(lista[lista.length - 1].t).split('-').reverse().join('/') + '. Duplas: ' +
+          Object.keys(duplas).sort().join(', ') + '.';
+        resumo.appendChild(p);
+
+        var porJogo = {};
+        itens.forEach(function (l) {
+          var j = porJogo[l.jogo] = porJogo[l.jogo] || { tarefas: 0, primeira: 0, dicas: 0, tempo: 0 };
+          j.tarefas += 1;
+          if (l.resultado === 'primeira') j.primeira += 1;
+          j.dicas += Number(l.dicas) || 0;
+          j.tempo += Number(l.tempo_s) || 0;
+        });
+        var tabela = document.createElement('table');
+        tabela.className = 'resumo-tabela';
+        tabela.innerHTML = '<thead><tr><th>Jogo</th><th>Tarefas</th><th>De primeira</th><th>Dicas por tarefa</th><th>Tempo médio</th></tr></thead>';
+        var corpo = document.createElement('tbody');
+        Object.keys(porJogo).forEach(function (id) {
+          var j = porJogo[id];
+          var tr = document.createElement('tr');
+          [NOMES[id] || id, j.tarefas, Math.round(100 * j.primeira / j.tarefas) + '%',
+            (j.dicas / j.tarefas).toFixed(1).replace('.', ','), Math.round(j.tempo / j.tarefas) + ' s']
+            .forEach(function (v) { var td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+          corpo.appendChild(tr);
+        });
+        tabela.appendChild(corpo);
+        resumo.appendChild(tabela);
+      }
+
+      $('btn-baixar').addEventListener('click', baixar);
+      $('btn-apagar').addEventListener('click', apagar);
+      mostrar();
+
+      // Página também disponível sem internet (o cache é preenchido pelos jogos).
+      if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+        navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(function () { /* sem cache */ });
+      }
+    })();
+  </script>
+</body>
+</html>

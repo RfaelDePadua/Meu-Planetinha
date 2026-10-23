@@ -104,6 +104,7 @@
   var falar = voz.falar;
   var calar = voz.calar;
   var som = Base.som;
+  var registro = Base.criarRegistro(GAME_ID);
 
   voz.aoMudarDisponibilidade(function (disponivel) {
     $('btn-ouvir').hidden = !disponivel;
@@ -513,6 +514,7 @@
     var chave = (livres.length ? livres : chaves)[Math.floor(Math.random() * (livres.length || chaves.length))];
     S.recentes.push(chave);
     if (S.recentes.length > 3) S.recentes.shift();
+    S.chaveItem = chave;
     return etapa.itens[Number(chave.split('-')[1])];
   }
 
@@ -520,6 +522,7 @@
     S.token++;
     calar();
     S.modo = modo;
+    registro.iniciarSessao(modo);
     S.indice = 0;
     S.resultados = [];
     S.recentes = [];
@@ -540,6 +543,9 @@
     S.item = escolherItem();
     S.pos = calcularPosicoes(S.item);
     S.tentativa = 1;
+    S.setasErradas = 0;
+    S.previsoesErradas = 0;
+    registro.iniciarItem();
     S.setasUsuario = [];
     S.erradas = [];
     S.demo = [];
@@ -612,6 +618,7 @@
     var faltando = item.setas.filter(function (s) { return !contem(S.setasUsuario, s) && !contem(prontas, s); });
     if (!erradas.length && !faltando.length) { acertouMontagem(); return; }
 
+    S.setasErradas += erradas.length;
     S.tentativa += 1;
     if (S.tentativa > 3) { demonstrarMontagem(erradas, faltando); return; }
     som('quase');
@@ -714,6 +721,7 @@
     var erradas = item.perguntas.filter(function (p) { return S.previsoes[p.ser] !== p.resposta; });
     var acertos = item.perguntas.length - erradas.length;
     var resultado = !erradas.length ? 'primeira' : (acertos ? 'dica' : 'demo');
+    S.previsoesErradas = erradas.length;
     registrar(resultado);
     S.avaliado = true;
     definirEstado('feedback');
@@ -777,6 +785,19 @@
     S.pontos += primeira ? 100 : (tipo === 'dica' ? 50 : 10);
     gravarSave();
     desenharHUD();
+
+    // Registro anônimo (professores/registro.html). Montar: erro = setas erradas
+    // somadas nas tentativas. Prever (uma tentativa, sem dicas): erro = previsões
+    // erradas de quantas, e o resultado vira primeira / parcial / errou.
+    var prever = !montando();
+    registro.item({
+      etapa: S.etapa,
+      item: S.chaveItem,
+      resultado: prever ? { primeira: 'primeira', dica: 'parcial', demo: 'errou' }[tipo] : tipo,
+      tentativas: prever ? 1 : (tipo === 'demo' ? S.tentativa - 1 : S.tentativa),
+      dicas: prever ? 0 : Math.min(S.tentativa - 1, 2),
+      erro: prever ? S.previsoesErradas + ' de ' + S.item.perguntas.length : S.setasErradas
+    });
   }
 
   function rotuloProximo() { return S.indice + 1 >= S.total ? 'Ver resultado' : 'Próxima tarefa'; }
@@ -822,6 +843,7 @@
     save.etapa = S.etapa;
     gravarSave();
     desenharHUD();
+    registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var ajuda = S.resultados.filter(function (r) { return r.tipo === 'dica'; }).length;
@@ -937,6 +959,7 @@
     botao.addEventListener('click', function () {
       save.estrategias[estrategia.id] = (save.estrategias[estrategia.id] || 0) + 1;
       gravarSave();
+      registro.estrategia(estrategia.id);
       document.querySelectorAll('[data-estrategia]').forEach(function (b) {
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
@@ -958,6 +981,7 @@
   if ('ResizeObserver' in window) new ResizeObserver(redesenhar).observe(campo);
   else window.addEventListener('resize', redesenhar);
 
+  Base.barraDoProfessor(GAME_ID);
   voltarAoInicio();
   portal.pronto();
 })();

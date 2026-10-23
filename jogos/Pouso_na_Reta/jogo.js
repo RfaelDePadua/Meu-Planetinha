@@ -95,6 +95,7 @@
   var calar = voz.calar;
   var preCarregar = voz.preCarregar;
   var som = Base.som;
+  var registro = Base.criarRegistro(GAME_ID);
 
   voz.aoMudarDisponibilidade(function (disponivel) {
     $('btn-ouvir').hidden = !disponivel;
@@ -437,6 +438,7 @@
     S.token++;
     calar();
     S.modo = modo;
+    registro.iniciarSessao(modo);
     S.indice = 0;
     S.resultados = [];
     S.recentes = [];
@@ -456,6 +458,8 @@
     S.token++;
     S.item = escolherItem();
     S.tentativa = 1;
+    S.erro1 = null;
+    registro.iniciarItem();
     S.naveV = 0;
     S.naveY = 0;
     S.reguaVisivel = false;
@@ -522,6 +526,7 @@
         if (token !== S.token) return;
         som('pouso');
         var erro = Math.abs(S.naveV - S.item.valor) / S.item.max;
+        if (S.tentativa === 1) S.erro1 = erro;
         if (erro <= etapaAtual().tolerancia) acertou(erro);
         else errou(erro);
       });
@@ -543,6 +548,18 @@
     S.pontos += primeira ? (erro <= PERFEITO ? 100 : 70) : (tipo === 'regua' ? 40 : 10);
     gravarSave();
     atualizarHUD();
+
+    // Registro anônimo (professores/registro.html). erro = distância do
+    // primeiro pouso até o ponto certo, em % do comprimento da pista.
+    registro.item({
+      etapa: S.etapa,
+      item: S.item.texto + (S.item.marco ? ' (marco ' + S.item.marco.texto + ')' : '') +
+        (S.item.max !== 1 ? ' [pista até ' + S.item.max + ']' : ''),
+      resultado: tipo === 'regua' ? 'dica' : tipo,
+      tentativas: S.tentativa,
+      dicas: S.tentativa - 1,
+      erro: S.erro1 === null ? '' : Math.round(S.erro1 * 1000) / 10
+    });
   }
 
   // Revela a régua e conta as partes até o alvo. Na demonstração (`narrar`),
@@ -686,6 +703,7 @@
     save.etapa = S.etapa;
     gravarSave();
     atualizarHUD();
+    registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var regua = S.resultados.filter(function (r) { return r.tipo === 'regua'; }).length;
@@ -858,6 +876,7 @@
     botao.addEventListener('click', function () {
       save.estrategias[estrategia.id] = (save.estrategias[estrategia.id] || 0) + 1;
       gravarSave();
+      registro.estrategia(estrategia.id);
       document.querySelectorAll('[data-estrategia]').forEach(function (b) {
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
@@ -883,6 +902,7 @@
     window.addEventListener('resize', function () { medir(); desenharCena(); });
   }
 
+  Base.barraDoProfessor(GAME_ID);
   medir();
   voltarAoInicio();
   if (params.get('dupla') === '1') $('btn-dupla').focus({ preventScroll: true });

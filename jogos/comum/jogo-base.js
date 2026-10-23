@@ -5,7 +5,10 @@
  *   audio/falas.json); se faltar algum, usa a melhor voz pt-BR do navegador;
  * - sons curtos sintetizados (sem arquivos);
  * - contrato com a página do portal (jogos/jogar.html): pronto, pausa, som,
- *   reinício e resultado.
+ *   reinício e resultado;
+ * - uso na escola: registro anônimo das jogadas (exportado em
+ *   professores/registro.html), "Nova dupla" para aparelhos compartilhados e
+ *   preparo para usar sem internet (com o service worker /sw.js).
  */
 (function (global) {
   'use strict';
@@ -175,9 +178,300 @@
     };
   }
 
+  /* ------------------------------------------------
+     Uso na escola: registro anônimo, nova dupla e uso sem internet
+     ------------------------------------------------ */
+  var CHAVE_REGISTRO = 'meu-planetinha.registro.v1';
+  var CHAVE_DUPLA = 'meu-planetinha.dupla.v1';
+  var CHAVE_APARELHO = 'meu-planetinha.aparelho.v1';
+  var PREFIXO_OFFLINE = 'meu-planetinha.offline.';
+  var CACHE = 'meu-planetinha-v1';
+  var LIMITE_REGISTRO = 8000;
+  var CODIGO_VALIDO = /^(?=.*\d)[A-Z0-9-]{1,12}$/;
+
+  // Raiz do site, a partir do endereço deste arquivo (jogos/comum/jogo-base.js).
+  var RAIZ = (function () {
+    var script = global.document.currentScript;
+    return new URL('../../', script ? script.src : global.location.href).href;
+  })();
+
+  function lerLocal(chave, padrao) {
+    try {
+      var valor = JSON.parse(global.localStorage.getItem(chave));
+      return valor === null || valor === undefined ? padrao : valor;
+    } catch (e) { return padrao; }
+  }
+
+  function gravarLocal(chave, valor) {
+    try { global.localStorage.setItem(chave, JSON.stringify(valor)); return true; } catch (e) { return false; }
+  }
+
+  function idCurto() { return Math.random().toString(36).slice(2, 8); }
+
+  // Identifica o aparelho (não a pessoa), para juntar planilhas de vários computadores.
+  function aparelho() {
+    var id = lerLocal(CHAVE_APARELHO, null);
+    if (!id) { id = idCurto(); gravarLocal(CHAVE_APARELHO, id); }
+    return id;
+  }
+
+  function duplaAtual() { return lerLocal(CHAVE_DUPLA, null) || { codigo: '' }; }
+
+  // Registro das jogadas, só neste aparelho: uma linha por tarefa resolvida e
+  // uma por sessão terminada. Sem nomes: a dupla aparece pelo código que o
+  // professor digitou em "Nova dupla". Exportado em professores/registro.html.
+  function criarRegistro(jogo) {
+    var sessao = '';
+    var modo = 'solo';
+    var inicioItem = 0;
+
+    function linha(tipo, dados) {
+      var l = {
+        t: Date.now(), aparelho: aparelho(), dupla: duplaAtual().codigo || '', sessao: sessao,
+        jogo: jogo, modo: modo, registro: tipo
+      };
+      Object.keys(dados || {}).forEach(function (k) { l[k] = dados[k]; });
+      return l;
+    }
+
+    function anotar(l) {
+      var lista = lerLocal(CHAVE_REGISTRO, []);
+      if (!Array.isArray(lista)) lista = [];
+      lista.push(l);
+      if (lista.length > LIMITE_REGISTRO) lista = lista.slice(-LIMITE_REGISTRO);
+      gravarLocal(CHAVE_REGISTRO, lista);
+    }
+
+    return {
+      iniciarSessao: function (m) { sessao = idCurto(); modo = m || 'solo'; },
+      iniciarItem: function () { inicioItem = Date.now(); },
+      // dados: etapa, item, resultado (primeira | dica | demo…), tentativas, dicas, erro
+      item: function (dados) {
+        var l = linha('item', dados);
+        l.tempo_s = inicioItem ? Math.round((Date.now() - inicioItem) / 1000) : '';
+        anotar(l);
+      },
+      fim: function (dados) { anotar(linha('fim', dados)); },
+      // A pergunta "Como você descobriu?" vem depois do fim: completa a linha da sessão.
+      estrategia: function (id) {
+        var lista = lerLocal(CHAVE_REGISTRO, []);
+        for (var i = lista.length - 1; i >= 0; i--) {
+          if (lista[i].registro === 'fim' && lista[i].sessao === sessao && lista[i].jogo === jogo) {
+            lista[i].estrategia = id;
+            gravarLocal(CHAVE_REGISTRO, lista);
+            return;
+          }
+        }
+      }
+    };
+  }
+
+  // Próxima dupla começa do zero em todos os jogos deste aparelho. Ficam o
+  // registro das jogadas, o código do aparelho e o preparo para usar sem internet.
+  function novaDupla(codigo) {
+    try {
+      var apagar = [];
+      for (var i = 0; i < global.localStorage.length; i++) {
+        var chave = global.localStorage.key(i);
+        if (/^meu-planetinha\./.test(chave) && chave.indexOf(PREFIXO_OFFLINE) !== 0 &&
+            [CHAVE_REGISTRO, CHAVE_DUPLA, CHAVE_APARELHO].indexOf(chave) === -1) apagar.push(chave);
+      }
+      apagar.forEach(function (chave) { global.localStorage.removeItem(chave); });
+    } catch (e) { /* armazenamento indisponível */ }
+    gravarLocal(CHAVE_DUPLA, { codigo: codigo || '', desde: Date.now() });
+  }
+
+  var registroSW = null;
+
+  function registrarServiceWorker() {
+    if (registroSW) return registroSW;
+    if (!('serviceWorker' in global.navigator) || !/^https?:$/.test(global.location.protocol)) {
+      registroSW = Promise.resolve(null);
+      return registroSW;
+    }
+    registroSW = global.navigator.serviceWorker.register(RAIZ + 'sw.js', { scope: RAIZ })
+      .catch(function () { return null; });
+    return registroSW;
+  }
+
+  // Endereços já carregados por esta página e, dentro do portal, pela página de fora.
+  function enderecosCarregados(janela) {
+    try {
+      return janela.performance.getEntriesByType('resource').map(function (e) { return e.name; })
+        .concat([janela.location.href]);
+    } catch (e) { return []; }
+  }
+
+  function baixarPara(cache, url) {
+    var endereco = new URL(url);
+    // Arquivos de fonte são sempre pedidos com CORS (uma cópia "opaca" não serve);
+    // a folha de estilo das fontes é pedida sem CORS, como faz o <link>.
+    var pedido = endereco.origin === global.location.origin ? fetch(url, { cache: 'no-cache' })
+      : fetch(url, { mode: endereco.hostname === 'fonts.gstatic.com' ? 'cors' : 'no-cors' });
+    return pedido.then(function (resp) {
+      if (!resp || (!resp.ok && resp.type !== 'opaque')) throw new Error('falhou: ' + url);
+      if (!resp.redirected) return cache.put(url, resp);
+      // Resposta que veio de um redirecionamento não serve para abrir página: guarda limpa.
+      return resp.blob().then(function (corpo) {
+        return cache.put(url, new Response(corpo, {
+          status: 200, headers: { 'Content-Type': resp.headers.get('Content-Type') || 'text/html; charset=utf-8' }
+        }));
+      });
+    });
+  }
+
+  // Baixa tudo o que o jogo usa (páginas, código, áudios, fontes) para o cache
+  // do service worker. aoProgresso(feitos, total).
+  function prepararSemInternet(jogo, aoProgresso) {
+    if (!('caches' in global)) return Promise.reject(new Error('sem-cache'));
+    var pasta = new URL('./', global.location.href).href;
+    var lista = [];
+    function incluir(url) {
+      if (!url || !/^https?:/.test(url) || /\/sw\.js(\?|$)/.test(url)) return;
+      url = url.split('#')[0];
+      if (lista.indexOf(url) === -1) lista.push(url);
+    }
+    ['', 'index.html', 'estilo.css', 'conteudo.js', 'jogo.js', 'audio/falas.json'].forEach(function (rel) { incluir(pasta + rel); });
+    ['jogos/comum/jogo-base.js', 'jogos/comum/base.css', 'jogos/jogar.html',
+      'professores/registro.html', 'professores/impressao.css'].forEach(function (rel) { incluir(RAIZ + rel); });
+    enderecosCarregados(global).forEach(incluir);
+    if (global.parent !== global) enderecosCarregados(global.parent).forEach(incluir);
+
+    return registrarServiceWorker()
+      .then(function () {
+        return fetch(pasta + 'audio/falas.json', { cache: 'no-cache' })
+          .then(function (r) { return r.ok ? r.json() : {}; })
+          .catch(function () { return {}; });
+      })
+      .then(function (manifesto) {
+        Object.keys(manifesto).forEach(function (fala) { incluir(pasta + 'audio/' + manifesto[fala]); });
+        return caches.open(CACHE);
+      })
+      .then(function (cache) {
+        var total = lista.length;
+        var feitos = 0;
+        var falhas = 0;
+        var fila = lista.slice();
+        function proximo() {
+          var url = fila.shift();
+          if (!url) return Promise.resolve();
+          // Áudios nunca mudam (o nome vem do texto): se já está guardado, pula.
+          var tarefa = /\.mp3$/i.test(url)
+            ? cache.match(url).then(function (r) { return r || baixarPara(cache, url); })
+            : baixarPara(cache, url);
+          return tarefa.catch(function () { falhas += 1; }).then(function () {
+            feitos += 1;
+            if (aoProgresso) aoProgresso(feitos, total);
+            return proximo();
+          });
+        }
+        var trabalhadores = [];
+        for (var i = 0; i < 6; i++) trabalhadores.push(proximo());
+        return Promise.all(trabalhadores).then(function () {
+          if (global.navigator.storage && global.navigator.storage.persist) {
+            global.navigator.storage.persist().catch(function () { /* o navegador decide */ });
+          }
+          if (!falhas) gravarLocal(PREFIXO_OFFLINE + jogo, { quando: Date.now(), arquivos: total });
+          return { total: total, falhas: falhas };
+        });
+      });
+  }
+
+  function dataCurta(ms) {
+    var d = new Date(ms);
+    return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2);
+  }
+
+  // Caixa "Para o professor" na tela inicial do jogo: código da dupla, nova
+  // dupla, preparo para usar sem internet e o caminho para baixar o registro.
+  function barraDoProfessor(jogo) {
+    var painel = global.document.querySelector('#tela-inicio .painel');
+    if (!painel) return;
+    var caixa = global.document.createElement('details');
+    caixa.className = 'professor';
+    caixa.innerHTML =
+      '<summary>Para o professor <span class="professor__dupla"></span></summary>' +
+      '<div class="professor__corpo">' +
+      '  <div class="professor__acoes">' +
+      '    <button type="button" class="professor__btn" data-acao="nova-dupla">Nova dupla</button>' +
+      '    <button type="button" class="professor__btn" data-acao="offline">Preparar para usar sem internet</button>' +
+      '  </div>' +
+      '  <form class="professor__form" hidden>' +
+      '    <label for="professor-codigo">Código da dupla (opcional, sem nomes)</label>' +
+      '    <input id="professor-codigo" name="codigo" maxlength="12" autocomplete="off" spellcheck="false" placeholder="ex.: 4A-07">' +
+      '    <p class="professor__nota">A próxima dupla começa do início em todos os jogos deste aparelho. ' +
+      'O registro das jogadas continua guardado.</p>' +
+      '    <div class="professor__acoes">' +
+      '      <button type="submit" class="professor__btn professor__btn--forte">Começar do zero</button>' +
+      '      <button type="button" class="professor__btn" data-acao="cancelar">Cancelar</button>' +
+      '    </div>' +
+      '  </form>' +
+      '  <p class="professor__status" role="status" aria-live="polite"></p>' +
+      '  <p class="professor__nota">Registro das jogadas: <a target="_blank" rel="noopener" href="' +
+      RAIZ + 'professores/registro.html">baixar a planilha deste aparelho</a>.</p>' +
+      '</div>';
+    painel.appendChild(caixa);
+
+    function $(sel) { return caixa.querySelector(sel); }
+    var form = $('.professor__form');
+    var status = $('.professor__status');
+    var botaoOffline = $('[data-acao="offline"]');
+
+    function mostrarDupla() {
+      var codigo = duplaAtual().codigo;
+      $('.professor__dupla').textContent = codigo ? '· dupla ' + codigo : '';
+    }
+
+    function mostrarOffline() {
+      var preparo = lerLocal(PREFIXO_OFFLINE + jogo, null);
+      status.textContent = preparo ? 'Este jogo já foi preparado para usar sem internet (' + dataCurta(preparo.quando) + ').' : '';
+    }
+
+    $('[data-acao="nova-dupla"]').addEventListener('click', function () {
+      form.hidden = false;
+      form.elements.codigo.value = '';
+      form.elements.codigo.focus();
+      status.textContent = '';
+    });
+    $('[data-acao="cancelar"]').addEventListener('click', function () { form.hidden = true; mostrarOffline(); });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var codigo = form.elements.codigo.value.trim().toUpperCase();
+      if (codigo && !CODIGO_VALIDO.test(codigo)) {
+        status.textContent = 'Use só letras, números e hífen, com pelo menos um número (ex.: 4A-07). Não escreva nomes.';
+        form.elements.codigo.focus();
+        return;
+      }
+      novaDupla(codigo);
+      global.location.reload();
+    });
+
+    botaoOffline.addEventListener('click', function () {
+      botaoOffline.disabled = true;
+      status.textContent = 'Preparando…';
+      prepararSemInternet(jogo, function (feitos, total) {
+        status.textContent = 'Baixando ' + feitos + ' de ' + total + ' arquivos…';
+      }).then(function (r) {
+        status.textContent = r.falhas
+          ? 'Faltaram ' + r.falhas + ' de ' + r.total + ' arquivos. Confira a internet e toque de novo.'
+          : 'Pronto: este jogo funciona sem internet neste aparelho.';
+      }).catch(function () {
+        status.textContent = 'Este navegador não consegue guardar o jogo para usar sem internet.';
+      }).then(function () { botaoOffline.disabled = false; });
+    });
+
+    mostrarDupla();
+    mostrarOffline();
+  }
+
+  registrarServiceWorker();
+
   global.PlanetinhaJogo = {
     conectarPortal: conectarPortal,
     criarVoz: criarVoz,
-    som: som
+    som: som,
+    criarRegistro: criarRegistro,
+    barraDoProfessor: barraDoProfessor,
+    prepararSemInternet: prepararSemInternet
   };
 })(window);

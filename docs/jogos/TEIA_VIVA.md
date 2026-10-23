@@ -71,6 +71,14 @@ professor de Ciências.** Para revisar as frases, abra
 Apenas no navegador do computador usado, sem nome nem login: etapa atual,
 acertos por etapa e as estratégias escolhidas na pergunta final.
 
+Também fica, no mesmo aparelho, o **registro das jogadas**: uma linha por
+tarefa (etapa, acerto de primeira, dicas, erro e tempo), identificada só pelo
+código da dupla que o professor digita em "Para o professor › Nova dupla", na
+tela inicial. No fim de cada sessão, baixe a planilha em
+`professores/registro.html`. "Nova dupla" faz a próxima dupla começar do zero
+em todos os jogos do aparelho, sem apagar o registro; "Preparar para usar sem
+internet" guarda o jogo e todos os áudios no aparelho antes da aula.
+
 ## Base na pesquisa
 
 Simulações e modelagem guiadas ajudam crianças a entender a dinâmica de

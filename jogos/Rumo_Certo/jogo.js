@@ -96,6 +96,7 @@
   var falar = voz.falar;
   var calar = voz.calar;
   var som = Base.som;
+  var registro = Base.criarRegistro(GAME_ID);
 
   voz.aoMudarDisponibilidade(function (disponivel) {
     $('btn-ouvir').hidden = !disponivel;
@@ -338,6 +339,7 @@
   function iniciarSessao(modo) {
     calar();
     S.modo = modo;
+    registro.iniciarSessao(modo);
     S.indice = 0;
     S.resultados = [];
     S.recentes = [];
@@ -357,6 +359,7 @@
   function iniciarMissao(falaAntes) {
     S.missao = escolherMissao();
     S.tentativa = 1;
+    registro.iniciarItem();
     S.erros = 0;
     S.tocado = null;
     S.errados = [];
@@ -580,6 +583,25 @@
     S.pontos += primeira ? 100 : (tipo === 'dica' ? 50 : 10);
     gravarSave();
     desenharHUD();
+
+    // Registro anônimo (professores/registro.html). erro: lugares errados tocados
+    // (encontrar), passos que afastaram do destino (ir) ou paradas erradas (rota).
+    var m = S.missao;
+    var demo = tipo === 'demo';
+    var dados = m.tipo === 'ir'
+      ? { tentativas: 1, dicas: Math.min(S.erros, 2), erro: S.erros }
+      : m.tipo === 'rota'
+        ? { tentativas: demo ? S.tentativa - 1 : S.tentativa, dicas: Math.min(S.tentativa - 1, 1), erro: S.tentativa - 1 }
+        : { tentativas: demo ? S.tentativa - 1 : S.tentativa, dicas: Math.min(S.tentativa - 1, 2), erro: S.errados.length };
+    registro.item({
+      etapa: S.etapa,
+      item: m.tipo + ' · ' + m.mapa + ' · ' + (m.alvo || m.destino || '') + (m.dir ? ' (' + m.dir + ')' : '') +
+        (m.giro ? ' · girado ' + m.giro + '°' : ''),
+      resultado: tipo,
+      tentativas: dados.tentativas,
+      dicas: dados.dicas,
+      erro: dados.erro
+    });
   }
 
   function rotuloProximo() { return S.indice + 1 >= S.total ? 'Ver resultado' : 'Próxima missão'; }
@@ -624,6 +646,7 @@
     save.etapa = S.etapa;
     gravarSave();
     desenharHUD();
+    registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var ajuda = S.resultados.filter(function (r) { return r.tipo === 'dica'; }).length;
@@ -746,6 +769,7 @@
     botao.addEventListener('click', function () {
       save.estrategias[estrategia.id] = (save.estrategias[estrategia.id] || 0) + 1;
       gravarSave();
+      registro.estrategia(estrategia.id);
       document.querySelectorAll('[data-estrategia]').forEach(function (b) {
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
@@ -762,6 +786,7 @@
     aoReiniciar: function () { S.pausado = false; $('tela-pausa').hidden = true; voltarAoInicio(); }
   });
 
+  Base.barraDoProfessor(GAME_ID);
   voltarAoInicio();
   portal.pronto();
 })();

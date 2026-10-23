@@ -86,6 +86,7 @@
      ------------------------------------------------ */
   var voz = Base.criarVoz();
   var som = Base.som;
+  var registro = Base.criarRegistro(GAME_ID);
   var audioDoTexto = params.get('audio') !== '0';
 
   voz.aoMudarDisponibilidade(function (disponivel) {
@@ -308,6 +309,7 @@
   function iniciarSessao(modo) {
     calarTudo();
     S.modo = modo;
+    registro.iniciarSessao(modo);
     S.casoNum = 0;
     S.resultados = [];
     S.feitosSessao = [];
@@ -344,6 +346,8 @@
     S.escolha = null;
     S.marcadas = [];
     S.tentativa = 1;
+    S.motivos = [];
+    registro.iniciarItem();
     S.respostaTravada = false;
     S.revelada = false;
     S.regiao = false;
@@ -428,6 +432,7 @@
   }
 
   function falhar(motivo) {
+    S.motivos.push(motivo);
     S.tentativa += 1;
     if (S.tentativa > 3) { demonstrar(); return; }
     som('quase');
@@ -505,6 +510,18 @@
     S.pontos += primeira ? 100 : (resultado === 'dica' ? 50 : 10);
     gravarSave();
     desenharHUD();
+
+    // Registro anônimo (professores/registro.html). erro = o que estava errado em
+    // cada tentativa: "resposta" (alternativa) ou "pista" (frase que não prova).
+    var demo = resultado === 'demo';
+    registro.item({
+      etapa: S.nivel,
+      item: S.caso.id + ' · ' + S.misterio.tipo,
+      resultado: resultado,
+      tentativas: demo ? S.tentativa - 1 : S.tentativa,
+      dicas: Math.min(S.tentativa - 1, 2),
+      erro: S.motivos.join(' ')
+    });
   }
 
   function rotuloProximo() {
@@ -542,6 +559,7 @@
     save.nivel = S.nivel;
     gravarSave();
     desenharHUD();
+    registro.fim({ etapa: S.nivel });
 
     var total = S.resultados.length;
     var primeira = S.resultados.filter(function (r) { return r.resultado === 'primeira'; }).length;
@@ -672,6 +690,7 @@
     botao.addEventListener('click', function () {
       save.estrategias[estrategia.id] = (save.estrategias[estrategia.id] || 0) + 1;
       gravarSave();
+      registro.estrategia(estrategia.id);
       document.querySelectorAll('[data-estrategia]').forEach(function (b) {
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
@@ -688,6 +707,7 @@
     aoReiniciar: function () { S.pausado = false; $('tela-pausa').hidden = true; voltarAoInicio(); }
   });
 
+  Base.barraDoProfessor(GAME_ID);
   voltarAoInicio();
   portal.pronto();
 })();
