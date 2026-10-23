@@ -175,8 +175,8 @@
 /* =========================================
    PLANET BADGE — floating planet with glow + orbit ring (design-system parity)
    Mirrors the standalone's <PlanetBadge>. Two miolo variants:
-     - __img    : real PNG art (Calculon, Letrion)
-     - __sphere : CSS gradient sphere + Bootstrap icon (Naturox/Terramund/Globish)
+     - __img    : arte do planeta (midia/planet-*.webp; os cinco planetas têm)
+     - __sphere : esfera em CSS + ícone, reserva caso uma arte falte
    Size is driven by --pb-size (set inline, e.g. style="--pb-size:240px").
    Each planet variant just remaps three local custom props.
    ========================================= */

@@ -209,5 +209,12 @@ document.addEventListener('DOMContentLoaded', function() {
           '</div></footer>';
       }
     });
+    // Avisa as páginas que o menu e o rodapé já estão no lugar (ex.: barra que muda ao rolar).
+    document.dispatchEvent(new CustomEvent('componentes-prontos'));
   });
+
+  // Uso sem internet: o mesmo service worker dos jogos guarda as páginas visitadas.
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register(BASE_URL + 'sw.js', { scope: BASE_URL }).catch(function () { /* sem cache */ });
+  }
 });

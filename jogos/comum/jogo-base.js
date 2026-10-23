@@ -20,15 +20,22 @@
      Voz
      ------------------------------------------------ */
   // Vozes "Natural"/"Online" (Edge) e Google soam bem melhor que as do sistema.
-  function notaDaVoz(v) {
-    return (/^pt[-_]BR/i.test(v.lang) ? 10 : 0) + (/natural|neural|online/i.test(v.name) ? 5 : 0) +
+  function notaDaVoz(v, preferida) {
+    return (preferida.test(v.lang) ? 10 : 0) + (/natural|neural|online/i.test(v.name) ? 5 : 0) +
       (/google/i.test(v.name) ? 3 : 0);
+  }
+
+  // Frases em inglês vêm marcadas: "en:" (normal) ou "en-lento:" (devagar).
+  function lerFala(fala) {
+    var m = /^en(-lento)?:(.*)$/.exec(fala);
+    return m ? { texto: m[2], ingles: true, lento: Boolean(m[1]) } : { texto: fala, ingles: false, lento: false };
   }
 
   function criarVoz(config) {
     var pasta = (config && config.pasta) || 'audio/';
     var manifesto = null;
     var vozNavegador = null;
+    var vozIngles = null;
     var cache = {};
     var token = 0;
     var tocando = null;
@@ -44,10 +51,16 @@
       .then(function (m) { manifesto = m; avisar(); })
       .catch(function () { /* sem áudios gravados: fica a voz do navegador */ });
 
+    function melhorVoz(todas, prefixo, preferida) {
+      var lista = todas.filter(function (v) { return prefixo.test(v.lang); });
+      lista.sort(function (a, b) { return notaDaVoz(b, preferida) - notaDaVoz(a, preferida); });
+      return lista[0] || null;
+    }
+
     function carregarVozes() {
-      var lista = global.speechSynthesis.getVoices().filter(function (v) { return /^pt/i.test(v.lang); });
-      lista.sort(function (a, b) { return notaDaVoz(b) - notaDaVoz(a); });
-      vozNavegador = lista[0] || null;
+      var todas = global.speechSynthesis.getVoices();
+      vozNavegador = melhorVoz(todas, /^pt/i, /^pt[-_]BR/i);
+      vozIngles = melhorVoz(todas, /^en/i, /^en[-_]US/i);
       avisar();
     }
 
@@ -77,15 +90,17 @@
       });
     }
 
-    function falarNavegador(texto) {
-      if (!vozNavegador) return Promise.resolve();
+    function falarNavegador(bruta) {
+      var f = lerFala(bruta);
+      var vozEscolhida = f.ingles ? vozIngles : vozNavegador;
+      if (!vozEscolhida) return Promise.resolve();
       return new Promise(function (resolve) {
-        var fala = new SpeechSynthesisUtterance(texto);
-        fala.voice = vozNavegador;
-        fala.lang = vozNavegador.lang;
-        fala.rate = 1;
+        var fala = new SpeechSynthesisUtterance(f.texto);
+        fala.voice = vozEscolhida;
+        fala.lang = vozEscolhida.lang;
+        fala.rate = f.lento ? 0.7 : 1;
         fala.onend = fala.onerror = function () { resolve(); };
-        setTimeout(resolve, 1500 + texto.length * 90); // algumas vozes não avisam o fim
+        setTimeout(resolve, 1500 + f.texto.length * (f.lento ? 130 : 90)); // algumas vozes não avisam o fim
         global.speechSynthesis.speak(fala);
       });
     }
@@ -104,7 +119,12 @@
         if (mudo || !falas.length) return Promise.resolve();
         var atual = token;
         var audios = falas.map(audioDe);
-        if (!audios.every(Boolean)) return falarNavegador(falas.join(' '));
+        if (!audios.every(Boolean)) {
+          // Sem algum áudio gravado: voz do navegador, frase a frase (cada uma na sua língua).
+          return falas.reduce(function (cadeia, fala) {
+            return cadeia.then(function () { return atual === token ? falarNavegador(fala) : null; });
+          }, Promise.resolve());
+        }
         return audios.reduce(function (cadeia, audio) {
           return cadeia.then(function () { return atual === token ? tocar(audio) : null; });
         }, Promise.resolve());
@@ -294,6 +314,20 @@
     return registroSW;
   }
 
+  // Páginas e peças do portal, para abrir o site sem internet pela página inicial
+  // ou pelo Explorar (caminhos a partir da raiz do site).
+  var PORTAL = [
+    '', 'index.html', 'explorar/explorar.html', 'sobre_nos/sobre_nos.html', 'professores/index.html',
+    'components/nav.html', 'components/footer.html', 'components/components.js', 'components/components.css',
+    'estilos/reset.css', 'estilos/base.css', 'estilos/animacoes.css', 'estilos/layout.css', 'estilos/componentes.css',
+    'estilos/cards.css', 'estilos/pages/page-shell.css', 'estilos/pages/homepage.css', 'estilos/pages/explore.css',
+    'estilos/pages/jogar.css', 'estilos/pages/sobre_nos.css',
+    'scripts/animacoes.js', 'scripts/homepage.js', 'scripts/games.js', 'scripts/explore.js',
+    'scripts/progress.js?v=3', 'scripts/jogar.js?v=3',
+    'midia/planetinha-mark.svg', 'midia/planet-calculon.webp', 'midia/planet-letrion.webp',
+    'midia/planet-naturox.webp', 'midia/planet-terramund.webp', 'midia/planet-globish.webp'
+  ];
+
   // Endereços já carregados por esta página e, dentro do portal, pela página de fora.
   function enderecosCarregados(janela) {
     try {
@@ -333,7 +367,8 @@
     }
     ['', 'index.html', 'estilo.css', 'conteudo.js', 'jogo.js', 'audio/falas.json'].forEach(function (rel) { incluir(pasta + rel); });
     ['jogos/comum/jogo-base.js', 'jogos/comum/base.css', 'jogos/jogar.html',
-      'professores/registro.html', 'professores/impressao.css'].forEach(function (rel) { incluir(RAIZ + rel); });
+      'professores/registro.html', 'professores/impressao.css'].concat(PORTAL)
+      .forEach(function (rel) { incluir(RAIZ + rel); });
     enderecosCarregados(global).forEach(incluir);
     if (global.parent !== global) enderecosCarregados(global.parent).forEach(incluir);
 

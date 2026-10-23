@@ -63,16 +63,19 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
   transition: color var(--duracao-rapida), background var(--duracao-rapida);
 }
 .back-link:hover { color: var(--cor-texto); background: var(--cor-superficie-2); }
+.back-link[hidden] { display: none; }
 
 /* ─── LOBBY ─────────────────────────────── */
 .state-lobby {
   position: fixed; inset: 0; z-index: 20;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
+  overflow-y: auto;
   padding: var(--espaco-2xl) var(--espaco-md) var(--espaco-md);
 }
 .state-lobby[hidden] { display: none; }
 
 .lobby-card {
+  margin: auto;
   display: flex; overflow: hidden;
   width: 100%; max-width: 500px;
   background: var(--cor-superficie-2);
@@ -99,6 +102,10 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
   background: var(--cor-superficie-3);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem; color: var(--p-cor);
+}
+.lobby-cover-fallback .lobby-cover-planeta {
+  width: 100%; height: 100%; object-fit: contain;
+  transform: scale(1.25);
 }
 
 /* info section */

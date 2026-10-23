@@ -104,16 +104,19 @@
    PLANET-ACTIVE STATES — per data-planet
    =========================================== */
 
+/* Filtro ativo: texto escuro (contraste) e um ✓, para não depender só da cor. */
+.explore-filter-btn--active::before { content: "✓ "; font-weight: 800; }
+
 .explore-filter-btn[data-planet="calculon"].explore-filter-btn--active {
   background: var(--planeta-calculon-cor);
   border-color: var(--planeta-calculon-cor);
-  color: var(--planeta-calculon-texto);
+  color: var(--cor-texto-escuro);
 }
 
 .explore-filter-btn[data-planet="letrion"].explore-filter-btn--active {
   background: var(--planeta-letrion-cor);
   border-color: var(--planeta-letrion-cor);
-  color: var(--planeta-letrion-texto);
+  color: var(--cor-texto-escuro);
 }
 
 .explore-filter-btn[data-planet="naturox"].explore-filter-btn--active {
@@ -125,7 +128,7 @@
 .explore-filter-btn[data-planet="terramund"].explore-filter-btn--active {
   background: var(--planeta-terramund-cor);
   border-color: var(--planeta-terramund-cor);
-  color: var(--planeta-terramund-texto);
+  color: var(--cor-texto-escuro);
 }
 
 .explore-filter-btn[data-planet="globish"].explore-filter-btn--active {

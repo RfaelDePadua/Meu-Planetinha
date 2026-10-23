@@ -62,7 +62,7 @@
       orientacao: 'horizontal',
       sobre: 'Monte as cadeias e teias alimentares do Cerrado ligando quem é comido a quem come. Depois preveja o que acontece quando algo muda (uma seca, a caça, o sumiço dos fungos) e veja a simulação. Para 4º e 5º ano (BNCC EF04CI04, EF04CI05, EF04CI06). Dá para jogar sozinho ou em dupla.',
       tutorial: [
-        'Toque em um ser vivo e depois em quem come ele: a seta mostra para onde vai a energia',
+        'Toque em um ser vivo e depois em quem se alimenta dele: a seta mostra para onde vai a energia',
         'Toque em Conferir para ver se a teia está certa',
         'Nas tarefas "E se…?", preveja se cada ser marcado aumenta, diminui ou fica igual',
         'Veja a simulação e siga as setas destacadas para entender o que aconteceu'
@@ -77,12 +77,29 @@
       cover: null,
       path: 'jogos/Rumo_Certo/index.html',
       orientacao: 'horizontal',
-      sobre: 'Cumpra missões num mapa usando a rosa dos ventos e a legenda: encontre lugares, leve o explorador e siga rotas. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Para 4º e 5º ano (BNCC EF04GE09, EF04GE10, EF03GE07). Dá para jogar sozinho ou em dupla.',
+      sobre: 'Cumpra missões num mapa usando a rosa dos ventos e a legenda: encontre lugares, leve o explorador e siga rotas. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Para 4º e 5º ano (BNCC EF04GE09, EF04GE10, EF03GE07, EF04MA16). Dá para jogar sozinho ou em dupla.',
       tutorial: [
         'Ouça a missão e olhe a rosa dos ventos do mapa',
         'Para encontrar, toque no lugar certo; para andar, use os botões Norte, Sul, Leste e Oeste',
         'Use a legenda para saber o que cada símbolo é',
         'Errou? A dica mostra a direção a partir do lugar de referência'
+      ]
+    },
+    {
+      id: 'listen-and-do',
+      name: 'Listen & Do',
+      planet: 'globish',
+      subject: 'Inglês',
+      difficulty: 1,
+      cover: null,
+      path: 'jogos/Listen_and_Do/index.html',
+      orientacao: 'horizontal',
+      sobre: 'Ouça um comando em inglês e faça no quarto: toque na coisa pedida ou leve cada coisa ao lugar certo ("Put the red ball under the bed"). Vocabulário da lista Cambridge Starters (Pre-A1). Para 4º e 5º ano, como complemento: a BNCC só tem inglês a partir do 6º ano. Dá para jogar sozinho ou em dupla; use fone de ouvido se puder.',
+      tutorial: [
+        'Toque em Ouvir para escutar o comando; Devagar repete mais lento',
+        'Para "Touch...", toque na coisa pedida',
+        'Para "Put...", toque na coisa, depois no lugar, e em Pronto',
+        'Errou? O jogo mostra a palavra que decide e o que ela quer dizer'
       ]
     },
     // Jogos do modelo antigo (pergunta por cima de ação), fora das listas desde
@@ -291,8 +308,7 @@
       if (GAME_DATA[i].arquivado) continue;
       html += createCard(GAME_DATA[i], basePath);
     }
-    /* Append "Em Breve" placeholder as the last card */
-    html += createPlaceholderCard();
+    // Os cinco planetas já têm jogo: o card "Em breve" saiu (createPlaceholderCard fica para o futuro).
     grid.innerHTML = html;
   }
 

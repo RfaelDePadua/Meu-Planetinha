@@ -18,31 +18,27 @@
      `art` = PNG path when the planet has illustration; otherwise the CSS sphere
      + Bootstrap icon is used. */
   var PLANETS = {
-    calculon:  { nome: 'Calculon',  materia: 'Matemática', art: 'midia/planet-calculon.png', icon: 'bi-plus-slash-minus', convite: 'Pouse a nave no ponto certo da reta!' },
-    letrion:   { nome: 'Letrion',   materia: 'Português',  art: 'midia/planet-letrion.png',  icon: 'bi-fonts',           convite: 'Resolva mistérios com as pistas do texto!' },
-    naturox:   { nome: 'Naturox',   materia: 'Ciências',   art: null,                        icon: 'bi-flower1',         convite: 'Descubra por onde a energia passa no Cerrado!' },
-    terramund: { nome: 'Terramund', materia: 'Geografia',  art: null,                        icon: 'bi-globe-americas',  convite: 'Use a rosa dos ventos para cumprir missões no mapa!' },
-    globish:   { nome: 'Globish',   materia: 'Inglês',     art: null,                        icon: 'bi-translate',       convite: 'Em breve: ouça e faça em inglês.' }
+    calculon:  { nome: 'Calculon',  materia: 'Matemática', art: 'midia/planet-calculon.webp',  icon: 'bi-plus-slash-minus', jogo: 'pouso-na-reta',       nomeJogo: 'Pouso na Reta',       convite: 'Pouse a nave no ponto certo da reta!' },
+    letrion:   { nome: 'Letrion',   materia: 'Português',  art: 'midia/planet-letrion.webp',   icon: 'bi-fonts',            jogo: 'detetive-de-letrion', nomeJogo: 'Detetive de Letrion', convite: 'Resolva mistérios com as pistas do texto!' },
+    naturox:   { nome: 'Naturox',   materia: 'Ciências',   art: 'midia/planet-naturox.webp',   icon: 'bi-flower1',          jogo: 'teia-viva',           nomeJogo: 'Teia Viva',           convite: 'Descubra por onde a energia passa no Cerrado!' },
+    terramund: { nome: 'Terramund', materia: 'Geografia',  art: 'midia/planet-terramund.webp', icon: 'bi-globe-americas',   jogo: 'rumo-certo',          nomeJogo: 'Rumo Certo',          convite: 'Use a rosa dos ventos para cumprir missões no mapa!' },
+    globish:   { nome: 'Globish',   materia: 'Inglês',     art: 'midia/planet-globish.webp',   icon: 'bi-translate',        jogo: 'listen-and-do',       nomeJogo: 'Listen & Do',         convite: 'Ouça o comando em inglês e faça no quarto!' }
   };
 
   /* ------------------------------------------------
      1. Scroll-triggered header background
      ------------------------------------------------ */
+  // O menu é injetado depois (components.js): procura a barra a cada rolagem
+  // e de novo quando os componentes avisam que estão prontos.
   function initScrollHeader() {
-    var nav = document.querySelector('.site-nav');
-    if (!nav) return;
-
-    var isScrolled = false;
     function onScroll() {
-      var shouldBeScrolled = window.scrollY > SCROLL_THRESHOLD;
-      if (shouldBeScrolled !== isScrolled) {
-        isScrolled = shouldBeScrolled;
-        nav.classList.toggle(SCROLLED_CLASS, isScrolled);
-      }
+      var nav = document.querySelector('.site-nav');
+      if (nav) nav.classList.toggle(SCROLLED_CLASS, window.scrollY > SCROLL_THRESHOLD);
     }
 
     onScroll(); // handle reload mid-scroll
     window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('componentes-prontos', onScroll);
   }
 
   /* ------------------------------------------------
@@ -80,7 +76,6 @@
 
       // Hero badge: re-theme + rebuild miolo (img vs sphere)
       badge.setAttribute('data-planeta', slug);
-      badge.setAttribute('aria-label', p.nome);
       badge.innerHTML = buildBadgeInner(slug);
 
       // Planet-scoped color tokens (eyebrow + CTA gradient)
@@ -91,6 +86,12 @@
       if (elMateria) elMateria.textContent = p.materia;
       if (elNome) elNome.textContent = p.nome;
       if (elConvite) elConvite.textContent = p.convite;
+
+      // Botão principal leva direto ao jogo do planeta escolhido
+      var cta = document.getElementById('hero-cta-jogo');
+      var ctaTexto = document.getElementById('hero-cta-texto');
+      if (cta) cta.href = 'jogos/jogar.html?game=' + p.jogo;
+      if (ctaTexto) ctaTexto.textContent = 'Jogar ' + p.nomeJogo;
 
       // Button states
       var buttons = picker.querySelectorAll('.home-hero__picker-btn');

@@ -28,20 +28,27 @@ educativos ([PESQUISA_JOGOS.md](PESQUISA_JOGOS.md)). Princípios:
 | Letrion · Português | **Detetive de Letrion** — resolver mistérios marcando as frases que provam a resposta | BNCC EF15LP03, EF35LP03–06 | ✅ pronto; textos aguardam revisão docente ([guia](jogos/DETETIVE_DE_LETRION.md)) |
 | Naturox · Ciências | **Teia Viva** — montar teias alimentares e prever o efeito de mudanças | BNCC EF04CI04–06 | ✅ pronto; conteúdo aguarda revisão docente ([guia](jogos/TEIA_VIVA.md)) |
 | Terramund · Geografia | **Rumo Certo** — cumprir missões num mapa usando rosa dos ventos e legenda; o mapa gira e o Norte muda de lugar | BNCC EF04GE09, EF04GE10, EF03GE07, EF04MA16 | ✅ pronto; conteúdo aguarda revisão docente ([guia](jogos/RUMO_CERTO.md)) |
-| Globish · Inglês | **Listen & Do** — ouvir um comando em inglês e executá-lo numa cena ("Put the red ball under the bed") | Currículo da Cidade SP EF04LI10, EF05LI02, EF05LI15; CEFR Pre-A1 (a BNCC só tem inglês a partir do 6º ano) | a fazer |
+| Globish · Inglês | **Listen & Do** — ouvir um comando em inglês e executá-lo numa cena ("Put the red ball under the bed") | Currículo da Cidade SP EF04LI10, EF05LI02, EF05LI15; CEFR Pre-A1 (a BNCC só tem inglês a partir do 6º ano) | ✅ pronto; conteúdo aguarda revisão docente ([guia](jogos/LISTEN_AND_DO.md)) |
 
 A fundamentação de cada um está em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
 
 Também no repositório:
 
-- voz: falas gravadas com voz neural do Azure (Macerio), iguais em qualquer
-  computador e sem internet (`ferramentas/gerar-falas.ps1`);
+- voz: falas gravadas com voz neural do Azure (Macerio em português, Jenny nos
+  comandos em inglês), iguais em qualquer computador e sem internet
+  (`ferramentas/gerar-falas.ps1`);
+- uso na escola: "Preparar para usar sem internet" (`sw.js`), "Nova dupla" e
+  registro anônimo das jogadas, exportado em `professores/registro.html`;
+- arte dos planetas: renders 3D gerados no Blender por
+  `ferramentas/planeta-blender.py` (Naturox, Terramund, Globish), todos em
+  `midia/planet-*.webp`;
 - peças comuns dos jogos em `jogos/comum/` (voz, sons, contrato com o portal,
   visual);
 - Contando Estrelas e Palavra Parkour: jogos do modelo antigo (pergunta por
   cima de ação), arquivados: os arquivos continuam no repositório, mas saíram
   do catálogo do portal;
-- Nave Central e prólogo de Letrion: protótipos do ciclo anterior. A economia
+- Nave Central e prólogo de Letrion: protótipos do ciclo anterior, fora da
+  cópia publicada desde 23/10/2026 (`.gitattributes`, export-ignore). A economia
   de estrelas e troféus contraria a pesquisa sobre recompensas e será refeita
   como mapa de domínio.
 
@@ -52,7 +59,7 @@ As janelas de teste nas escolas são outubro–meados de dezembro e fevereiro.
 | Mês | Desenvolvimento | Escolas e equipe |
 |---|---|---|
 | Outubro | Teia Viva ✅; Rumo Certo ✅ | Site publicado ✅ (provisório); professores revisam os quatro jogos |
-| Novembro | **Listen & Do** (Globish) | Primeiros testes nas escolas, com pré e pós-teste curtos |
+| Novembro | Listen & Do ✅ (feito em outubro); uso sem internet, "Nova dupla" e registro anônimo ✅ | Primeiros testes nas escolas, com pré e pós-teste curtos |
 | Dezembro | Portal repaginado: mapa de domínio no lugar da Nave; aposentar os jogos antigos | Últimos testes antes das férias |
 | Janeiro | Ajustes a partir dos testes; painel do professor | Guias do professor, relatório |
 | Fevereiro | — | Visitas com os 5 jogos e relatório final |

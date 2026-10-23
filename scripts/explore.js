@@ -106,12 +106,12 @@
     var html = '';
 
     // "Todos" button first — no active class; "Todos" never gets highlighted (context decision)
-    html += '<button class="explore-filter-btn" data-planet="todos" type="button">Todos</button>';
+    html += '<button class="explore-filter-btn" data-planet="todos" type="button" aria-pressed="false">Todos</button>';
 
     // One button per planet
     for (var i = 0; i < PLANET_INFO.length; i++) {
       var p = PLANET_INFO[i];
-      html += '<button class="explore-filter-btn" data-planet="' + p.slug + '" type="button" ' +
+      html += '<button class="explore-filter-btn" data-planet="' + p.slug + '" type="button" aria-pressed="false" ' +
               'aria-label="Planeta ' + p.label + ' \u2013 ' + p.subject + '">' + p.label + '</button>';
     }
 
@@ -143,9 +143,11 @@
     for (var i = 0; i < buttons.length; i++) {
       var btnPlanet = buttons[i].getAttribute('data-planet');
       // "Todos" never gets active class (context decision)
+      var ativo = btnPlanet === 'todos' ? !planet : btnPlanet === planet;
+      buttons[i].setAttribute('aria-pressed', ativo ? 'true' : 'false');
       if (btnPlanet === 'todos') {
         buttons[i].classList.remove('explore-filter-btn--active');
-      } else if (btnPlanet === planet) {
+      } else if (ativo) {
         buttons[i].classList.add('explore-filter-btn--active');
       } else {
         buttons[i].classList.remove('explore-filter-btn--active');

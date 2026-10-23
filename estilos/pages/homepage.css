@@ -71,7 +71,7 @@
   color: var(--hero-cor);
 }
 
-.home-hero__planet-info h3 {
+.home-hero__planet-info .home-hero__planet-nome {
   font-size: var(--texto-2xl);
   margin: var(--espaco-xs) 0 var(--espaco-2xs);
 }

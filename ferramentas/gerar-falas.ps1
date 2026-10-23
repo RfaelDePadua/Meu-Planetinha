@@ -32,6 +32,7 @@
 param(
   [string]$Jogo = 'Pouso_na_Reta',
   [string]$Voz = 'pt-BR-MacerioMultilingualNeural',
+  [string]$VozIngles = 'en-US-JennyNeural',
   [string]$Velocidade = '+8%',
   [string]$Tom = '+5%',
   [switch]$Amostras,
@@ -64,9 +65,17 @@ $cabecalhos = @{
   'X-Microsoft-OutputFormat' = 'audio-24khz-48kbitrate-mono-mp3'
 }
 
-function Sintetizar([string]$texto, [string]$voz, [string]$destino) {
-  $ssml = "<speak version='1.0' xml:lang='pt-BR'><voice name='$voz'>" +
-    "<prosody rate='$Velocidade' pitch='$Tom'>$([Security.SecurityElement]::Escape($texto))</prosody></voice></speak>"
+# Frases marcadas "en:" saem na voz em inglês; "en-lento:", na mesma voz mais devagar.
+# As demais usam a voz, a velocidade e o tom do projeto (nomes de arquivo inalterados).
+function LerFala([string]$texto) {
+  if ($texto -match '^en-lento:(.+)$') { return @{ Texto = $matches[1]; Voz = $VozIngles; Vel = '-25%'; Tom = '+0%'; Lingua = 'en-US' } }
+  if ($texto -match '^en:(.+)$') { return @{ Texto = $matches[1]; Voz = $VozIngles; Vel = '+0%'; Tom = '+0%'; Lingua = 'en-US' } }
+  return @{ Texto = $texto; Voz = $Voz; Vel = $Velocidade; Tom = $Tom; Lingua = 'pt-BR' }
+}
+
+function Sintetizar([string]$texto, [string]$voz, [string]$destino, [string]$vel = $Velocidade, [string]$tom = $Tom, [string]$lingua = 'pt-BR') {
+  $ssml = "<speak version='1.0' xml:lang='$lingua'><voice name='$voz'>" +
+    "<prosody rate='$vel' pitch='$tom'>$([Security.SecurityElement]::Escape($texto))</prosody></voice></speak>"
   $corpo = $utf8.GetBytes($ssml)
   for ($tentativa = 1; $tentativa -le 8; $tentativa++) {
     try {
@@ -91,7 +100,8 @@ function Sintetizar([string]$texto, [string]$voz, [string]$destino) {
 
 function NomeDoArquivo([string]$texto) {
   # O tom só entra na chave quando muda, para não invalidar áudios já gerados.
-  $chaveAudio = if ($Tom -eq '+0%') { "$Voz|$Velocidade|$texto" } else { "$Voz|$Velocidade|$Tom|$texto" }
+  $f = LerFala $texto
+  $chaveAudio = if ($f.Tom -eq '+0%') { "$($f.Voz)|$($f.Vel)|$($f.Texto)" } else { "$($f.Voz)|$($f.Vel)|$($f.Tom)|$($f.Texto)" }
   $sha = [Security.Cryptography.SHA1]::Create()
   $hash = $sha.ComputeHash($utf8.GetBytes($chaveAudio))
   return (-join ($hash[0..7] | ForEach-Object { $_.ToString('x2') })) + '.mp3'
@@ -153,7 +163,8 @@ foreach ($texto in $roteiro) {
   $destino = Join-Path $pastaAudio $arquivo
   if ($Refazer -or -not (Test-Path -LiteralPath $destino)) {
     Write-Host "[$n/$total] $texto"
-    Sintetizar $texto $Voz $destino
+    $f = LerFala $texto
+    Sintetizar $f.Texto $f.Voz $destino $f.Vel $f.Tom $f.Lingua
     $novos++
   }
   $indice[$texto] = $arquivo

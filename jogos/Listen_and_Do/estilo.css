@@ -1,0 +1,102 @@
+/* Listen & Do — o que é só deste jogo (o comum está em ../comum/base.css). */
+
+:root { --planeta: #22D3EE; }
+
+.app { grid-template-rows: auto auto 1fr auto; }
+[data-estado="inicio"] .enunciado,
+[data-estado="inicio"] .cena-caixa { visibility: hidden; }
+
+/* ── Enunciado: o comando é ouvido; o texto só aparece na dica ── */
+.enunciado { padding: 8px 16px 0; text-align: center; }
+.enunciado__tipo {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.16);
+  color: var(--planeta);
+  font-size: 14px;
+  font-weight: 800;
+}
+.enunciado__linha { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-ouvir {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 8px 20px;
+  border: 2px solid rgba(34, 211, 238, 0.55);
+  border-radius: 16px;
+  background: rgba(34, 211, 238, 0.14);
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+  font-weight: 800;
+}
+.btn-ouvir svg { width: 26px; height: 26px; color: var(--planeta); }
+.btn-ouvir--devagar { border-color: var(--borda); background: var(--superficie-2); }
+.btn-ouvir:active { transform: translateY(2px); }
+.enunciado__texto {
+  min-height: 1.3em;
+  max-width: 860px;
+  margin: 8px auto 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(19px, 2.4vw, 25px);
+  line-height: 1.2;
+}
+.enunciado__texto.escondido { color: var(--texto-2); font-family: var(--fonte); font-size: 16px; font-weight: 700; }
+.enunciado__texto mark {
+  padding: 0 6px;
+  border-radius: 8px;
+  background: var(--amarelo);
+  color: #2A1A05;
+}
+.enunciado__texto small { display: block; color: var(--texto-2); font-family: var(--fonte); font-size: 16px; font-weight: 700; }
+
+/* ── Cena ────────────────────────────────────────────── */
+.cena-caixa { position: relative; min-height: 220px; padding: 8px 16px 0; }
+.cena {
+  position: absolute;
+  inset: 8px 16px 0;
+  width: calc(100% - 32px);
+  height: calc(100% - 8px);
+  border-radius: 18px;
+}
+.cena-caixa .aviso { top: auto; bottom: 6px; }
+
+.coisa { outline: none; transition: transform 0.45s ease; }
+.coisa__halo { fill: transparent; stroke: transparent; stroke-width: 5; }
+[data-estado="ouvindo"] .coisa,
+[data-estado="arrumando"] .coisa { cursor: pointer; }
+[data-estado="ouvindo"] .coisa:hover .coisa__halo,
+[data-estado="arrumando"] .coisa:hover .coisa__halo,
+.coisa:focus-visible .coisa__halo { fill: rgba(255, 212, 59, 0.35); }
+.coisa.selecionada .coisa__halo { fill: rgba(255, 212, 59, 0.45); stroke: #F59E0B; stroke-dasharray: 8 6; }
+.coisa.errada .coisa__halo { fill: rgba(255, 107, 107, 0.28); stroke: #DC2626; }
+.coisa.certa .coisa__halo { fill: rgba(77, 255, 180, 0.35); stroke: #059669; }
+.coisa.pulsar { animation: pulsar 0.9s ease-in-out 3; }
+@keyframes pulsar { 50% { filter: drop-shadow(0 0 10px #22D3EE); } }
+
+.vaga { cursor: pointer; outline: none; }
+.vaga circle {
+  fill: rgba(34, 211, 238, 0.12);
+  stroke: #0891B2;
+  stroke-width: 3;
+  stroke-dasharray: 7 6;
+}
+.vaga:hover circle,
+.vaga:focus-visible circle { fill: rgba(34, 211, 238, 0.35); stroke-width: 4; }
+
+/* ── Controles ───────────────────────────────────────── */
+.dica-toque { margin: 0; color: var(--texto-2); font-weight: 800; }
+
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .cena-caixa { min-height: 60vw; }
+  .controles > div { flex-wrap: wrap; }
+  .btn-ouvir { min-height: 48px; padding: 6px 14px; font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coisa { transition: none; }
+}

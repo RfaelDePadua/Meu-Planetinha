@@ -98,8 +98,9 @@
       target.hidden = true;
       return;
     }
-    target.textContent = 'Melhor pontuação: ' + progress.bestScore +
-      ' · Aventuras concluídas: ' + progress.sessions;
+    // Sem pontuação nem ranking (princípio do projeto): só quantas vezes jogou aqui.
+    target.textContent = progress.sessions === 1 ? 'Você já jogou 1 vez neste aparelho.'
+      : 'Você já jogou ' + progress.sessions + ' vezes neste aparelho.';
     target.hidden = false;
   }
 
@@ -159,8 +160,9 @@
       img.hidden = false;
       $('lobby-cover-fallback').hidden = true;
     } else {
-      $('lobby-cover-fallback').innerHTML =
-        '<i class="bi ' + (PLANET_ICONS[g.planet] || 'bi-controller') + '"></i>';
+      $('lobby-cover-fallback').innerHTML = PLANET_NAMES[g.planet]
+        ? '<img class="lobby-cover-planeta" src="' + getBaseURL() + 'midia/planet-' + g.planet + '.webp" alt="" width="120" height="120">'
+        : '<i class="bi ' + (PLANET_ICONS[g.planet] || 'bi-controller') + '"></i>';
     }
     renderStars($('lobby-stars'), dificuldade);
     $('lobby-chip-text').textContent = chipText;
@@ -201,6 +203,9 @@
   function startGame() {
     el.lobby.hidden = true;
     el.shell.hidden = false;
+    // No jogo, a faixa do topo já tem o botão de voltar: o atalho do lobby sai para não cobrir o título.
+    var atalho = $('back-link');
+    if (atalho) atalho.hidden = true;
     checkOrientation();
     loadGameIframe();
   }
@@ -246,12 +251,15 @@
   /* ------------------------------------------------
      Orientação (aviso de girar o celular — só jogos horizontais)
      ------------------------------------------------ */
+  // Só em tela estreita (celular em pé): tablets em pé jogam bem, e os jogos
+  // têm layout para telas estreitas. A criança pode dispensar o aviso.
+  var rotacaoDispensada = false;
   function checkOrientation() {
-    if (!game || (game.orientacao || 'vertical') !== 'horizontal') {
+    if (!game || (game.orientacao || 'vertical') !== 'horizontal' || rotacaoDispensada) {
       el.rotateOverlay.hidden = true;
       return;
     }
-    el.rotateOverlay.hidden = window.innerWidth >= window.innerHeight;
+    el.rotateOverlay.hidden = window.innerWidth >= window.innerHeight || window.innerWidth >= 600;
   }
 
   /* ------------------------------------------------
@@ -424,6 +432,8 @@
 
     /* Orientação */
     window.addEventListener('resize', checkOrientation);
+    var dispensar = $('rotate-dispensar');
+    if (dispensar) dispensar.addEventListener('click', function () { rotacaoDispensada = true; checkOrientation(); });
 
     /* Esc fecha overlays (a11y) */
     document.addEventListener('keydown', function (e) {

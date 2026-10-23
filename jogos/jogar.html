@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Jogando no Meu Planetinha — plataforma educacional gamificada para crianças.">
+  <meta name="description" content="Jogo educativo do Meu Planetinha para o 4º e o 5º ano.">
   <title>Jogar — Meu Planetinha</title>
+  <meta name="theme-color" content="#0A0E28">
+  <link rel="icon" href="../midia/planetinha-mark.svg" type="image/svg+xml">
 
   <!-- Google Fonts: preconnect + stylesheet -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,7 +77,7 @@
         <div class="lobby-progress" aria-hidden="true">
           <div class="lobby-progress-bar" id="lobby-progress-bar"></div>
         </div>
-        <button class="jogar-btn" id="btn-jogar" disabled aria-label="Iniciar jogo">
+        <button class="jogar-btn" id="btn-jogar" disabled>
           <i class="bi bi-hourglass-split" id="jogar-icon" aria-hidden="true"></i>
           <span id="jogar-text">Carregando…</span>
         </button>
@@ -88,6 +90,7 @@
     <i class="bi bi-phone-landscape rotate-icon" aria-hidden="true"></i>
     <h2 class="rotate-title">Gire o celular</h2>
     <p class="rotate-sub">Este jogo é melhor no modo paisagem</p>
+    <button class="btn-secundario" type="button" id="rotate-dispensar">Jogar assim mesmo</button>
   </div>
 
   <!-- ══════════════════════ GAME SHELL ══════════════════════ -->

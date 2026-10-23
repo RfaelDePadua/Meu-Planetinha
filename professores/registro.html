@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Registro das jogadas — Meu Planetinha</title>
+  <link rel="icon" href="../midia/planetinha-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@500;700;800&display=swap" rel="stylesheet">
@@ -55,14 +56,15 @@
       <dt>jogo, modo</dt><dd>Qual jogo e se foi "solo" ou "dupla".</dd>
       <dt>registro</dt><dd>"item" para cada tarefa; "fim" para o fim da partida (com a etapa final e a resposta de "Como você descobriu?").</dd>
       <dt>etapa</dt><dd>Etapa do jogo (no Detetive, o nível).</dd>
-      <dt>item</dt><dd>Qual tarefa: o número da pista (Pouso), o caso e o tipo de mistério (Detetive), a teia (Teia Viva) ou a missão (Rumo Certo).</dd>
+      <dt>item</dt><dd>Qual tarefa: o número da pista (Pouso), o caso e o tipo de mistério (Detetive), a teia (Teia Viva), a missão (Rumo Certo) ou o comando em inglês (Listen &amp; Do).</dd>
       <dt>resultado</dt><dd>"primeira" (acertou na primeira tentativa), "dica" (acertou depois de dica) ou "demo" (o jogo demonstrou).
         Nas tarefas "E se…?" da Teia Viva: "primeira", "parcial" ou "errou".</dd>
       <dt>tentativas, dicas</dt><dd>Quantas vezes conferiu e quantas camadas de dica recebeu.</dd>
       <dt>erro</dt><dd>Pouso na Reta: distância do primeiro pouso até o ponto certo, em % da pista.
         Detetive: o que estava errado em cada tentativa ("resposta" ou "pista").
         Teia Viva: setas erradas (montar) ou previsões erradas (E se…?).
-        Rumo Certo: lugares errados tocados, passos que afastaram do destino ou paradas erradas.</dd>
+        Rumo Certo: lugares errados tocados, passos que afastaram do destino ou paradas erradas.
+        Listen &amp; Do: o que estava errado em cada tentativa ("coisa", "cor", "prep" para in/on/under/next to, ou "movel").</dd>
       <dt>tempo_s</dt><dd>Segundos do início da tarefa até a resposta certa ou a demonstração.</dd>
       <dt>estrategia</dt><dd>Resposta da pergunta final (só na linha "fim").</dd>
     </dl>
@@ -75,7 +77,7 @@
       var CHAVE = 'meu-planetinha.registro.v1';
       var NOMES = {
         'pouso-na-reta': 'Pouso na Reta', 'detetive-de-letrion': 'Detetive de Letrion',
-        'teia-viva': 'Teia Viva', 'rumo-certo': 'Rumo Certo'
+        'teia-viva': 'Teia Viva', 'rumo-certo': 'Rumo Certo', 'listen-and-do': 'Listen & Do'
       };
       var COLUNAS = ['data', 'hora', 'aparelho', 'dupla', 'sessao', 'jogo', 'modo', 'registro', 'etapa', 'item',
         'resultado', 'tentativas', 'dicas', 'erro', 'tempo_s', 'estrategia'];

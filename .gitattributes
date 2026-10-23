@@ -1,0 +1,11 @@
+# Protótipos do ciclo anterior (Nave Central e prólogo de Letrion): ficam no Git
+# como referência, mas não vão para a cópia publicada (git archive).
+nave.html export-ignore
+missao-letrion.html export-ignore
+scripts/nave.js export-ignore
+scripts/missao-letrion.js export-ignore
+estilos/pages/nave.css export-ignore
+estilos/pages/missao-letrion.css export-ignore
+midia/Jogo_de_silaba.png export-ignore
+# Arte-fonte dos planetas (PNG 512 px): o site usa as versões WebP.
+midia/planet-*.png export-ignore

@@ -16,7 +16,14 @@ var CACHE = 'meu-planetinha-v1';
 var ESPERA_REDE = 4000;
 
 self.addEventListener('install', function () { self.skipWaiting(); });
-self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
+// Ao trocar o nome do cache (nova versão), apaga os antigos do projeto.
+// O nome também aparece em jogos/comum/jogo-base.js (CACHE): os dois precisam ser iguais.
+self.addEventListener('activate', function (e) {
+  e.waitUntil(caches.keys().then(function (nomes) {
+    return Promise.all(nomes.filter(function (n) { return /^meu-planetinha-/.test(n) && n !== CACHE; })
+      .map(function (n) { return caches.delete(n); }));
+  }).then(function () { return self.clients.claim(); }));
+});
 
 self.addEventListener('fetch', function (e) {
   var req = e.request;
