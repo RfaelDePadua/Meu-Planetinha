@@ -150,7 +150,16 @@
           teia: 'lobo', alvo: 'gafanhoto', direcao: 'sobe', evento: 'Apareceram muitos gafanhotos no Cerrado.',
           perguntas: [
             { ser: 'seriema', resposta: 'sobe', explicacao: 'A seriema come gafanhotos. Com mais comida, as seriemas aumentam.', caminho: [['gafanhoto', 'seriema']] },
-            { ser: 'capim', resposta: 'desce', explicacao: 'Os gafanhotos comem capim. Com muitos gafanhotos, o capim diminui.', caminho: [['capim', 'gafanhoto']] }
+            { ser: 'capim', resposta: 'desce', explicacao: 'Os gafanhotos comem capim. Com muitos gafanhotos, o capim diminui.', caminho: [['capim', 'gafanhoto']] },
+            // "Igual": nesta teia, nenhuma seta liga a lobeira aos gafanhotos.
+            { ser: 'lobeira', resposta: 'igual', explicacao: 'Nesta teia, o gafanhoto não come lobeira, e quem come lobeira não come gafanhoto. Por isso a lobeira fica igual.', caminho: [] }
+          ]
+        },
+        {
+          teia: 'lobo', alvo: 'seriema', direcao: 'desce', evento: 'Caçadores levaram muitas seriemas.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'sobe', explicacao: 'A seriema come gafanhotos. Com menos seriemas caçando, os gafanhotos aumentam.', caminho: [['gafanhoto', 'seriema']] },
+            { ser: 'lobeira', resposta: 'igual', explicacao: 'Nesta teia, a seriema não come lobeira, e quem come lobeira não come seriema. Por isso a lobeira fica igual.', caminho: [] }
           ]
         },
         {
@@ -378,6 +387,12 @@
     quaseLa: 'Quase lá.',
     naturalista: function (n) { return 'Naturalista ' + ['', 'um', 'dois'][n] + '.'; },
     confirma: function (n) { return 'Naturalista ' + ['', 'um', 'dois'][n] + ', você concorda?'; },
+    // Modo dupla: o parceiro responde sozinho antes de conferir.
+    toqueCarta: 'Toque na carta.',
+    perguntaPrevisao: function (ser) {
+      return maiuscula(SERES[ser].o) + (/^(os|as) /.test(SERES[ser].o) ? ' vão' : ' vai') + ' aumentar, diminuir ou ficar igual?';
+    },
+    pensaramDiferente: 'Vocês pensaram diferente. Conversem e decidam juntos.',
     novaEtapa: function (etapa) { return 'Nova etapa: ' + etapa.nome.replace('…', '') + '!'; },
     treinar: 'Vamos treinar mais um pouco.',
     fim: 'Missão concluída!',
@@ -395,7 +410,8 @@
     var lista = [];
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
     ['instrucaoMontar', 'instrucaoCadeia', 'instrucaoTeia', 'instrucaoPrever', 'dicaMontar', 'certo', 'certoCadeia', 'certoDica',
-      'previsaoCerta', 'previsaoParte', 'vamosVer', 'temErrada', 'quaseLa', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute']
+      'previsaoCerta', 'previsaoParte', 'vamosVer', 'temErrada', 'quaseLa', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute',
+      'toqueCarta', 'pensaramDiferente']
       .forEach(function (k) { add(FALAS[k]); });
     [1, 2, 3, 4, 5].forEach(function (n) { add(FALAS.faltaSeta(n)); });
     [1, 2].forEach(function (n) { add(FALAS.naturalista(n)); add(FALAS.confirma(n)); });
@@ -419,6 +435,7 @@
           item.perguntas.forEach(function (p) {
             add(p.explicacao);
             add(FALAS.faltaPrever(p.ser));
+            add(FALAS.perguntaPrevisao(p.ser));
             Object.keys(DIRECOES).forEach(function (d) { add(FALAS.previsao(p.ser, d)); });
           });
         }

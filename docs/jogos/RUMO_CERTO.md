@@ -52,8 +52,10 @@ chute): dizer qual pista usou é o que mais ajuda a ler mapas.
 
 ## Como usar em sala
 
-- **Em dupla** ("Jogar em dupla"): os exploradores se alternam e o parceiro
-  precisa concordar antes de conferir. Peça que a dupla diga a direção em voz
+- **Em dupla** ("Jogar em dupla"): os exploradores se alternam. Em "Encontre",
+  o parceiro diz sozinho para que lado da referência fica o lugar tocado; na
+  rota, conta quantos quadradinhos andaram; em "Leve o explorador", os dois se
+  revezam a cada passo. Se as respostas não batem, conversam e decidem juntos. Peça que a dupla diga a direção em voz
   alta ("é para o leste, que fica à direita neste mapa").
 - **Antes de jogar (opcional, 5 min):** marque o norte na sala e brinque de
   "dê dois passos para o leste". O mapa girado fica mais fácil depois disso.

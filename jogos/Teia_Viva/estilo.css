@@ -136,5 +136,7 @@
   .carta { --carta-l: 78px; padding: 4px 2px; border-radius: 14px; }
   .carta svg { width: 34px; height: 34px; }
   .carta__nome { font-size: 11px; }
-  .previsao button { width: 30px; height: 30px; border-radius: 9px; }
+  /* Os três botões passam um pouco da carta, para não ficarem pequenos demais */
+  .previsao { justify-content: center; gap: 6px; margin: 5px -33px 0; }
+  .previsao button { width: 44px; height: 44px; border-radius: 12px; }
 }

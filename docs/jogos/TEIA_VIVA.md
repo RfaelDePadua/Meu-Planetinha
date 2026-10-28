@@ -43,8 +43,10 @@ dica não faz voltar. Não há vidas, tempo nem ranking.
 
 ## Como usar em sala
 
-- **Em dupla** ("Jogar em dupla"): os naturalistas se alternam e o parceiro
-  precisa concordar antes de conferir. Nas tarefas "E se…?", peça que a dupla
+- **Em dupla** ("Jogar em dupla"): os naturalistas se alternam. Antes de
+  conferir, o parceiro responde sozinho: nas cadeias, "quem come tal ser?"
+  (as setas do colega ficam escondidas); no "E se…?", a previsão de um dos
+  seres. Se as respostas não batem, conversam e decidem juntos. Nas tarefas "E se…?", peça que a dupla
   combine a previsão em voz alta antes de tocar.
 - **Depois do jogo (5 min):** "Por que a seta sai do capim e vai para o
   gafanhoto?", "Se os gaviões sumirem, por que os gafanhotos aumentam?",

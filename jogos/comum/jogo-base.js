@@ -176,6 +176,45 @@
   }
 
   /* ------------------------------------------------
+     Modo dupla: pergunta ao parceiro
+     Antes de conferir, quem não jogou responde sozinho uma pergunta curta
+     sobre o que o colega fez (com botões, ou tocando na cena quando não há
+     opções). O jogo compara as duas respostas: se não batem, a dupla conversa
+     e decide junto. Usa o painel #controles-confirma de cada jogo: o botão
+     principal ("Sim") some durante a pergunta; o secundário ("Mudar") fica.
+     ------------------------------------------------ */
+  function perguntarAoParceiro(cfg) {
+    var painel = document.getElementById('controles-confirma');
+    var caixa = painel.querySelector('.dupla-opcoes');
+    if (!caixa) {
+      caixa = document.createElement('div');
+      caixa.className = 'dupla-opcoes';
+      painel.appendChild(caixa);
+    }
+    painel.classList.add('perguntando');
+    document.getElementById('confirma-texto').textContent = cfg.texto;
+    caixa.textContent = '';
+    (cfg.opcoes || []).forEach(function (o) {
+      var botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = 'btn-secundario';
+      botao.textContent = o.rotulo;
+      botao.addEventListener('click', function () { fimDaPergunta(); cfg.aoResponder(o.valor); });
+      caixa.appendChild(botao);
+    });
+    var primeiro = caixa.querySelector('button');
+    if (primeiro) primeiro.focus({ preventScroll: true });
+  }
+
+  function fimDaPergunta() {
+    var painel = document.getElementById('controles-confirma');
+    if (!painel) return;
+    painel.classList.remove('perguntando');
+    var caixa = painel.querySelector('.dupla-opcoes');
+    if (caixa) caixa.textContent = '';
+  }
+
+  /* ------------------------------------------------
      Contrato com a página do portal
      ------------------------------------------------ */
   function conectarPortal(acoes) {
@@ -507,6 +546,8 @@
     som: som,
     criarRegistro: criarRegistro,
     barraDoProfessor: barraDoProfessor,
-    prepararSemInternet: prepararSemInternet
+    prepararSemInternet: prepararSemInternet,
+    perguntarAoParceiro: perguntarAoParceiro,
+    fimDaPergunta: fimDaPergunta
   };
 })(window);

@@ -320,6 +320,7 @@
     S.item = escolherItem();
     S.objetos = C.montarCena(S.item, S.etapa);
     S.tentativa = 1;
+    S.parceiroOuviu = false;
     S.motivos = [];
     S.palavraChave = null;
     S.mostrarTexto = false;
@@ -341,7 +342,10 @@
       S.jaInstruiu[tipo] = true;
       falas.push({ tocar: F.instrucaoTocar, colocar: F.instrucaoColocar, dois: F.instrucaoDois }[tipo]);
     }
-    if (!S.avisouFones && S.indice === 0 && !save.sessoes) { S.avisouFones = true; falas.push(F.fones); }
+    if (!S.avisouFones && S.indice === 0 && (!save.sessoes || S.modo === 'dupla')) {
+      S.avisouFones = true;
+      falas.push(S.modo === 'dupla' ? F.fonesDupla : F.fones);
+    }
     falas.push(C.en(comando()));
     falar(falas);
     voz.preCarregar([C.enLento(comando()), C.comandoPt(S.item)]);
@@ -392,8 +396,24 @@
     definirEstado('confirmando');
     desenharTudo();
     var parceiro = ouvinteAtual() === 1 ? 2 : 1;
-    $('confirma-texto').textContent = 'Ouvinte ' + parceiro + ', você concorda?';
     mostrarControles('confirma');
+    // O parceiro ouve o comando antes de concordar (com um fone só, ele não
+    // tinha ouvido). Sem som, o comando já aparece escrito.
+    if (!semSom() && !S.parceiroOuviu) {
+      Base.perguntarAoParceiro({
+        texto: 'Ouvinte ' + parceiro + ': ouça o comando antes de responder.',
+        opcoes: [{ rotulo: 'Ouvir o comando', valor: true }],
+        aoResponder: function () {
+          S.parceiroOuviu = true;
+          $('confirma-texto').textContent = 'Ouvinte ' + parceiro + ', você concorda?';
+          $('btn-confirmar').focus({ preventScroll: true });
+          falar([C.en(comando()), F.confirma(parceiro)]);
+        }
+      });
+      falar([F.ouvinte(parceiro), F.ouvirAntes]);
+      return;
+    }
+    $('confirma-texto').textContent = 'Ouvinte ' + parceiro + ', você concorda?';
     $('btn-confirmar').focus({ preventScroll: true });
     falar(F.confirma(parceiro));
   }
@@ -737,6 +757,7 @@
   });
   $('btn-mudar').addEventListener('click', function () {
     if (S.estado !== 'confirmando') return;
+    Base.fimDaPergunta();
     S.tocado = null;
     definirEstado(S.item.tipo === 'tocar' ? 'ouvindo' : 'arrumando');
     desenharTudo();

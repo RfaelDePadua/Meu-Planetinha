@@ -270,7 +270,11 @@
 
   function desenharControles() {
     var tipo = S.missao.tipo;
-    $('dica-toque').hidden = tipo !== 'encontrar';
+    var dica = $('dica-toque');
+    // Em dupla, andando, os dois se revezam a cada passo.
+    if (tipo === 'encontrar') dica.textContent = 'Toque no lugar certo do mapa.';
+    else if (S.modo === 'dupla') dica.textContent = 'Vez do Explorador ' + S.vez + ' apertar';
+    dica.hidden = tipo !== 'encontrar' && S.modo !== 'dupla';
     $('direcoes').hidden = tipo === 'encontrar';
     $('btn-recomecar').hidden = tipo !== 'rota';
     $('btn-cheguei').hidden = tipo !== 'rota';
@@ -365,6 +369,8 @@
     registro.iniciarItem();
     S.erros = 0;
     S.tocado = null;
+    S.duplaConversou = false;
+    S.vez = exploradorAtual();
     S.errados = [];
     S.referenciaDestacada = false;
     S.revelado = false;
@@ -405,13 +411,37 @@
       S.tocado = id;
       definirEstado('confirmando');
       var parceiro = exploradorAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Explorador ' + parceiro + ', você concorda com ' + C.nomeDoLugar(S.missao.mapa, id) + '?';
       mostrarControles('confirma');
+      // Na primeira vez da missão, o parceiro diz sozinho para que lado da
+      // referência fica o lugar tocado; se não for a direção pedida, conversam.
+      if (!S.duplaConversou && id !== S.missao.referencia) {
+        var ordem = etapaAtual().id === 1 ? ['N', 'L', 'S', 'O'] : ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
+        Base.perguntarAoParceiro({
+          texto: 'Explorador ' + parceiro + ': ' + F.perguntaLado(S.missao).charAt(0).toLowerCase() + F.perguntaLado(S.missao).slice(1),
+          opcoes: ordem.map(function (d) { var n = C.DIRECOES[d].nome; return { rotulo: n.charAt(0).toUpperCase() + n.slice(1), valor: d }; }),
+          aoResponder: function (dir) {
+            if (dir === S.missao.dir) { avaliarToque(id); return; }
+            pensaramDiferente('procurando');
+          }
+        });
+        falar([F.explorador(parceiro), F.perguntaLado(S.missao)]);
+        return;
+      }
+      $('confirma-texto').textContent = 'Explorador ' + parceiro + ', você concorda com ' + C.nomeDoLugar(S.missao.mapa, id) + '?';
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
       return;
     }
     avaliarToque(id);
+  }
+
+  function pensaramDiferente(estado) {
+    S.duplaConversou = true;
+    definirEstado(estado);
+    desenharTudo();
+    mostrarControles('acao');
+    aviso(F.pensaramDiferente);
+    falar(F.pensaramDiferente);
   }
 
   function avaliarToque(id) {
@@ -506,6 +536,10 @@
     var antes = S.missao.tipo === 'ir' ? distancia(S.pos, lugar(S.missao.alvo)) : 0;
     S.trilha.push({ x: S.pos.x, y: S.pos.y });
     S.pos = { x: nx, y: ny };
+    if (S.modo === 'dupla') {
+      S.vez = S.vez === 1 ? 2 : 1;
+      $('dica-toque').textContent = 'Vez do Explorador ' + S.vez + ' apertar';
+    }
     som('tique');
     $('anuncio').textContent = 'Andou para o ' + d.nome + '.';
 
@@ -541,8 +575,24 @@
     if (S.modo === 'dupla') {
       definirEstado('confirmando');
       var parceiro = exploradorAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Explorador ' + parceiro + ', você concorda?';
       mostrarControles('confirma');
+      // Na primeira vez da rota, o parceiro conta sozinho quantos quadradinhos
+      // a dupla andou; se não bate com o que andaram, conversam.
+      var andou = S.trilha.length;
+      if (!S.duplaConversou && andou > 0) {
+        var opcoes = [andou - 1, andou, andou + 1].filter(function (n) { return n > 0; });
+        Base.perguntarAoParceiro({
+          texto: 'Explorador ' + parceiro + ': ' + F.perguntaQuadradinhos.charAt(0).toLowerCase() + F.perguntaQuadradinhos.slice(1),
+          opcoes: opcoes.map(function (n) { return { rotulo: String(n), valor: n }; }),
+          aoResponder: function (n) {
+            if (n === andou) { avaliarRota(); return; }
+            pensaramDiferente('andando');
+          }
+        });
+        falar([F.explorador(parceiro), F.perguntaQuadradinhos]);
+        return;
+      }
+      $('confirma-texto').textContent = 'Explorador ' + parceiro + ', você concorda?';
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
       return;
@@ -777,6 +827,7 @@
   });
   $('btn-mudar').addEventListener('click', function () {
     if (S.estado !== 'confirmando') return;
+    Base.fimDaPergunta();
     definirEstado(S.missao.tipo === 'encontrar' ? 'procurando' : 'andando');
     desenharTudo();
     mostrarControles('acao');

@@ -471,6 +471,7 @@
     S.item = escolherItem();
     S.tentativa = 1;
     S.erro1 = null;
+    S.duplaConversou = false;
     registro.iniciarItem();
     S.naveV = 0;
     S.naveY = 0;
@@ -518,8 +519,29 @@
     if (S.modo === 'dupla') {
       definirEstado('confirmando');
       var copiloto = pilotoAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Piloto ' + copiloto + ', você concorda?';
       mostrarControles('confirma');
+      // Na primeira vez do pouso, o copiloto responde sozinho de que lado da
+      // referência fica o número; o jogo compara com o lado da nave.
+      var ref = S.item.max === 2 ? 1 : 0.5;
+      var ladoNave = Math.sign(Math.round((S.naveV - ref) * 1000));
+      if (!S.duplaConversou && Math.abs(S.item.valor - ref) > 1e-9 && ladoNave) {
+        var nome = ref === 1 ? 'do 1' : 'da metade';
+        Base.perguntarAoParceiro({
+          texto: 'Piloto ' + copiloto + ': o número fica antes ou depois ' + nome + '?',
+          opcoes: [{ rotulo: 'Antes ' + nome, valor: -1 }, { rotulo: 'Depois ' + nome, valor: 1 }],
+          aoResponder: function (lado) {
+            if (lado === ladoNave) { pousar(); return; }
+            S.duplaConversou = true;
+            definirEstado('mirando');
+            mostrarControles('mira');
+            aviso(F.pensaramDiferente);
+            falar(F.pensaramDiferente);
+          }
+        });
+        falar([F.piloto(copiloto), ref === 1 ? F.perguntaUm : F.perguntaMetade]);
+        return;
+      }
+      $('confirma-texto').textContent = 'Piloto ' + copiloto + ', você concorda?';
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(copiloto));
       return;
@@ -867,6 +889,7 @@
   $('btn-confirmar').addEventListener('click', function () { if (S.estado === 'confirmando') pousar(); });
   $('btn-ajustar').addEventListener('click', function () {
     if (S.estado !== 'confirmando') return;
+    Base.fimDaPergunta();
     definirEstado('mirando');
     mostrarControles('mira');
     cena.focus({ preventScroll: true });

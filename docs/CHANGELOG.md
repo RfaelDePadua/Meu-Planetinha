@@ -81,6 +81,24 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
     "Chutei" tem resposta própria; o portal repassa ao jogo os ajustes da URL
     (como `?texto=1`) e o som desligado.
 
+- **O que tinha ficado do teste (28/10):**
+  - Modo dupla nos cinco jogos: antes de conferir, o parceiro responde sozinho
+    uma pergunta curta sobre o que o colega fez (de que lado da metade fica o
+    número; qual frase prova; quem come tal ser; para que lado fica o lugar;
+    quantos quadradinhos andaram). Se as respostas não batem, o jogo pede que
+    conversem e decidam juntos. No Listen & Do, o parceiro ouve o comando antes
+    de concordar; no "Leve o explorador", os dois se revezam a cada passo.
+  - Detetive de Letrion: de 12 para 18 casos (6 por nível): convite, fábula da
+    raposa e as uvas, receita, notícia, carta de leitor e texto sobre o
+    tatu-bola.
+  - Teia Viva: previsões cuja resposta é "fica igual" (a lobeira, que nenhuma
+    seta liga aos gafanhotos nem às seriemas); com tudo certo, o jogo explica
+    o caminho inteiro.
+  - Telas: a tela final cabe em 1024×768; no celular em pé, os botões de ação
+    ficam presos ao pé da tela, o Detetive mostra a pergunta antes do texto e
+    os botões de previsão da Teia têm 44 px; no celular deitado, o Listen & Do
+    rola.
+
 ## Alterações a partir do parecer dos professores
 
 Registre aqui cada mudança feita por causa de uma ficha de validação ou de um

@@ -34,8 +34,9 @@ alternam decimal, porcentagem e dinheiro.
 ## Como usar em sala
 
 - **Em dupla no mesmo computador** (botão "Jogar em dupla"): os pilotos se
-  alternam e o copiloto precisa concordar antes de cada pouso. Isso obriga a
-  dupla a conversar sobre onde fica o número.
+  alternam. Antes do pouso, o copiloto responde sozinho se o número fica antes
+  ou depois da metade (ou do 1); se a resposta não bate com o lado da nave, o
+  jogo pede que conversem e ajustem juntos.
 - **Depois do jogo (5 min):** pergunte "como vocês descobriram onde fica 3/4?",
   "por que 6/8 caiu no mesmo lugar que 3/4?", "0,5 e 50% são o mesmo ponto?".
   No fim da missão o próprio jogo pergunta à criança qual estratégia usou.

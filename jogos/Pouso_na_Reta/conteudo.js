@@ -384,6 +384,10 @@
     primeiraVez: 'Arraste a nave até o ponto certo da pista e toque em Pousar.',
     piloto: function (n) { return 'Piloto ' + extenso(n) + '.'; },
     confirma: function (n) { return 'Piloto ' + extenso(n) + ', você concorda com esse pouso?'; },
+    // Modo dupla: pergunta ao copiloto antes do pouso.
+    perguntaMetade: 'O número fica antes ou depois da metade da pista?',
+    perguntaUm: 'O número fica antes ou depois do um?',
+    pensaramDiferente: 'Vocês pensaram diferente. Conversem e ajustem a nave juntos.',
     novaEtapa: function (etapa) { return 'Nova etapa: ' + (etapa.nomeFala || etapa.nome) + '!'; },
     dominio: function (etapa) { return 'Agora você sabe ' + (etapa.dominioFala || etapa.dominio) + '!'; },
     // Os títulos exibidos também são falados; a voz recebe a versão pontuada.
@@ -421,7 +425,8 @@
     TITULOS.forEach(function (t) { add(FALAS.titulo(t)); });
     [1, 2].forEach(function (n) { add(FALAS.piloto(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
-    [FALAS.pista2, FALAS.usarRegua, FALAS.treinar, FALAS.fim, FALAS.pergunta, FALAS.obrigado].forEach(add);
+    [FALAS.pista2, FALAS.usarRegua, FALAS.treinar, FALAS.fim, FALAS.pergunta, FALAS.obrigado,
+      FALAS.perguntaMetade, FALAS.perguntaUm, FALAS.pensaramDiferente].forEach(add);
     return lista;
   }
 

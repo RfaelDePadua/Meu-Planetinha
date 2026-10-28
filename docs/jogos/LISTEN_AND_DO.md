@@ -47,8 +47,9 @@ acerto. Não há vidas, tempo nem ranking.
 
 ## Como usar em sala
 
-- **Em dupla** ("Jogar em dupla"): os ouvintes se alternam; o parceiro precisa
-  concordar antes de conferir. Peça que a dupla diga em voz alta a palavra que
+- **Em dupla** ("Jogar em dupla"): os ouvintes se alternam. Antes de concordar,
+  o parceiro precisa ouvir o comando (botão "Ouvir o comando"); o jogo pede que
+  a dupla use a caixa de som baixinho, para os dois ouvirem. Peça que a dupla diga em voz alta a palavra que
   ouviu ("ouvi *under*, é embaixo").
 - **Depois do jogo (5 min):** o professor diz um comando ("Put your pencil on
   the book!") e a turma faz com objetos de verdade; depois, uma criança dá o

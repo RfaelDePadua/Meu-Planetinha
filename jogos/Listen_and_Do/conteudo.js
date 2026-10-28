@@ -262,6 +262,8 @@
     instrucaoColocar: 'Ouça o comando. Toque na coisa e depois no lugar. No fim, toque em Pronto.',
     instrucaoDois: 'Agora são dois comandos. Faça os dois e toque em Pronto.',
     fones: 'Se puder, use fone de ouvido.',
+    fonesDupla: 'Em dupla, usem a caixa de som baixinho, para os dois ouvirem.',
+    ouvirAntes: 'Ouça o comando antes de responder.',
     isso: 'Isso!',
     issoAjuda: 'Isso, com ajuda!',
     aindaNao: 'Ainda não.',
@@ -291,7 +293,7 @@
   function todasAsFalas() {
     var lista = [];
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
-    ['instrucaoTocar', 'instrucaoColocar', 'instrucaoDois', 'fones', 'isso', 'issoAjuda', 'aindaNao', 'ouvirDeNovo',
+    ['instrucaoTocar', 'instrucaoColocar', 'instrucaoDois', 'fones', 'fonesDupla', 'ouvirAntes', 'isso', 'issoAjuda', 'aindaNao', 'ouvirDeNovo',
       'vamosVer', 'umCerto', 'outraCoisa', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute'].forEach(function (k) { add(FALAS[k]); });
     [1, 2].forEach(function (n) { add(FALAS.ouvinte(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });

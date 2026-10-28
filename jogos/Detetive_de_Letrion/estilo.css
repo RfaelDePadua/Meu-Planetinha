@@ -94,6 +94,10 @@
 .frase.regiao { background: rgba(8, 145, 178, 0.14); box-shadow: inset 0 -3px 0 #0891B2; }
 /* Frase marcada que não prova a resposta (só durante o feedback) */
 .frase.errada { background: #FFD9DC; box-shadow: inset 0 -3px 0 #E5484D; }
+/* Modo dupla: a frase que o parceiro achou, quando é diferente */
+.frase.parceiro { background: #D6ECFF; box-shadow: inset 0 -3px 0 #2F80ED; }
+/* Enquanto o parceiro procura, as frases continuam tocáveis */
+[data-estado="confirmando"] .frase { cursor: pointer; }
 .frase.marcada {
   background: #FFE58A;
   box-shadow: inset 0 -3px 0 #E0A800;
@@ -189,6 +193,8 @@ mark.destaque {
   .mesa { grid-template-columns: 1fr; }
   .texto__topo { flex-wrap: wrap; }
   .texto__corpo, .misterio { overflow: visible; }
+  /* No celular em pé, a pergunta vem antes do texto (senão ficava fora da tela) */
+  .misterio { order: -1; }
 }
 @media (max-height: 460px) {
   .texto__corpo { font-size: 17px; line-height: 1.5; }

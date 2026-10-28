@@ -429,6 +429,200 @@
           explicacao: 'O corvo tentou derrubar o jarro, mas “ele”, o jarro, era pesado demais.'
         }
       ]
+    },
+
+    /* ── Casos novos (28/10/2026): dois por nível ───────── */
+    {
+      id: 'convite-festa', nivel: 1, genero: 'Convite', titulo: 'Convite de aniversário',
+      frases: [
+        'Oi, Lia!',
+        { t: 'Vou fazer 10 anos e quero você na minha festa!', f: 'Vou fazer dez anos e quero você na minha festa!' },
+        { t: 'Vai ser no sábado, às 15h, no salão do prédio.', f: 'Vai ser no sábado, às três da tarde, no salão do prédio.' },
+        'Vai ter bolo de chocolate e pula-pula.',
+        'Traga roupa de banho, porque vamos usar a piscina do prédio.',
+        'Um abraço, Marcos.'
+      ],
+      misterios: [
+        {
+          tipo: 'direta', pergunta: 'Em que lugar vai ser a festa?', pistas: [2],
+          opcoes: [
+            { texto: 'No salão do prédio', certa: true },
+            { texto: 'Na casa da Lia', porque: 'A Lia é quem recebe o convite. A festa não é na casa dela.' },
+            { texto: 'No parque da cidade', porque: 'O convite não fala de parque. Procure a frase que diz onde vai ser.' }
+          ],
+          explicacao: 'A frase que diz “no salão do prédio” mostra o lugar da festa.'
+        },
+        {
+          tipo: 'escondida', pergunta: 'Quem vai fazer aniversário?', pistas: [1, 5],
+          opcoes: [
+            { texto: 'O Marcos', certa: true },
+            { texto: 'A Lia', porque: 'A Lia é quem recebe o convite. Veja quem assina no fim.' },
+            { texto: 'A mãe do Marcos', porque: 'A mãe não aparece no convite. Quem diz “vou fazer 10 anos” é quem escreveu.' }
+          ],
+          explicacao: 'Quem escreveu diz “vou fazer 10 anos”, e quem assina o convite é o Marcos: o aniversário é dele.'
+        }
+      ]
+    },
+    {
+      id: 'raposa-uvas', nivel: 1, genero: 'Fábula', titulo: 'A raposa e as uvas',
+      frases: [
+        'Uma raposa com fome viu um cacho de uvas bem maduras no alto de uma parreira.',
+        'Ela pulou uma, duas, três vezes, mas não alcançou as uvas.',
+        'Cansada, a raposa desistiu.',
+        'Enquanto ia embora, ela resmungou: “Essas uvas estão verdes. Nem queria mesmo!”'
+      ],
+      misterios: [
+        {
+          tipo: 'quem', pergunta: 'Na frase “Ela pulou uma, duas, três vezes”, quem é “ela”?', pistas: [0],
+          destaque: { frase: 1, palavra: 'Ela' },
+          opcoes: [
+            { texto: 'A raposa', certa: true },
+            { texto: 'A parreira', porque: 'A parreira é a planta das uvas. Planta não pula.' },
+            { texto: 'A uva', porque: 'As uvas estavam lá no alto, paradas. Quem pulava para pegá-las era outro bicho.' }
+          ],
+          explicacao: 'A frase de antes fala da raposa com fome. É ela quem pula para pegar as uvas.'
+        },
+        {
+          tipo: 'escondida', pergunta: 'Por que a raposa disse que as uvas estavam verdes?', pistas: [0, 1],
+          opcoes: [
+            { texto: 'Para disfarçar que não conseguiu', certa: true },
+            { texto: 'Porque as uvas ainda estavam verdes', porque: 'O texto diz logo no começo que as uvas estavam bem maduras.' },
+            { texto: 'Porque ela não gostava de uvas', porque: 'Ela estava com fome e pulou três vezes para pegar as uvas: ela queria, sim.' }
+          ],
+          explicacao: 'As uvas estavam maduras e a raposa queria comê-las. Como não conseguiu pegá-las, disse que estavam verdes para disfarçar.'
+        }
+      ]
+    },
+    {
+      id: 'receita-suco', nivel: 2, genero: 'Receita', titulo: 'Suco de laranja com cenoura',
+      frases: [
+        'Ingredientes: duas laranjas, uma cenoura pequena e um copo de água.',
+        'Peça a um adulto para descascar e cortar a cenoura em pedaços.',
+        'Esprema as laranjas e coloque o suco no liquidificador.',
+        'Junte a cenoura e a água, e bata por um minuto.',
+        'Se não gostar dos pedacinhos, coe o suco numa peneira antes de servir.',
+        'Sirva logo, porque o suco perde vitaminas quando fica parado muito tempo.'
+      ],
+      misterios: [
+        {
+          tipo: 'direta', pergunta: 'Quem deve cortar a cenoura?', pistas: [1],
+          opcoes: [
+            { texto: 'Um adulto', certa: true },
+            { texto: 'A criança sozinha', porque: 'A receita pede ajuda: essa parte é de alguém mais velho.' },
+            { texto: 'Quem vai beber o suco', porque: 'O texto não diz isso. Procure a frase que fala da cenoura.' }
+          ],
+          explicacao: 'A frase “Peça a um adulto para descascar e cortar a cenoura” mostra quem corta.'
+        },
+        {
+          tipo: 'palavra', pergunta: 'O que quer dizer “coe” nessa receita?', pistas: [4],
+          destaque: { frase: 4, palavra: 'coe' },
+          opcoes: [
+            { texto: 'Separe os pedacinhos com a peneira', certa: true },
+            { texto: 'Junte mais pedacinhos ao suco de laranja', porque: 'É o contrário: a frase fala de quem não gosta dos pedacinhos.' },
+            { texto: 'Esquente o suco no fogão', porque: 'A receita não usa fogão. Veja o que a frase manda usar.' }
+          ],
+          explicacao: 'Quem não gosta dos pedacinhos passa o suco pela peneira: coar é separar os pedacinhos do líquido.'
+        }
+      ]
+    },
+    {
+      id: 'noticia-ipes', nivel: 2, genero: 'Notícia', titulo: 'Alunos plantam ipês na praça',
+      frases: [
+        { t: 'Os alunos do 4º ano da Escola Rio Claro plantaram vinte mudas de ipê na praça do bairro, na sexta-feira.',
+          f: 'Os alunos do quarto ano da Escola Rio Claro plantaram vinte mudas de ipê na praça do bairro, na sexta-feira.' },
+        'A ideia surgiu depois que a turma estudou, na aula de Ciências, como as árvores deixam o ar mais fresco.',
+        'Cada turma ficou responsável por regar as mudas uma vez por semana.',
+        '“Antes, a praça era só cimento e sol quente”, contou uma aluna.',
+        'Daqui a alguns anos, quando os ipês crescerem, a praça vai ficar cheia de sombra e de flores.',
+        'A prefeitura prometeu colocar bancos perto das árvores.'
+      ],
+      quebras: [3],
+      misterios: [
+        {
+          tipo: 'assunto', pergunta: 'Qual é o assunto principal dessa notícia?', pistas: [0],
+          opcoes: [
+            { texto: 'Alunos que plantaram árvores na praça', certa: true },
+            { texto: 'Uma aula de Ciências sobre o ar fresco', porque: 'A aula aparece só para explicar de onde veio a ideia.' },
+            { texto: 'Os bancos novos que a prefeitura vai pôr', porque: 'Os bancos aparecem só no fim, como uma promessa.' }
+          ],
+          explicacao: 'A primeira frase da notícia conta o fato principal: os alunos plantaram ipês na praça. O resto explica e completa.'
+        },
+        {
+          tipo: 'escondida', pergunta: 'Por que a aluna disse que a praça “era só cimento e sol quente”?', pistas: [3, 4],
+          opcoes: [
+            { texto: 'Porque antes não havia sombra de árvore', certa: true },
+            { texto: 'Porque a praça estava em obra fazia meses', porque: 'O texto não fala de obras. Pense no que as mudas vão trazer.' },
+            { texto: 'Porque ela não gosta de ir à praça', porque: 'Ela fala de como a praça ERA. Veja o que vai mudar quando os ipês crescerem.' }
+          ],
+          explicacao: 'Sem árvores, a praça não tinha sombra. Quando os ipês crescerem, ela vai ficar cheia de sombra: é isso que vai mudar.'
+        }
+      ]
+    },
+    {
+      id: 'carta-leitor', nivel: 3, genero: 'Carta de leitor', titulo: 'Biblioteca no recreio',
+      frases: [
+        { t: 'Sou aluno do 5º ano e leio esta revista todo mês.', f: 'Sou aluno do quinto ano e leio esta revista todo mês.' },
+        'Na minha escola, a biblioteca só abre durante as aulas.',
+        'No recreio, muitos colegas ficam sem ter o que fazer e acabam brigando.',
+        'Por isso, proponho que a biblioteca abra também no recreio, com a ajuda de alunos voluntários.',
+        'Assim, quem gosta de ler teria um lugar tranquilo, e o pátio ficaria menos cheio.',
+        { t: 'Pedro Henrique, 10 anos.', f: 'Pedro Henrique, dez anos.' }
+      ],
+      quebras: [1, 3, 5],
+      misterios: [
+        {
+          tipo: 'assunto', pergunta: 'O que o autor da carta quer?', pistas: [3],
+          opcoes: [
+            { texto: 'Que a biblioteca abra no recreio', certa: true },
+            { texto: 'Que o recreio fique mais comprido', porque: 'Ele não pede mais tempo de recreio. Procure a frase com “proponho”.' },
+            { texto: 'Que os colegas leiam na sala de aula', porque: 'A carta fala do recreio, não da aula. Procure a frase com “proponho”.' }
+          ],
+          explicacao: 'Na frase “proponho que a biblioteca abra também no recreio”, o autor diz o que quer.'
+        },
+        {
+          tipo: 'escondida', pergunta: 'Por que abrir a biblioteca ajudaria até quem não gosta de ler? Junte duas pistas.',
+          pistas: [2, 4], todas: true,
+          opcoes: [
+            { texto: 'Teria menos gente e menos briga no pátio', certa: true },
+            { texto: 'Todos teriam de ler durante o recreio', porque: 'A carta não obriga ninguém. Só quem gosta de ler iria à biblioteca.' },
+            { texto: 'A biblioteca ganharia muitos livros novos', porque: 'A carta não fala de livros novos. Veja o que acontece no pátio.' }
+          ],
+          explicacao: 'No pátio cheio, colegas sem ter o que fazer acabam brigando. Com a biblioteca aberta, o pátio fica menos cheio: ajuda todo mundo.'
+        }
+      ]
+    },
+    {
+      id: 'tatu-bola', nivel: 3, genero: 'Texto informativo', titulo: 'O tatu-bola',
+      frases: [
+        'O tatu-bola é um animal que só existe no Brasil, principalmente na Caatinga e no Cerrado.',
+        'Quando se sente ameaçado, ele se enrola e vira uma bola dura, protegida pela carapaça.',
+        'Essa defesa funciona contra muitos animais, mas não contra as pessoas, que conseguem pegá-lo com facilidade.',
+        'Por causa da caça e da destruição do lugar onde vive, o tatu-bola está ameaçado de extinção.',
+        { t: 'Em 2014, ele foi o mascote da Copa do Mundo no Brasil, e muita gente conheceu a sua história.',
+          f: 'Em dois mil e catorze, ele foi o mascote da Copa do Mundo no Brasil, e muita gente conheceu a sua história.' }
+      ],
+      misterios: [
+        {
+          tipo: 'palavra', pergunta: 'O que quer dizer “carapaça” nesse texto?', pistas: [1],
+          destaque: { frase: 1, palavra: 'carapaça' },
+          opcoes: [
+            { texto: 'A casca dura que cobre o corpo', certa: true },
+            { texto: 'O buraco no chão onde o tatu dorme', porque: 'A frase fala do corpo enrolado virando uma bola dura, não de um buraco.' },
+            { texto: 'A comida preferida do tatu', porque: 'A frase não fala de comida. Ela fala de como o tatu se protege.' }
+          ],
+          explicacao: 'O tatu se enrola e vira uma bola dura, protegida pela carapaça: é a casca dura que cobre o corpo dele.'
+        },
+        {
+          tipo: 'escondida', pergunta: 'Por que ser mascote da Copa pode ter ajudado o tatu-bola? Junte duas pistas.',
+          pistas: [3, 4], todas: true,
+          opcoes: [
+            { texto: 'Mais gente passou a conhecer o perigo dele', certa: true },
+            { texto: 'Ele deixou de ser caçado na mesma hora', porque: 'O texto não diz isso. A Copa fez muita gente conhecer a história dele.' },
+            { texto: 'A Copa foi jogada na Caatinga', porque: 'O texto não diz onde foram os jogos. Veja o que a frase diz sobre as pessoas.' }
+          ],
+          explicacao: 'O tatu-bola está ameaçado de extinção, e a Copa fez muita gente conhecer a história dele. Quem conhece um animal ajuda mais a protegê-lo.'
+        }
+      ]
     }
   ];
 
@@ -458,6 +652,9 @@
     vamosVer: 'Vamos ver juntos.',
     detetive: function (n) { return 'Detetive ' + EXTENSO[n] + '.'; },
     confirma: function (n) { return 'Detetive ' + EXTENSO[n] + ', leia em voz alta a frase marcada. Ela prova a resposta?'; },
+    // Modo dupla: o parceiro procura sozinho a frase que prova.
+    toqueFrase: 'Toque na frase que prova a resposta.',
+    pensaramDiferente: 'Vocês marcaram frases diferentes. A do colega está em azul. Conversem e decidam juntos.',
     novoNivel: 'Muito bem! Os próximos casos vão ser mais difíceis.',
     treinar: 'Vamos treinar com casos mais fáceis.',
     fim: 'Missão concluída!',
@@ -492,7 +689,7 @@
     [1, 2].forEach(function (n) { add(FALAS.detetive(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
     ['duasPistas', 'faltaPista', 'resolvido', 'resolvidoDica', 'respostaCerta', 'pistaNaoProva', 'aindaNao',
-      'olheAqui', 'vamosVer', 'novoNivel', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute',
+      'olheAqui', 'vamosVer', 'novoNivel', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute', 'toqueFrase', 'pensaramDiferente',
       'faltaMarcar', 'faltaEscolher']
       .forEach(function (k) { add(FALAS[k]); });
     return lista;

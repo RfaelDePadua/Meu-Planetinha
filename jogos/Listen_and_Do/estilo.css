@@ -97,6 +97,13 @@
   .btn-ouvir { min-height: 48px; padding: 6px 14px; font-size: 18px; }
 }
 
+/* Celular deitado: a página rola e os botões ficam presos ao pé da tela */
+@media (max-height: 500px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .cena-caixa { min-height: 260px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .coisa { transition: none; }
 }

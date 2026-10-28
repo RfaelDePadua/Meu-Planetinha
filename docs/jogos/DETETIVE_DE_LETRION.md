@@ -48,8 +48,10 @@ vidas, tempo nem ranking.
 ## Como usar em sala
 
 - **Em dupla no mesmo computador** ("Jogar em dupla"): os detetives se
-  alternam e o parceiro precisa concordar com a pista e a resposta antes de
-  resolver. A conversa sobre "qual frase prova?" é o objetivo.
+  alternam. Antes de resolver, o parceiro procura sozinho a frase que prova (a
+  marcação do colega fica escondida). Se marcaram frases diferentes, a do
+  parceiro aparece em azul e o jogo pede que conversem e decidam juntos. A
+  conversa sobre "qual frase prova?" é o objetivo.
 - **Ouvir o texto:** lê o caso em voz alta, frase por frase, destacando a
   frase lida. Ajuda quem ainda lê devagar. Para treinar a leitura sem apoio,
   use `?audio=0`.
@@ -67,8 +69,10 @@ vidas, tempo nem ranking.
 
 ## Os textos
 
-São 12 casos originais escritos para o jogo (as duas fábulas recontam Esopo,
-domínio público), 4 por nível, cada um com 2 mistérios. **É um rascunho:**
+São 18 casos originais escritos para o jogo (as três fábulas recontam Esopo,
+domínio público), 6 por nível, cada um com 2 mistérios. Os casos de um nível
+só se repetem depois que a criança fez todos, começando pelo feito há mais
+tempo. **É um rascunho:**
 precisa de revisão dos professores parceiros quanto a vocabulário, tamanho e
 adequação à turma. Para revisar todas as frases de uma vez, abra
 `ferramentas/roteiro-falas.html?jogo=Detetive_de_Letrion` pelo servidor local.
@@ -102,5 +106,6 @@ mecânica de jogo, e seu efeito ainda precisa ser medido.
 ## Ainda falta
 
 - Revisão dos textos pelos professores e teste com crianças.
-- Mais casos por nível (com 3 casos por sessão, uma criança vê todos em 4 sessões).
+- Mais casos por nível, se as turmas jogarem muitas sessões (hoje, com 3 casos
+  por sessão, uma criança vê todos os 18 em 6 sessões).
 - Mistérios de fato × opinião e de conjunções (EF05LP07).

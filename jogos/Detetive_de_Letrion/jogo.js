@@ -184,10 +184,13 @@
       preencherFrase(el, texto, i);
       var marcada = S.marcadas.indexOf(i) !== -1;
       var ehPista = S.misterio.pistas.indexOf(i) !== -1;
+      // Enquanto o parceiro procura a frase (modo dupla), a marcação do colega fica escondida.
+      if (S.perguntando) marcada = false;
       el.setAttribute('aria-pressed', String(marcada));
       if (S.revelada && ehPista) el.classList.add('certa');
       else if (marcada) el.classList.add('marcada');
       else if (S.erradas.indexOf(i) !== -1) el.classList.add('errada');
+      else if (S.fraseParceiro === i) el.classList.add('parceiro');
       if (S.regiao && !S.revelada && perto(i)) el.classList.add('regiao');
       paragrafo.appendChild(el);
       paragrafo.appendChild(document.createTextNode(' '));
@@ -370,6 +373,9 @@
     S.descartadas = [];
     S.marcadas = [];
     S.erradas = [];
+    S.duplaConversou = false;
+    S.perguntando = false;
+    S.fraseParceiro = null;
     S.tentativa = 1;
     S.motivos = [];
     registro.iniciarItem();
@@ -398,7 +404,9 @@
   }
 
   function alternarFrase(i) {
+    if (S.estado === 'confirmando' && S.perguntando && !S.pausado) { respostaDoParceiro(i); return; }
     if (S.estado !== 'resolvendo' || S.pausado) return;
+    S.fraseParceiro = null;
     var pos = S.marcadas.indexOf(i);
     if (pos !== -1) {
       S.marcadas.splice(pos, 1);
@@ -436,13 +444,36 @@
     if (S.modo === 'dupla') {
       definirEstado('confirmando');
       var parceiro = detetiveAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Detetive ' + parceiro + ', leia em voz alta a frase marcada. Ela prova a resposta?';
       mostrarControles('confirma');
+      // Na primeira vez do mistério, o parceiro procura sozinho a frase que
+      // prova (as marcações do colega ficam escondidas); o jogo compara.
+      if (!S.duplaConversou) {
+        S.perguntando = true;
+        desenharTexto();
+        Base.perguntarAoParceiro({ texto: 'Detetive ' + parceiro + ': toque na frase que prova a resposta.' });
+        falar([F.detetive(parceiro), F.toqueFrase]);
+        return;
+      }
+      $('confirma-texto').textContent = 'Detetive ' + parceiro + ', leia em voz alta a frase marcada. Ela prova a resposta?';
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
       return;
     }
     resolver();
+  }
+
+  function respostaDoParceiro(i) {
+    S.perguntando = false;
+    Base.fimDaPergunta();
+    if (S.marcadas.indexOf(i) !== -1) { resolver(); return; }
+    // Frases diferentes: a do parceiro aparece em azul e a dupla decide junto.
+    S.duplaConversou = true;
+    S.fraseParceiro = i;
+    definirEstado('resolvendo');
+    desenharTudo();
+    mostrarControles('acao');
+    aviso(F.pensaramDiferente);
+    falar(F.pensaramDiferente);
   }
 
   function resolver() {
@@ -709,7 +740,10 @@
   $('btn-confirmar').addEventListener('click', function () { if (S.estado === 'confirmando') resolver(); });
   $('btn-mudar').addEventListener('click', function () {
     if (S.estado !== 'confirmando') return;
+    S.perguntando = false;
+    Base.fimDaPergunta();
     definirEstado('resolvendo');
+    desenharTexto();
     mostrarControles('acao');
   });
   $('btn-seguir').addEventListener('click', function () {

@@ -159,6 +159,12 @@ svg { display: block; }
   font-size: 20px;
   font-weight: 800;
 }
+/* Pergunta ao parceiro (modo dupla): opções no lugar do "Sim" */
+.controles__confirma { flex-wrap: wrap; }
+.controles__confirma.perguntando > .btn-principal { display: none; }
+.dupla-opcoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.dupla-opcoes:empty { display: none; }
+.dupla-opcoes .btn-secundario { min-height: 56px; padding: 10px 20px; font-size: 20px; }
 
 .controles__feedback { justify-content: space-between !important; max-width: 980px; margin: 0 auto; }
 .feedback__texto { display: grid; gap: 2px; font-size: clamp(16px, 2.2vw, 20px); line-height: 1.35; }
@@ -172,16 +178,18 @@ svg { display: block; }
 .controles__feedback[data-tom="demo"] strong { color: var(--ciano); }
 
 /* ── Telas (início, fim, pausa) ──────────────────────── */
+/* Flex + margin:auto centraliza quando cabe e, quando não cabe, rola desde o
+   topo (com place-items:center, o topo do painel ficava cortado). */
 .tela {
   position: absolute;
   inset: 0;
   z-index: 10;
-  display: grid;
-  place-items: center;
+  display: flex;
   padding: 16px;
   background: rgba(10, 14, 40, 0.86);
   overflow: auto;
 }
+.tela > .painel { margin: auto; }
 .painel {
   width: min(560px, 100%);
   padding: clamp(20px, 4vw, 36px);
@@ -325,11 +333,34 @@ svg { display: block; }
 }
 
 /* ── Telas estreitas ou baixas ───────────────────────── */
+/* Quando a página rola (telas estreitas), os botões de ação ficam presos ao
+   pé da tela: Conferir, Resolver, Pronto e Pousar sempre à vista. */
+@media (max-width: 760px), (max-height: 500px) {
+  .controles { position: sticky; bottom: 0; z-index: 5; background: var(--fundo); box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.35); }
+}
 @media (max-width: 640px) {
   .marcadores li { width: 10px; height: 10px; }
   .btn-principal { min-width: 150px; font-size: 20px; }
   .controles__feedback { flex-direction: column; align-items: stretch !important; gap: 10px !important; }
   .reflexao__opcoes { grid-template-columns: 1fr; }
+  .hud { flex-wrap: wrap; }
+  .hud .chip { white-space: normal; }
+}
+/* Tela final em telas baixas (notebook 1024×768, 1366×657): mais compacta,
+   para "Jogar de novo" caber sem rolar. */
+@media (max-height: 860px) and (min-width: 641px) {
+  .painel--fim { padding: 18px 24px; }
+  .painel--fim h2 { font-size: 34px; }
+  .painel--fim .resumo { margin: 10px 0; }
+  .painel--fim .resumo div { padding: 6px 10px; }
+  .painel--fim .resumo strong { font-size: 24px; }
+  .painel--fim .dominio-novo { margin-bottom: 8px; padding: 8px 12px; font-size: 16px; }
+  .painel--fim .etapas { grid-template-columns: repeat(2, 1fr); gap: 4px 8px; margin-bottom: 10px; }
+  .painel--fim .etapas li { padding: 5px 10px; font-size: 15px; }
+  .painel--fim .reflexao__pergunta { margin-bottom: 6px; font-size: 18px; }
+  .painel--fim .reflexao__opcoes { gap: 8px; margin-bottom: 10px; }
+  .painel--fim .reflexao__opcoes button { min-height: 50px; padding: 6px 12px; }
+  .painel--fim .reflexao__obrigado { margin-bottom: 8px; }
 }
 @media (max-height: 460px) {
   .hud { padding-top: 8px; }

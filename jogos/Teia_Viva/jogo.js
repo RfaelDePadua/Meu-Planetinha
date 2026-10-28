@@ -287,7 +287,7 @@
       botao.type = 'button';
       botao.innerHTML = '<svg aria-hidden="true"><use href="#i-' + dir + '"/></svg>';
       botao.setAttribute('aria-label', C.DIRECOES[dir].texto);
-      botao.setAttribute('aria-pressed', String(S.previsoes[id] === dir));
+      botao.setAttribute('aria-pressed', String(S.previsoes[id] === dir && S.ocultarPrevisao !== id));
       botao.disabled = S.estado !== 'prevendo';
       if (S.avaliado && dir === pergunta.resposta && S.previsoes[id] !== dir) botao.classList.add('resposta-real');
       botao.addEventListener('click', function () { escolherPrevisao(id, dir); });
@@ -384,10 +384,13 @@
     var lista = [];
     if (montando()) {
       (item.prontas || []).forEach(function (s) { lista.push({ s: s, tipo: S.certo ? 'certa' : 'pronta' }); });
-      S.setasUsuario.forEach(function (s, i) {
-        var tipo = S.certo ? 'certa' : (contem(S.erradas, s) ? 'errada' : 'usuario');
-        lista.push({ s: s, tipo: tipo, indice: i });
-      });
+      // Enquanto o parceiro responde (modo dupla), as setas do colega ficam escondidas.
+      if (!S.perguntando) {
+        S.setasUsuario.forEach(function (s, i) {
+          var tipo = S.certo ? 'certa' : (contem(S.erradas, s) ? 'errada' : 'usuario');
+          lista.push({ s: s, tipo: tipo, indice: i });
+        });
+      }
       S.demo.forEach(function (s) { lista.push({ s: s, tipo: 'demo' }); });
     } else {
       item.setas.forEach(function (s) { lista.push({ s: s, tipo: contem(materia, s) ? 'materia' : 'pronta' }); });
@@ -554,6 +557,9 @@
     S.tentativa = 1;
     S.setasErradas = 0;
     S.previsoesErradas = 0;
+    S.duplaConversou = false;
+    S.perguntando = false;
+    S.ocultarPrevisao = null;
     registro.iniciarItem();
     S.setasUsuario = [];
     S.erradas = [];
@@ -591,6 +597,7 @@
 
   /* ── Montar ──────────────────────────────────────── */
   function tocarCarta(id) {
+    if (S.estado === 'confirmando' && S.perguntando && !S.pausado) { respostaDoParceiro(id); return; }
     if (S.estado !== 'montando' || S.pausado) return;
     if (!S.selecionada) {
       S.selecionada = id;
@@ -718,7 +725,8 @@
       return cadeia.then(function () { return esperar(i === 0 ? 400 : 850); }).then(function () {
         S.populacao[ser] = nivelFinal[item.efeitos[ser]];
         var pergunta = item.perguntas.filter(function (p) { return p.ser === ser; })[0];
-        S.caminho = pergunta ? [pergunta.caminho[pergunta.caminho.length - 1]] : [];
+        // Quem "fica igual" não tem caminho de setas para destacar.
+        S.caminho = pergunta && pergunta.caminho.length ? [pergunta.caminho[pergunta.caminho.length - 1]] : [];
         som('tique');
         desenharTudo();
       });
@@ -738,11 +746,14 @@
     var titulo;
     var explicacoes;
     if (!erradas.length) {
+      // Tudo certo: explica o caminho inteiro (todas as previsões), não só a última.
       som('acerto');
-      var ultima = item.perguntas[item.perguntas.length - 1];
-      S.caminho = ultima.caminho;
+      S.caminho = [];
+      item.perguntas.forEach(function (p) {
+        p.caminho.forEach(function (s) { if (!contem(S.caminho, s)) S.caminho.push(s); });
+      });
       titulo = F.previsaoCerta;
-      explicacoes = [ultima.explicacao];
+      explicacoes = item.perguntas.map(function (p) { return p.explicacao; });
     } else {
       som('quase');
       S.caminho = [];
@@ -773,13 +784,62 @@
       S.estadoAntes = estado;
       definirEstado('confirmando');
       var parceiro = naturalistaAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Naturalista ' + parceiro + ', você concorda?';
       mostrarControles('confirma');
+      if (!S.duplaConversou) { perguntarAoParceiro(estado, parceiro); return; }
+      $('confirma-texto').textContent = 'Naturalista ' + parceiro + ', você concorda?';
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
       return;
     }
     conferir(estado);
+  }
+
+  // Modo dupla: na primeira conferência da tarefa, o parceiro responde sozinho
+  // uma pergunta sobre o que o colega fez (o que o colega fez fica escondido).
+  // Montar: "quem come X?" tocando na carta. Prever: a previsão de um dos seres.
+  function perguntarAoParceiro(estado, parceiro) {
+    var sorteio = function (lista) { return lista[Math.floor(Math.random() * lista.length)]; };
+    if (estado === 'montando') {
+      var semSol = S.setasUsuario.filter(function (s) { return s[0] !== 'sol'; });
+      var seta = sorteio(semSol.length ? semSol : S.setasUsuario);
+      S.perguntaDupla = { tipo: 'montar', de: seta[0] };
+      S.perguntando = true;
+      desenharTudo();
+      var quem = C.quemCome(seta[0]);
+      Base.perguntarAoParceiro({ texto: 'Naturalista ' + parceiro + ': nesta tarefa, ' + quem.charAt(0).toLowerCase() + quem.slice(1) + ' Toque na carta.' });
+      falar([F.naturalista(parceiro), C.quemCome(seta[0]), F.toqueCarta]);
+      return;
+    }
+    var p = sorteio(S.item.perguntas);
+    S.ocultarPrevisao = p.ser;
+    desenharCartas();
+    Base.perguntarAoParceiro({
+      texto: 'Naturalista ' + parceiro + ': ' + F.perguntaPrevisao(p.ser).charAt(0).toLowerCase() + F.perguntaPrevisao(p.ser).slice(1),
+      opcoes: ['sobe', 'desce', 'igual'].map(function (d) { return { rotulo: C.DIRECOES[d].texto, valor: d }; }),
+      aoResponder: function (dir) { fimDaPerguntaDupla(dir === S.previsoes[p.ser], null); }
+    });
+    falar([F.naturalista(parceiro), F.perguntaPrevisao(p.ser)]);
+  }
+
+  function respostaDoParceiro(id) {
+    var de = S.perguntaDupla.de;
+    Base.fimDaPergunta();
+    fimDaPerguntaDupla(contem(S.setasUsuario, [de, id]), id);
+  }
+
+  function fimDaPerguntaDupla(concordam, cartaParceiro) {
+    S.perguntando = false;
+    S.ocultarPrevisao = null;
+    if (concordam) { conferir(S.estadoAntes); return; }
+    S.duplaConversou = true;
+    definirEstado(S.estadoAntes);
+    desenharTudo();
+    mostrarControles('acao');
+    var texto = cartaParceiro
+      ? F.pensaramDiferente + ' (O colega tocou na carta ' + C.SERES[cartaParceiro].nome + '.)'
+      : F.pensaramDiferente;
+    aviso(texto);
+    falar(F.pensaramDiferente);
   }
 
   function conferir(estado) {
@@ -957,6 +1017,9 @@
   });
   $('btn-mudar').addEventListener('click', function () {
     if (S.estado !== 'confirmando') return;
+    Base.fimDaPergunta();
+    S.perguntando = false;
+    S.ocultarPrevisao = null;
     definirEstado(S.estadoAntes);
     desenharTudo();
     mostrarControles('acao');

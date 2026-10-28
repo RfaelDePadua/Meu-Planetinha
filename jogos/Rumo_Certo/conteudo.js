@@ -319,7 +319,13 @@
     obrigadoChute: 'Tudo bem! Na próxima, olhe a rosa dos ventos antes de escolher.',
     estrategia: function (e) { return e.texto + '.'; },
     explorador: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + '.'; },
-    confirma: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + ', você concorda?'; }
+    confirma: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + ', você concorda?'; },
+    // Modo dupla: o parceiro responde sozinho antes de conferir.
+    perguntaLado: function (missao) {
+      return 'Para que lado d' + nomeDoLugar(missao.mapa, missao.referencia) + ' fica o lugar que o colega tocou?';
+    },
+    perguntaQuadradinhos: 'Quantos quadradinhos vocês andaram ao todo?',
+    pensaramDiferente: 'Vocês pensaram diferente. Conversem e decidam juntos.'
   };
 
   // Todas as frases que o jogo pode falar: o roteiro para gerar os áudios.
@@ -328,7 +334,7 @@
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
     ['instrucaoEncontrar', 'instrucaoIr', 'instrucaoRota', 'mapaGirado', 'achou', 'chegou', 'chegouDica', 'caminhoCerto',
       'quase', 'olheReferencia', 'rosaNoExplorador', 'vamosVer', 'referencia', 'agua', 'borda', 'treinar', 'fim', 'pergunta', 'obrigado',
-      'obrigadoChute']
+      'obrigadoChute', 'perguntaQuadradinhos', 'pensaramDiferente']
       .forEach(function (k) { add(FALAS[k]); });
     [1, 2].forEach(function (n) { add(FALAS.explorador(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
@@ -342,6 +348,7 @@
         if (m.tipo === 'encontrar') {
           add(dicaRosa(m));
           add(explicaEncontrar(m));
+          add(FALAS.perguntaLado(m));
           MAPAS[m.mapa].lugares.forEach(function (l) { if (l.id !== m.alvo && l.id !== m.referencia) add(erroEncontrar(m, l.id)); });
         }
         if (m.tipo === 'ir') add(chegouA(m.mapa, m.alvo));
