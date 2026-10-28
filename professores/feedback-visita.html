@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Feedback da visita — Meu Planetinha</title>
+  <link rel="icon" href="../midia/planetinha-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="impressao.css">
+</head>
+<body>
+  <nav class="tela-apenas barra">
+    <a href="index.html">← Materiais do professor</a>
+    <button type="button" onclick="window.print()">Imprimir</button>
+  </nav>
+
+  <!-- Projeto de extensão, Fase 4: ao final de cada visita, o professor da turma
+       responde este formulário (turmas atendidas, engajamento, ajustes). -->
+  <main class="compacto">
+    <header class="cabecalho">
+      <p class="projeto">Meu Planetinha · IFSULDEMINAS Campus Passos · Projeto de extensão (Edital 07/2026)</p>
+      <h1>Feedback da visita</h1>
+      <div class="campos">
+        <span class="campo"><span>Escola:</span><span class="linha"></span></span>
+        <span class="campo"><span>Data:</span><span class="linha"></span></span>
+      </div>
+      <div class="campos">
+        <span class="campo"><span>Turma (ano):</span><span class="linha"></span></span>
+        <span class="campo"><span>Alunos presentes:</span><span class="linha"></span></span>
+        <span class="campo"><span>Professor(a):</span><span class="linha"></span></span>
+      </div>
+    </header>
+
+    <section class="questao">
+      <p class="enunciado">1. Jogos usados hoje (marque) e tempo aproximado de jogo:</p>
+      <ul class="alternativas">
+        <li>( ) Pouso na Reta (Matemática) &nbsp; ( ) Detetive de Letrion (Português) &nbsp; ( ) Teia Viva (Ciências)</li>
+        <li>( ) Rumo Certo (Geografia) &nbsp; ( ) Listen &amp; Do (Inglês) &nbsp; — tempo: _______ minutos</li>
+      </ul>
+    </section>
+
+    <h2>Como foi (marque um X)</h2>
+    <table class="escala">
+      <thead><tr><th></th><th>Discordo totalmente</th><th>Discordo</th><th>Concordo</th><th>Concordo totalmente</th><th>Não sei</th></tr></thead>
+      <tbody>
+        <tr><td>2. Os alunos ficaram envolvidos com o jogo.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+        <tr><td>3. Entenderam o que fazer sem muita ajuda.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+        <tr><td>4. O nível de dificuldade foi adequado à turma.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+        <tr><td>5. As duplas conversaram sobre o conteúdo.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+        <tr><td>6. O jogo se relacionou com o que a turma está estudando.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+        <tr><td>7. Os equipamentos (computadores, internet, som) funcionaram bem.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+        <tr><td>8. Valeu a pena usar o tempo de aula com o jogo.</td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td><td class="marca"></td></tr>
+      </tbody>
+    </table>
+
+    <section class="questao">
+      <p class="enunciado">9. O que funcionou bem?</p>
+      <p class="linha-resposta"></p><p class="linha-resposta"></p>
+    </section>
+    <section class="questao">
+      <p class="enunciado">10. Que problemas você observou (alunos travados, dúvidas, equipamentos, comportamento)?</p>
+      <p class="linha-resposta"></p><p class="linha-resposta"></p>
+    </section>
+    <section class="questao">
+      <p class="enunciado">11. O que devemos ajustar para a próxima visita?</p>
+      <p class="linha-resposta"></p><p class="linha-resposta"></p>
+    </section>
+    <section class="questao">
+      <p class="enunciado">12. Você usaria os jogos sem a equipe do projeto (em outra aula)? ( ) Sim &nbsp; ( ) Talvez &nbsp; ( ) Não — Por quê?</p>
+      <p class="linha-resposta"></p>
+    </section>
+
+    <p class="legenda">Não escreva nomes de alunos. Obrigado! As respostas entram no relatório do projeto de extensão
+      (turmas atendidas, percepção de engajamento e ajustes para as próximas visitas).</p>
+  </main>
+</body>
+</html>

@@ -9,3 +9,5 @@ estilos/pages/missao-letrion.css export-ignore
 midia/Jogo_de_silaba.png export-ignore
 # Arte-fonte dos planetas (PNG 512 px): o site usa as versões WebP.
 midia/planet-*.png export-ignore
+# Documento interno de apoio aos relatórios (fica no Git, fora do site).
+docs/RELATORIO_APOIO.md export-ignore

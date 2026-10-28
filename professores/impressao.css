@@ -77,6 +77,19 @@ h2 { margin: 18px 0 8px; padding-bottom: 3px; border-bottom: 1.5px solid #000; f
 
 .lista-materiais li { margin: 6px 0; }
 
+/* Escalas de concordância (validação e feedback de visita) */
+.escala { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 10pt; }
+.escala th, .escala td { padding: 4px 6px; border: 1px solid #000; vertical-align: middle; }
+.escala thead th { font-size: 8.5pt; text-align: center; }
+.escala td.marca { width: 17mm; }
+.escala tbody td:first-child { text-align: left; }
+
+/* Apresentação para a escola */
+.apresentacao h2 { margin-top: 14px; }
+.apresentacao ul { margin: 4px 0 8px; padding-left: 6mm; }
+.apresentacao li { margin: 2px 0; }
+.combinados td { height: 11mm; }
+
 @media print {
   body { background: #fff; }
   .tela-apenas { display: none !important; }
@@ -84,3 +97,18 @@ h2 { margin: 18px 0 8px; padding-bottom: 3px; border-bottom: 1.5px solid #000; f
   main.paisagem { page: paisagem; }
   .nova-pagina { break-before: page; }
 }
+
+/* Folhas que precisam caber numa página por lado */
+.compacto { font-size: 10.5pt; line-height: 1.32; }
+.compacto h1 { margin: 2px 0 6px; font-size: 16pt; }
+.compacto h2 { margin: 9px 0 5px; font-size: 12pt; }
+.compacto p { margin: 0 0 5px; }
+.compacto .questao { margin: 5px 0 7px; }
+.compacto .linha-resposta { height: 7.5mm; }
+.compacto .gabarito th, .compacto .gabarito td { padding: 2px 6px; }
+.compacto .escala th, .compacto .escala td { padding: 3px 5px; }
+.compacto .combinados td { height: 8mm; }
+.compacto .observacao th, .compacto .observacao td { padding: 3px 6px; }
+.compacto .apresentacao-lista li, .compacto ul li { margin: 1px 0; }
+.compacto .escala, .compacto .gabarito { font-size: 9.5pt; }
+.compacto .escala thead th { font-size: 8pt; }

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Validação pedagógica — Meu Planetinha</title>
+  <link rel="icon" href="../midia/planetinha-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="impressao.css">
+</head>
+<body>
+  <nav class="tela-apenas barra">
+    <a href="index.html">← Materiais do professor</a>
+    <span id="escolha-jogo"></span>
+    <button type="button" onclick="window.print()">Imprimir</button>
+  </nav>
+
+  <main id="folha" class="compacto"></main>
+
+  <script>
+    /**
+     * Ficha de validação pedagógica (projeto de extensão, Fase 3): antes das
+     * visitas, cada jogo é avaliado por professores das escolas parceiras
+     * (alinhamento curricular, vocabulário, clareza, dificuldade). O verso
+     * registra as mudanças feitas a partir do parecer.
+     * Uma ficha por jogo: validacao.html?jogo=pouso-na-reta
+     */
+    (function () {
+      'use strict';
+
+      var JOGOS = {
+        'pouso-na-reta': {
+          nome: 'Pouso na Reta', planeta: 'Calculon · Matemática',
+          resumo: 'Pousar a nave no ponto da reta numérica onde fica o número pedido (frações, decimais, porcentagem e dinheiro).',
+          etapas: [['Frações unitárias', 'EF04MA09'], ['Frações até 1', 'EF05MA03'], ['Decimais, % e dinheiro', 'EF04MA10 · EF05MA06'],
+            ['Maiores que 1', 'EF05MA03'], ['Mesmo ponto, outro nome (equivalência)', 'EF05MA04 · EF05MA05']]
+        },
+        'detetive-de-letrion': {
+          nome: 'Detetive de Letrion', planeta: 'Letrion · Português',
+          resumo: 'Ler casos curtos, responder perguntas e marcar no texto a frase que prova a resposta.',
+          etapas: [['Pista direta (informação explícita)', 'EF15LP03'], ['Pista escondida (inferência)', 'EF35LP04'],
+            ['Palavra misteriosa (sentido pelo contexto)', 'EF35LP05'], ['Quem é quem (referência)', 'EF35LP06'], ['Assunto principal', 'EF35LP03']]
+        },
+        'teia-viva': {
+          nome: 'Teia Viva', planeta: 'Naturox · Ciências',
+          resumo: 'Montar cadeias e teias alimentares do Cerrado com setas e prever o que acontece quando um ser some ou aumenta.',
+          etapas: [['Cadeias alimentares', 'EF04CI04'], ['Teias alimentares', 'EF04CI04'], ['E se…? Efeito direto', 'EF04CI04'],
+            ['E se…? Efeito em cadeia', 'EF04CI04'], ['Decompositores e o solo', 'EF04CI05 · EF04CI06']]
+        },
+        'rumo-certo': {
+          nome: 'Rumo Certo', planeta: 'Terramund · Geografia',
+          resumo: 'Cumprir missões num mapa com rosa dos ventos e legenda; às vezes o mapa aparece girado.',
+          etapas: [['Pontos cardeais', 'EF04GE09'], ['Pontos colaterais', 'EF04GE09'], ['Legenda do mapa', 'EF03GE07 · EF04GE10'],
+            ['Mapa girado', 'EF04GE09 · EF04GE10'], ['Rotas', 'EF04GE09 · EF04MA16']]
+        },
+        'listen-and-do': {
+          nome: 'Listen & Do', planeta: 'Globish · Inglês (complemento)',
+          resumo: 'Ouvir um comando em inglês e fazer num quarto desenhado ("Put the red ball under the bed"). Vocabulário Cambridge Pre A1 Starters.',
+          etapas: [['Coisas', 'EF04LI10*'], ['Cores', 'EF04LI10*'], ['In, on, under', 'EF05LI02 · EF05LI15*'],
+            ['Cor e lugar (next to)', 'EF05LI02 · EF05LI15*'], ['Dois comandos', 'EF05LI02*']],
+          nota: '* Códigos do Currículo da Cidade de São Paulo (Língua Inglesa): a BNCC só tem inglês a partir do 6º ano.'
+        }
+      };
+
+      // Endereço público do site (impresso a partir do servidor local, também vale o público).
+      var SITE = /^(localhost|127.0.0.1)$/.test(location.hostname) ? 'https://meu-planetinha.netlify.app' : location.origin;
+
+      var ESCALA = ['Discordo totalmente', 'Discordo', 'Concordo', 'Concordo totalmente', 'Não sei'];
+      var AFIRMACOES = [
+        'O conteúdo está correto (não encontrei erros conceituais).',
+        'O jogo trabalha as habilidades da BNCC indicadas acima.',
+        'O vocabulário e as frases são adequados para o 4º e o 5º ano.',
+        'As instruções (faladas e escritas) são claras para as crianças.',
+        'As dicas e explicações ajudam quem erra a entender o porquê.',
+        'Alunos que ainda leem pouco conseguem jogar.',
+        'O jogo combina com o que eu trabalho em sala.'
+      ];
+
+      function el(tag, classe, texto) {
+        var no = document.createElement(tag);
+        if (classe) no.className = classe;
+        if (texto !== undefined) no.textContent = texto;
+        return no;
+      }
+
+      function campos(rotulos) {
+        var c = el('div', 'campos');
+        rotulos.forEach(function (r) {
+          var campo = el('span', 'campo');
+          campo.appendChild(el('span', '', r + ':'));
+          campo.appendChild(el('span', 'linha'));
+          c.appendChild(campo);
+        });
+        return c;
+      }
+
+      function linhas(n) {
+        var caixa = el('div');
+        for (var i = 0; i < n; i++) caixa.appendChild(el('p', 'linha-resposta', ''));
+        return caixa;
+      }
+
+      function montar(id) {
+        var J = JOGOS[id];
+        var folha = document.getElementById('folha');
+        folha.textContent = '';
+        var c = el('header', 'cabecalho');
+        c.appendChild(el('p', 'projeto', 'Meu Planetinha · IFSULDEMINAS Campus Passos · Projeto de extensão (Edital 07/2026)'));
+        c.appendChild(el('h1', '', 'Validação pedagógica — ' + J.nome));
+        c.appendChild(campos(['Escola', 'Data']));
+        c.appendChild(campos(['Professor(a)', 'Ano(s) em que leciona']));
+        folha.appendChild(c);
+
+        folha.appendChild(el('p', 'instrucao', 'Jogue o ' + J.nome + ' por 10 a 15 minutos (de preferência nas várias etapas) em ' +
+          SITE + '/jogos/jogar.html?game=' + id + ' e responda. Não há resposta certa: o objetivo é ajustar o jogo à sua turma.'));
+
+        folha.appendChild(el('h2', '', J.planeta + ' — o que o jogo trabalha'));
+        folha.appendChild(el('p', '', J.resumo));
+        var tab = el('table', 'gabarito');
+        tab.innerHTML = '<thead><tr><th>Etapa</th><th>O que a criança faz</th><th>Habilidade</th></tr></thead>';
+        var corpo = el('tbody');
+        J.etapas.forEach(function (e, i) {
+          var tr = el('tr');
+          tr.appendChild(el('td', '', String(i + 1)));
+          tr.appendChild(el('td', '', e[0]));
+          tr.appendChild(el('td', '', e[1]));
+          corpo.appendChild(tr);
+        });
+        tab.appendChild(corpo);
+        folha.appendChild(tab);
+        if (J.nota) folha.appendChild(el('p', 'legenda', J.nota));
+
+        folha.appendChild(el('h2', '', 'Sua avaliação (marque um X)'));
+        var t = el('table', 'escala');
+        var cab = '<thead><tr><th></th>' + ESCALA.map(function (e) { return '<th>' + e + '</th>'; }).join('') + '</tr></thead>';
+        t.innerHTML = cab;
+        var tb = el('tbody');
+        AFIRMACOES.forEach(function (a, i) {
+          var tr = el('tr');
+          tr.appendChild(el('td', '', (i + 1) + '. ' + a));
+          ESCALA.forEach(function () { tr.appendChild(el('td', 'marca', '')); });
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        folha.appendChild(t);
+
+        var q = el('section', 'questao');
+        q.appendChild(el('p', 'enunciado', '8. O nível de dificuldade para a sua turma é:'));
+        var alt = el('ul', 'alternativas');
+        alt.appendChild(el('li', '', '( ) fácil demais    ( ) adequado    ( ) difícil demais    ( ) depende da etapa: ____________________'));
+        q.appendChild(alt);
+        folha.appendChild(q);
+
+        [['9. Encontrou algum erro de conteúdo, palavra inadequada ou frase confusa? Onde?', 2],
+          ['10. O que você mudaria antes de usar com a sua turma?', 2],
+          ['11. Usaria com a sua turma? ( ) Sim  ( ) Talvez  ( ) Não — Por quê?', 1]].forEach(function (par) {
+          var s = el('section', 'questao');
+          s.appendChild(el('p', 'enunciado', par[0]));
+          s.appendChild(linhas(par[1]));
+          folha.appendChild(s);
+        });
+
+        // Verso: registro da equipe (Avaliação do projeto: nº de modificações a partir do parecer docente)
+        var verso = el('section', 'nova-pagina');
+        verso.appendChild(el('h2', '', 'Para a equipe — mudanças feitas a partir deste parecer'));
+        verso.appendChild(el('p', 'instrucao', 'Anote cada ajuste feito no jogo por causa desta ficha (o projeto conta quantas modificações vieram do parecer docente).'));
+        var reg = el('table', 'observacao');
+        reg.innerHTML = '<thead><tr><th style="width:22mm">Data</th><th>O que mudou no jogo</th><th style="width:40mm">Item da ficha</th><th style="width:30mm">Versão (commit)</th></tr></thead>';
+        var rb = el('tbody');
+        for (var k = 0; k < 7; k++) rb.innerHTML += '<tr><td></td><td></td><td></td><td></td></tr>';
+        reg.appendChild(rb);
+        verso.appendChild(reg);
+        folha.appendChild(verso);
+        document.title = 'Validação — ' + J.nome + ' — Meu Planetinha';
+      }
+
+      var escolha = document.getElementById('escolha-jogo');
+      Object.keys(JOGOS).forEach(function (id, i) {
+        if (i) escolha.appendChild(document.createTextNode(' · '));
+        var a = el('a', '', JOGOS[id].nome);
+        a.href = '?jogo=' + id;
+        escolha.appendChild(a);
+      });
+
+      var pedido = new URLSearchParams(location.search).get('jogo');
+      montar(JOGOS[pedido] ? pedido : 'pouso-na-reta');
+    })();
+  </script>
+</body>
+</html>
