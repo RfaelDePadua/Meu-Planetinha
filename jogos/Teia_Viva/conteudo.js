@@ -84,7 +84,11 @@
         { seres: ['sol', 'pequizeiro', 'lagarta', 'bemtevi', 'gaviao'] },
         { seres: ['sol', 'algas', 'lambari', 'garca'] },
         { seres: ['sol', 'capim', 'prea', 'cobra', 'gaviao'] },
-        { seres: ['sol', 'lobeira', 'loboguara'] }
+        { seres: ['sol', 'lobeira', 'loboguara'] },
+        { seres: ['sol', 'capim', 'gafanhoto', 'seriema'] },
+        { seres: ['sol', 'capim', 'gafanhoto', 'bemtevi', 'gaviao'] },
+        { seres: ['sol', 'algas', 'lambari', 'traira', 'garca'] },
+        { seres: ['sol', 'capim', 'prea', 'loboguara'] }
       ].map(function (item) {
         item.setas = item.seres.slice(1).map(function (s, i) { return [item.seres[i], s]; });
         item.embaralhar = true;
@@ -98,7 +102,11 @@
         { teia: 'campo', faltam: [['capim', 'prea'], ['sapo', 'cobra'], ['prea', 'gaviao']] },
         { teia: 'campo', faltam: [['capim', 'gafanhoto'], ['gafanhoto', 'sapo'], ['cobra', 'gaviao']] },
         { teia: 'lobo', faltam: [['lobeira', 'loboguara'], ['prea', 'loboguara'], ['gafanhoto', 'seriema']] },
-        { teia: 'lagoa', faltam: [['algas', 'lambari'], ['traira', 'garca']] }
+        { teia: 'lagoa', faltam: [['algas', 'lambari'], ['traira', 'garca']] },
+        { teia: 'campo', faltam: [['sol', 'capim'], ['prea', 'cobra'], ['cobra', 'gaviao']] },
+        { teia: 'lobo', faltam: [['sol', 'lobeira'], ['capim', 'prea'], ['prea', 'loboguara']] },
+        { teia: 'lobo', faltam: [['sol', 'capim'], ['capim', 'gafanhoto'], ['lobeira', 'loboguara']] },
+        { teia: 'lagoa', faltam: [['lambari', 'traira'], ['lambari', 'garca']] }
       ]
     },
     {
@@ -129,6 +137,39 @@
           teia: 'lagoa', alvo: 'traira', direcao: 'desce', evento: 'Pescadores tiraram muitas traíras da lagoa.',
           perguntas: [
             { ser: 'lambari', resposta: 'sobe', explicacao: 'A traíra come lambaris. Com menos traíras caçando, os lambaris aumentam.', caminho: [['lambari', 'traira']] }
+          ]
+        },
+        {
+          teia: 'campo', alvo: 'cobra', direcao: 'desce', evento: 'Uma doença atingiu as cobras do campo.',
+          perguntas: [
+            { ser: 'sapo', resposta: 'sobe', explicacao: 'A cobra come sapos. Com menos cobras caçando, os sapos aumentam.', caminho: [['sapo', 'cobra']] },
+            { ser: 'prea', resposta: 'sobe', explicacao: 'A cobra também come preás. Com menos cobras, os preás aumentam.', caminho: [['prea', 'cobra']] }
+          ]
+        },
+        {
+          teia: 'lobo', alvo: 'gafanhoto', direcao: 'sobe', evento: 'Apareceram muitos gafanhotos no Cerrado.',
+          perguntas: [
+            { ser: 'seriema', resposta: 'sobe', explicacao: 'A seriema come gafanhotos. Com mais comida, as seriemas aumentam.', caminho: [['gafanhoto', 'seriema']] },
+            { ser: 'capim', resposta: 'desce', explicacao: 'Os gafanhotos comem capim. Com muitos gafanhotos, o capim diminui.', caminho: [['capim', 'gafanhoto']] }
+          ]
+        },
+        {
+          teia: 'lagoa', alvo: 'algas', direcao: 'sobe', evento: 'Com sol forte e água limpa, as algas cresceram muito.',
+          perguntas: [
+            { ser: 'lambari', resposta: 'sobe', explicacao: 'O lambari come algas. Com mais comida, os lambaris aumentam.', caminho: [['algas', 'lambari']] }
+          ]
+        },
+        {
+          teia: 'campo', alvo: 'prea', direcao: 'desce', evento: 'Uma doença atingiu os preás do campo.',
+          perguntas: [
+            { ser: 'capim', resposta: 'sobe', explicacao: 'O preá come capim. Com menos preás comendo, o capim aumenta.', caminho: [['capim', 'prea']] },
+            { ser: 'gaviao', resposta: 'desce', explicacao: 'O gavião come preás. Com menos comida, os gaviões diminuem.', caminho: [['prea', 'gaviao']] }
+          ]
+        },
+        {
+          teia: 'lobo', alvo: 'loboguara', direcao: 'desce', evento: 'Atropelamentos nas estradas diminuíram os lobos-guará.',
+          perguntas: [
+            { ser: 'prea', resposta: 'sobe', explicacao: 'O lobo-guará come preás. Com menos lobos-guará caçando, os preás aumentam.', caminho: [['prea', 'loboguara']] }
           ]
         }
       ]
@@ -166,6 +207,38 @@
             { ser: 'lambari', resposta: 'sobe', explicacao: 'A traíra come lambaris. Com menos traíras, os lambaris aumentam.', caminho: [['lambari', 'traira']] },
             { ser: 'algas', resposta: 'desce', explicacao: 'Com mais lambaris comendo algas, as algas diminuem.', caminho: [['lambari', 'traira'], ['algas', 'lambari']] }
           ]
+        },
+        {
+          teia: 'campo', alvo: 'capim', direcao: 'sobe', evento: 'Choveu bem e o capim cresceu muito.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'sobe', explicacao: 'O gafanhoto come capim. Com mais comida, os gafanhotos aumentam.', caminho: [['capim', 'gafanhoto']] },
+            { ser: 'sapo', resposta: 'sobe', explicacao: 'Com mais gafanhotos, os sapos têm mais comida e aumentam.', caminho: [['capim', 'gafanhoto'], ['gafanhoto', 'sapo']] },
+            { ser: 'cobra', resposta: 'sobe', explicacao: 'Com mais sapos, as cobras também têm mais comida e aumentam.', caminho: [['gafanhoto', 'sapo'], ['sapo', 'cobra']] }
+          ]
+        },
+        {
+          teia: 'lobo', alvo: 'capim', direcao: 'desce', evento: 'Uma queimada destruiu boa parte do capim.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'desce', explicacao: 'O gafanhoto come capim. Com pouco capim, os gafanhotos diminuem.', caminho: [['capim', 'gafanhoto']] },
+            { ser: 'seriema', resposta: 'desce', explicacao: 'Com menos gafanhotos, as seriemas têm menos comida e diminuem.', caminho: [['capim', 'gafanhoto'], ['gafanhoto', 'seriema']] },
+            { ser: 'prea', resposta: 'desce', explicacao: 'O preá também come capim. Com pouco capim, os preás diminuem.', caminho: [['capim', 'prea']] }
+          ]
+        },
+        {
+          teia: 'lagoa', alvo: 'algas', direcao: 'desce', evento: 'A água ficou turva e as algas diminuíram.',
+          perguntas: [
+            { ser: 'lambari', resposta: 'desce', explicacao: 'O lambari come algas. Com menos algas, os lambaris diminuem.', caminho: [['algas', 'lambari']] },
+            { ser: 'traira', resposta: 'desce', explicacao: 'Com menos lambaris, as traíras têm menos comida e diminuem.', caminho: [['algas', 'lambari'], ['lambari', 'traira']] },
+            { ser: 'garca', resposta: 'desce', explicacao: 'A garça come lambaris e traíras. Com os dois diminuindo, as garças também diminuem.', caminho: [['lambari', 'garca'], ['traira', 'garca']] }
+          ]
+        },
+        {
+          teia: 'campo', alvo: 'sapo', direcao: 'desce', evento: 'Uma doença atingiu os sapos do campo.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'sobe', explicacao: 'O sapo come gafanhotos. Com menos sapos, os gafanhotos aumentam.', caminho: [['gafanhoto', 'sapo']] },
+            { ser: 'capim', resposta: 'desce', explicacao: 'Com mais gafanhotos comendo capim, o capim diminui.', caminho: [['gafanhoto', 'sapo'], ['capim', 'gafanhoto']] },
+            { ser: 'cobra', resposta: 'desce', explicacao: 'A cobra come sapos. Com menos sapos, as cobras têm menos comida e diminuem.', caminho: [['sapo', 'cobra']] }
+          ]
         }
       ]
     },
@@ -186,6 +259,28 @@
           perguntas: [
             { ser: 'fungos', resposta: 'sobe', explicacao: 'As folhas mortas são o alimento dos fungos e bactérias. Com mais folhas, eles aumentam.', caminho: [['restos', 'fungos']] },
             { ser: 'solo', resposta: 'sobe', explicacao: 'Decompondo as folhas, os fungos e bactérias devolvem mais nutrientes para o solo.', caminho: [['restos', 'fungos'], ['fungos', 'solo']] }
+          ]
+        },
+        {
+          teia: 'solo', alvo: 'restos', direcao: 'desce', evento: 'Varreram e queimaram todas as folhas caídas no chão.',
+          perguntas: [
+            { ser: 'fungos', resposta: 'desce', explicacao: 'Os restos e folhas mortas são o alimento dos fungos e bactérias. Sem eles, os fungos e bactérias diminuem.', caminho: [['restos', 'fungos']] },
+            { ser: 'solo', resposta: 'desce', explicacao: 'Sem restos para decompor, menos nutrientes voltam para o solo.', caminho: [['restos', 'fungos'], ['fungos', 'solo']] },
+            { ser: 'capim', resposta: 'desce', explicacao: 'Com o solo mais pobre, o capim cresce menos.', caminho: [['fungos', 'solo'], ['solo', 'capim']] }
+          ]
+        },
+        {
+          teia: 'solo', alvo: 'solo', direcao: 'sobe', evento: 'O agricultor fez compostagem e o solo ficou rico em nutrientes.',
+          perguntas: [
+            { ser: 'capim', resposta: 'sobe', explicacao: 'O capim usa os nutrientes do solo para crescer. Com o solo rico, o capim aumenta.', caminho: [['solo', 'capim']] },
+            { ser: 'gafanhoto', resposta: 'sobe', explicacao: 'Com mais capim, os gafanhotos têm mais comida e aumentam.', caminho: [['solo', 'capim'], ['capim', 'gafanhoto']] }
+          ]
+        },
+        {
+          teia: 'solo', alvo: 'capim', direcao: 'desce', evento: 'Uma seca forte secou o capim.',
+          perguntas: [
+            { ser: 'gafanhoto', resposta: 'desce', explicacao: 'O gafanhoto come capim. Com pouco capim, os gafanhotos diminuem.', caminho: [['capim', 'gafanhoto']] },
+            { ser: 'sapo', resposta: 'desce', explicacao: 'Com menos gafanhotos, os sapos têm menos comida e diminuem.', caminho: [['capim', 'gafanhoto'], ['gafanhoto', 'sapo']] }
           ]
         }
       ]

@@ -167,7 +167,10 @@
       itens: [
         encontrar('vila', 'casaN', 'praca', 'N'), encontrar('vila', 'casaS', 'praca', 'S'),
         encontrar('vila', 'casaL', 'praca', 'L'), encontrar('vila', 'casaO', 'praca', 'O'),
-        ir('vila', 'escola', 'praca'), ir('vila', 'mercado', 'biblioteca'), ir('vila', 'praca', 'posto')
+        ir('vila', 'escola', 'praca'), ir('vila', 'mercado', 'biblioteca'), ir('vila', 'praca', 'posto'),
+        encontrar('vila', 'posto', 'escola', 'L'), encontrar('vila', 'lago', 'posto', 'S'),
+        encontrar('vila', 'casaL', 'biblioteca', 'N'), encontrar('vila', 'casaS', 'biblioteca', 'O'),
+        encontrar('vila', 'casaO', 'escola', 'S'), ir('vila', 'biblioteca', 'escola'), ir('vila', 'posto', 'mercado')
       ]
     },
     {
@@ -175,7 +178,9 @@
       dominio: 'usar nordeste, noroeste, sudeste e sudoeste',
       itens: [
         encontrar('sitio', 'casaNE', 'poco', 'NE'), encontrar('sitio', 'casaNO', 'poco', 'NO'),
-        encontrar('sitio', 'casaSE', 'poco', 'SE'), encontrar('sitio', 'casaSO', 'poco', 'SO')
+        encontrar('sitio', 'casaSE', 'poco', 'SE'), encontrar('sitio', 'casaSO', 'poco', 'SO'),
+        encontrar('vila', 'casaN', 'escola', 'NE'), encontrar('vila', 'mercado', 'praca', 'SO'),
+        encontrar('vila', 'biblioteca', 'praca', 'SE'), encontrar('vila', 'escola', 'praca', 'NO')
       ]
     },
     {
@@ -184,7 +189,9 @@
       itens: [
         encontrar('cidade', 'hospitalS', 'ponte', 'SE'), encontrar('cidade', 'hospitalN', 'ponte', 'NO'),
         encontrar('cidade', 'mercadoN', 'ponte', 'NE'), encontrar('cidade', 'mercadoS', 'ponte', 'SO'),
-        ir('cidade', 'correio', 'hospitalS'), ir('cidade', 'escolaS', 'mercadoN')
+        ir('cidade', 'correio', 'hospitalS'), ir('cidade', 'escolaS', 'mercadoN'),
+        encontrar('cidade', 'escolaN', 'ponte', 'N'), encontrar('cidade', 'escolaS', 'ponte', 'SO'),
+        encontrar('cidade', 'correio', 'ponte', 'NO'), ir('cidade', 'escolaN', 'escolaS'), ir('cidade', 'mercadoS', 'correio')
       ]
     },
     {
@@ -193,7 +200,10 @@
       itens: [
         girado(encontrar('vila', 'casaN', 'praca', 'N'), 180), girado(encontrar('vila', 'casaL', 'praca', 'L'), 90),
         girado(encontrar('vila', 'casaO', 'praca', 'O'), 270), girado(ir('vila', 'escola', 'praca'), 90),
-        girado(ir('vila', 'mercado', 'biblioteca'), 180), girado(encontrar('sitio', 'casaNE', 'poco', 'NE'), 90)
+        girado(ir('vila', 'mercado', 'biblioteca'), 180), girado(encontrar('sitio', 'casaNE', 'poco', 'NE'), 90),
+        girado(encontrar('vila', 'posto', 'escola', 'L'), 90), girado(encontrar('vila', 'lago', 'posto', 'S'), 180),
+        girado(encontrar('vila', 'casaS', 'biblioteca', 'O'), 270), girado(ir('vila', 'posto', 'mercado'), 270),
+        girado(encontrar('sitio', 'casaSO', 'poco', 'SO'), 180)
       ]
     },
     {
@@ -202,7 +212,11 @@
       itens: [
         rota('vila', 'escola', [['S', 2], ['L', 2]]), rota('vila', 'mercado', [['L', 3], ['S', 1]]),
         rota('vila', 'praca', [['N', 2], ['L', 3]]), girado(rota('vila', 'escola', [['L', 2], ['S', 2]]), 180),
-        rota('sitio', 'escola', [['L', 1], ['N', 2]])
+        rota('sitio', 'escola', [['L', 1], ['N', 2]]),
+        rota('vila', 'posto', [['O', 3], ['S', 2]]), rota('vila', 'biblioteca', [['N', 2], ['O', 2]]),
+        rota('vila', 'mercado', [['N', 3], ['L', 1]]), rota('vila', 'casaN', [['S', 3], ['O', 2]]),
+        rota('sitio', 'poco', [['N', 2], ['L', 2]]), rota('sitio', 'escola', [['S', 2], ['L', 1]]),
+        girado(rota('vila', 'posto', [['O', 3], ['S', 2]]), 90)
       ]
     }
   ];
