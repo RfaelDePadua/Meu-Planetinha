@@ -197,8 +197,7 @@
         {
           teia: 'lobo', alvo: 'lobeira', direcao: 'sobe', evento: 'As lobeiras deram muitos frutos este ano.',
           perguntas: [
-            { ser: 'loboguara', resposta: 'sobe', explicacao: 'O lobo-guará come o fruto da lobeira. Com mais comida, os lobos-guará aumentam.', caminho: [['lobeira', 'loboguara']] },
-            { ser: 'prea', resposta: 'desce', explicacao: 'O lobo-guará também come preás. Com mais lobos-guará, mais preás são comidos.', caminho: [['lobeira', 'loboguara'], ['prea', 'loboguara']] }
+            { ser: 'loboguara', resposta: 'sobe', explicacao: 'O lobo-guará come o fruto da lobeira. Com mais comida, os lobos-guará aumentam.', caminho: [['lobeira', 'loboguara']] }
           ]
         },
         {
@@ -262,7 +261,7 @@
           ]
         },
         {
-          teia: 'solo', alvo: 'restos', direcao: 'desce', evento: 'Varreram e queimaram todas as folhas caídas no chão.',
+          teia: 'solo', alvo: 'restos', direcao: 'desce', evento: 'Varreram e levaram embora todas as folhas caídas no chão.',
           perguntas: [
             { ser: 'fungos', resposta: 'desce', explicacao: 'Os restos e folhas mortas são o alimento dos fungos e bactérias. Sem eles, os fungos e bactérias diminuem.', caminho: [['restos', 'fungos']] },
             { ser: 'solo', resposta: 'desce', explicacao: 'Sem restos para decompor, menos nutrientes voltam para o solo.', caminho: [['restos', 'fungos'], ['fungos', 'solo']] },
@@ -277,10 +276,11 @@
           ]
         },
         {
-          teia: 'solo', alvo: 'capim', direcao: 'desce', evento: 'Uma seca forte secou o capim.',
+          teia: 'solo', alvo: 'fungos', direcao: 'sobe', evento: 'Com chuva e calor, os fungos e bactérias do solo se multiplicaram.',
           perguntas: [
-            { ser: 'gafanhoto', resposta: 'desce', explicacao: 'O gafanhoto come capim. Com pouco capim, os gafanhotos diminuem.', caminho: [['capim', 'gafanhoto']] },
-            { ser: 'sapo', resposta: 'desce', explicacao: 'Com menos gafanhotos, os sapos têm menos comida e diminuem.', caminho: [['capim', 'gafanhoto'], ['gafanhoto', 'sapo']] }
+            { ser: 'restos', resposta: 'desce', explicacao: 'Mais fungos e bactérias decompõem os restos mais depressa. Os restos e folhas mortas diminuem.', caminho: [['restos', 'fungos']] },
+            { ser: 'solo', resposta: 'sobe', explicacao: 'Decompondo mais restos, os fungos e bactérias devolvem mais nutrientes para o solo.', caminho: [['fungos', 'solo']] },
+            { ser: 'capim', resposta: 'sobe', explicacao: 'Com mais nutrientes no solo, o capim cresce mais.', caminho: [['fungos', 'solo'], ['solo', 'capim']] }
           ]
         }
       ]
@@ -326,11 +326,13 @@
         : 'Ninguém alimenta o Sol. A energia sai do Sol e vai para as plantas.';
     }
     if (invertida) {
-      return 'Seta ao contrário: é ' + A.o + ' que come ' + B.o + '. A seta vai de quem é comido para quem come.';
+      var pluralA = /^(os|as) /.test(A.o);
+      return 'Seta ao contrário: ' + (pluralA ? 'são ' : 'é ') + A.o + (pluralA ? ' que comem ' : ' que come ') + B.o + '. A seta vai de quem é comido para quem come.';
     }
-    if (a === 'sol') return maiuscula(B.o) + ' não se alimenta da luz do Sol. Só as plantas e as algas usam a luz do Sol para produzir alimento.';
-    if (ehProdutor(b)) return maiuscula(B.o) + ' não come outros seres. As plantas e as algas produzem o próprio alimento com a luz do Sol.';
-    return maiuscula(B.o) + ' não come ' + A.o + '.';
+    var plural = /^(os|as) /.test(B.o);
+    if (a === 'sol') return maiuscula(B.o) + (plural ? ' não se alimentam' : ' não se alimenta') + ' da luz do Sol. Só as plantas e as algas usam a luz do Sol para produzir alimento.';
+    if (ehProdutor(b)) return maiuscula(B.o) + (plural ? ' não comem' : ' não come') + ' outros seres. As plantas e as algas produzem o próprio alimento com a luz do Sol.';
+    return 'Nesta tarefa, a seta ' + de(a) + ' não vai para ' + B.o + '. Procure quem come ' + A.o + ' aqui.';
   }
 
   function quemCome(id) { return id === 'sol' ? 'Quem usa a luz do Sol?' : 'Quem come ' + SERES[id].o + '?'; }
@@ -362,7 +364,8 @@
     instrucaoMontar: 'Toque em um ser vivo e depois em quem come ele. A seta mostra para onde vai a energia.',
     instrucaoCadeia: 'Monte a cadeia alimentar começando pelo Sol.',
     instrucaoTeia: 'Complete a teia: faltam algumas setas.',
-    instrucaoPrever: 'Para cada ser marcado, diga se ele vai aumentar, diminuir ou ficar igual. Depois veja o que acontece.',
+    instrucaoPrever: 'Para cada carta marcada, diga se ela vai aumentar, diminuir ou ficar igual. Depois veja o que acontece.',
+    faltaPrever: function (ser) { return 'Falta escolher para ' + SERES[ser].o + '.'; },
     faltaSeta: function (n) { return n === 1 ? 'Ainda falta uma seta.' : 'Ainda faltam ' + ['', '', 'duas', 'três', 'quatro', 'cinco'][n] + ' setas.'; },
     dicaMontar: 'Comece pelo Sol: quem usa a luz do Sol? Depois, quem come essa planta?',
     certo: 'Teia certinha!',
@@ -379,8 +382,9 @@
     treinar: 'Vamos treinar mais um pouco.',
     fim: 'Missão concluída!',
     dominio: function (etapa) { return 'Agora você sabe ' + etapa.dominio + '!'; },
-    pergunta: 'Como você fez as suas previsões?',
+    pergunta: 'Como você descobriu as respostas?',
     obrigado: 'Boa! Conte para o seu professor como você fez.',
+    obrigadoChute: 'Tudo bem! Na próxima, tente seguir as setas, uma de cada vez.',
     estrategia: function (e) { return e.texto + '.'; },
     evento: function (item) { return item.evento; },
     previsao: function (ser, dir) { return maiuscula(SERES[ser].o) + ' ' + DIRECOES[dir].fala + '.'; }
@@ -391,7 +395,7 @@
     var lista = [];
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
     ['instrucaoMontar', 'instrucaoCadeia', 'instrucaoTeia', 'instrucaoPrever', 'dicaMontar', 'certo', 'certoCadeia', 'certoDica',
-      'previsaoCerta', 'previsaoParte', 'vamosVer', 'temErrada', 'quaseLa', 'treinar', 'fim', 'pergunta', 'obrigado']
+      'previsaoCerta', 'previsaoParte', 'vamosVer', 'temErrada', 'quaseLa', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute']
       .forEach(function (k) { add(FALAS[k]); });
     [1, 2, 3, 4, 5].forEach(function (n) { add(FALAS.faltaSeta(n)); });
     [1, 2].forEach(function (n) { add(FALAS.naturalista(n)); add(FALAS.confirma(n)); });
@@ -414,6 +418,7 @@
           add(item.evento);
           item.perguntas.forEach(function (p) {
             add(p.explicacao);
+            add(FALAS.faltaPrever(p.ser));
             Object.keys(DIRECOES).forEach(function (d) { add(FALAS.previsao(p.ser, d)); });
           });
         }

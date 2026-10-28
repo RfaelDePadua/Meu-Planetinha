@@ -186,7 +186,7 @@
     {
       id: 5, nome: 'Mesmo ponto, outro nome', bncc: 'EF05MA04 · EF05MA05', tolerancia: 0.05,
       dominio: 'reconhecer frações equivalentes e comparar números na reta',
-      itens: [[2, 4], [3, 6], [4, 8], [5, 10], [2, 6], [4, 6], [2, 8], [6, 8], [4, 10], [6, 10], [8, 10]]
+      itens: [[2, 4], [4, 8], [2, 10], [3, 9], [2, 6], [4, 6], [2, 8], [6, 8], [4, 10], [6, 10], [8, 10]]
         .map(function (p) { return equivalente(p[0], p[1]); })
         .concat([
           comMarco(equivalente(6, 8), fracao(3, 4, 1)),
@@ -199,6 +199,19 @@
         ])
     }
   ];
+
+  // Tolerância de cada item, em fração da pista: a da etapa, mas nunca mais que
+  // metade da distância até o valor vizinho mais perto na mesma etapa. Assim o
+  // pouso no ponto de outro item (1/8 no lugar de 1/10) não conta como certo.
+  ETAPAS.forEach(function (etapa) {
+    etapa.itens.forEach(function (item) {
+      var perto = etapa.itens.reduce(function (menor, outro) {
+        var d = Math.abs(outro.valor - item.valor);
+        return d > 1e-9 && d < menor ? d : menor;
+      }, Infinity);
+      item.tolerancia = Math.min(etapa.tolerancia, perto / 2 / item.max);
+    });
+  });
 
   /* ------------------------------------------------
      Textos de apoio: cada função devolve { texto, fala }
@@ -255,7 +268,7 @@
 
   function rotulosExtremos(item) {
     if (item.tipo === 'porcentagem') return ['0%', '100%'];
-    if (item.tipo === 'dinheiro') return ['R$ 0', 'R$ 1'];
+    if (item.tipo === 'dinheiro') return ['R$ 0,00', 'R$ 1,00'];
     return item.max === 2 ? ['0', '1', '2'] : ['0', '1'];
   }
 
@@ -275,7 +288,7 @@
         '. Mesmo lugar, outro nome.']);
     }
     if (item.passos === 1) {
-      return frase([rep(item), ' é uma das ', contagem(item.partes, 'parte igual', 'partes iguais'),
+      return frase([['Do 0 até ', 'Do zero até '], rep(item), ' é uma das ', contagem(item.partes, 'parte igual', 'partes iguais'),
         item.tipo === 'dinheiro' ? [' de R$ 1.', ' de um real.'] : ' da pista.']);
     }
     switch (item.tipo) {
@@ -298,7 +311,7 @@
         return frase([CEM, ' é a pista toda. ', rep(item), ' são ',
           contagem(item.passos, 'parte', 'partes'), ' de ', unidade(item), '.']);
       default:
-        return frase([rep(item), ' são ', contagem(item.passos, 'moeda', 'moedas'),
+        return frase([rep(item), ' são ', contagem(item.passos, 'parte', 'partes'),
           ' de ', unidade(item), '.']);
     }
   }
@@ -313,7 +326,7 @@
     if (item.marco) return frase(['Compare com ', rep(item.marco), ', que já está marcado.']);
     var lado = Math.sign(item.valor - referencia(item));
     if (!lado) return null;
-    var nomeRef = item.max === 2 ? ['o 1', 'o um'] : ['a metade', 'a metade'];
+    var nomeRef = item.max === 2 ? ['1 inteiro', 'um inteiro'] : ['a metade', 'a metade'];
     return frase([rep(item), lado < 0 ? ' é menor que ' : ' é maior que ', nomeRef, '.']);
   }
 
@@ -334,7 +347,7 @@
       case 'porcentagem':
         return frase([CEM, ' é a pista toda. Cada parte da régua vale ', unidade(item), '.']);
       default:
-        return frase(['Cada parte da régua vale ', unidade(item), '. Conte as moedas.']);
+        return frase(['Cada parte da régua vale ', unidade(item), '. Conte as partes.']);
     }
   }
 

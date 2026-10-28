@@ -184,8 +184,8 @@
       var tipo = typeof e.data === 'string' ? e.data : e.data && e.data.type;
       if (tipo === 'pause') { calarTudo(); if (acoes.aoPausar) acoes.aoPausar(); }
       else if (tipo === 'resume') { if (acoes.aoContinuar) acoes.aoContinuar(); }
-      else if (tipo === 'mute') { mudo = true; calarTudo(); }
-      else if (tipo === 'unmute') { mudo = false; }
+      else if (tipo === 'mute') { mudo = true; calarTudo(); if (acoes.aoSilenciar) acoes.aoSilenciar(true); }
+      else if (tipo === 'unmute') { mudo = false; if (acoes.aoSilenciar) acoes.aoSilenciar(false); }
       else if (tipo === 'restart') { calarTudo(); if (acoes.aoReiniciar) acoes.aoReiniciar(); }
     });
     var noPortal = global.parent !== global;

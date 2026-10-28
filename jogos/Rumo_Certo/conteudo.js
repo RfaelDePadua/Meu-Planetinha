@@ -64,12 +64,16 @@
         { id: 'casaSO', tipo: 'casa', x: 1, y: 4 },
         { id: 'mata1', tipo: 'arvore', x: 3, y: 0 },
         { id: 'mata2', tipo: 'arvore', x: 6, y: 2 },
+        { id: 'mataNE', tipo: 'arvore', x: 4, y: 1 },
+        { id: 'mataNO', tipo: 'arvore', x: 2, y: 1 },
+        { id: 'mataSE', tipo: 'arvore', x: 4, y: 3 },
+        { id: 'mataSO', tipo: 'arvore', x: 2, y: 3 },
         { id: 'escola', tipo: 'escola', x: 0, y: 2 }
       ],
       agua: []
     },
     cidade: {
-      nome: 'Cidade do Rio', largura: 8, altura: 7,
+      nome: 'Cidade do Rio', largura: 8, altura: 7, rio: 3,
       lugares: [
         { id: 'hospitalN', tipo: 'hospital', x: 2, y: 1 },
         { id: 'hospitalS', tipo: 'hospital', x: 6, y: 5 },
@@ -124,9 +128,16 @@
   }
 
   function ir(mapa, inicio, alvo) {
+    var destino = lugar(mapa, alvo);
+    var iguais = MAPAS[mapa].lugares.filter(function (l) { return l.tipo === destino.tipo; }).length;
+    var qual = '';
+    if (iguais > 1 && MAPAS[mapa].rio !== undefined) {
+      var ladoInicio = lugar(mapa, inicio).y < MAPAS[mapa].rio;
+      qual = (ladoInicio === (destino.y < MAPAS[mapa].rio)) ? ' deste lado do rio' : ' do outro lado do rio';
+    }
     return {
       tipo: 'ir', mapa: mapa, inicio: inicio, alvo: alvo,
-      texto: 'Leve o explorador até ' + TIPOS_LUGAR[lugar(mapa, alvo).tipo].o + '. Use os botões da rosa dos ventos.'
+      texto: 'Leve o explorador até ' + TIPOS_LUGAR[destino.tipo].o + qual + '. Use os botões da rosa dos ventos.'
     };
   }
 
@@ -136,7 +147,7 @@
     passos.forEach(function (s) { p.x += DIRECOES[s[0]].dx * s[1]; p.y += DIRECOES[s[0]].dy * s[1]; });
     var destino = MAPAS[mapa].lugares.filter(function (l) { return l.x === p.x && l.y === p.y; })[0];
     var partes = passos.map(function (s) {
-      return (s[1] === 1 ? 'uma quadra' : ['', '', 'duas', 'três', 'quatro'][s[1]] + ' quadras') + ' para o ' + DIRECOES[s[0]].nome;
+      return (s[1] === 1 ? 'um quadradinho' : ['', '', 'dois', 'três', 'quatro'][s[1]] + ' quadradinhos') + ' para o ' + DIRECOES[s[0]].nome;
     });
     var ultima = partes.pop();
     return {
@@ -168,53 +179,55 @@
         encontrar('vila', 'casaN', 'praca', 'N'), encontrar('vila', 'casaS', 'praca', 'S'),
         encontrar('vila', 'casaL', 'praca', 'L'), encontrar('vila', 'casaO', 'praca', 'O'),
         ir('vila', 'escola', 'praca'), ir('vila', 'mercado', 'biblioteca'), ir('vila', 'praca', 'posto'),
-        encontrar('vila', 'posto', 'escola', 'L'), encontrar('vila', 'lago', 'posto', 'S'),
-        encontrar('vila', 'casaL', 'biblioteca', 'N'), encontrar('vila', 'casaS', 'biblioteca', 'O'),
-        encontrar('vila', 'casaO', 'escola', 'S'), ir('vila', 'biblioteca', 'escola'), ir('vila', 'posto', 'mercado')
+        ir('vila', 'biblioteca', 'escola'), ir('vila', 'posto', 'mercado')
       ]
     },
     {
       id: 2, nome: 'Pontos colaterais', bncc: 'EF04GE09',
+      apresenta: 'Os pontos colaterais ficam entre os cardeais: o nordeste fica entre o norte e o leste, e o sudoeste entre o sul e o oeste.',
       dominio: 'usar nordeste, noroeste, sudeste e sudoeste',
       itens: [
         encontrar('sitio', 'casaNE', 'poco', 'NE'), encontrar('sitio', 'casaNO', 'poco', 'NO'),
         encontrar('sitio', 'casaSE', 'poco', 'SE'), encontrar('sitio', 'casaSO', 'poco', 'SO'),
-        encontrar('vila', 'casaN', 'escola', 'NE'), encontrar('vila', 'mercado', 'praca', 'SO'),
-        encontrar('vila', 'biblioteca', 'praca', 'SE'), encontrar('vila', 'escola', 'praca', 'NO')
+        encontrar('sitio', 'mataNE', 'poco', 'NE'), encontrar('sitio', 'mataNO', 'poco', 'NO'),
+        encontrar('sitio', 'mataSE', 'poco', 'SE'), encontrar('sitio', 'mataSO', 'poco', 'SO')
       ]
     },
     {
       id: 3, nome: 'Legenda do mapa', bncc: 'EF03GE07 · EF04GE10',
+      apresenta: 'Agora use a legenda: ela mostra o que é cada símbolo do mapa. Para atravessar o rio, só pela ponte.',
       dominio: 'ler a legenda para reconhecer os símbolos do mapa',
       itens: [
         encontrar('cidade', 'hospitalS', 'ponte', 'SE'), encontrar('cidade', 'hospitalN', 'ponte', 'NO'),
         encontrar('cidade', 'mercadoN', 'ponte', 'NE'), encontrar('cidade', 'mercadoS', 'ponte', 'SO'),
         ir('cidade', 'correio', 'hospitalS'), ir('cidade', 'escolaS', 'mercadoN'),
-        encontrar('cidade', 'escolaN', 'ponte', 'N'), encontrar('cidade', 'escolaS', 'ponte', 'SO'),
-        encontrar('cidade', 'correio', 'ponte', 'NO'), ir('cidade', 'escolaN', 'escolaS'), ir('cidade', 'mercadoS', 'correio')
+        encontrar('cidade', 'escolaN', 'ponte', 'N'), ir('cidade', 'escolaN', 'escolaS'), ir('cidade', 'mercadoS', 'correio'),
+        ir('cidade', 'hospitalN', 'mercadoS')
       ]
     },
     {
       id: 4, nome: 'Mapa girado', bncc: 'EF04GE09 · EF04GE10',
+      apresenta: 'Agora o mapa pode aparecer girado. O norte é para onde aponta a letra N da rosa dos ventos, não o alto da tela.',
       dominio: 'usar a rosa dos ventos mesmo com o mapa girado',
       itens: [
         girado(encontrar('vila', 'casaN', 'praca', 'N'), 180), girado(encontrar('vila', 'casaL', 'praca', 'L'), 90),
         girado(encontrar('vila', 'casaO', 'praca', 'O'), 270), girado(ir('vila', 'escola', 'praca'), 90),
         girado(ir('vila', 'mercado', 'biblioteca'), 180), girado(encontrar('sitio', 'casaNE', 'poco', 'NE'), 90),
-        girado(encontrar('vila', 'posto', 'escola', 'L'), 90), girado(encontrar('vila', 'lago', 'posto', 'S'), 180),
-        girado(encontrar('vila', 'casaS', 'biblioteca', 'O'), 270), girado(ir('vila', 'posto', 'mercado'), 270),
-        girado(encontrar('sitio', 'casaSO', 'poco', 'SO'), 180)
+        girado(encontrar('vila', 'casaS', 'praca', 'S'), 90), girado(encontrar('sitio', 'mataNO', 'poco', 'NO'), 270),
+        girado(ir('vila', 'posto', 'mercado'), 270), girado(encontrar('sitio', 'casaSO', 'poco', 'SO'), 180),
+        girado(encontrar('sitio', 'mataSE', 'poco', 'SE'), 90)
       ]
     },
     {
       id: 5, nome: 'Rotas', bncc: 'EF04GE09 · EF04MA16',
+      apresenta: 'Agora siga caminhos: ande os quadradinhos pedidos em cada direção e toque em Cheguei.',
       dominio: 'seguir rotas descritas com pontos cardeais',
       itens: [
         rota('vila', 'escola', [['S', 2], ['L', 2]]), rota('vila', 'mercado', [['L', 3], ['S', 1]]),
         rota('vila', 'praca', [['N', 2], ['L', 3]]), girado(rota('vila', 'escola', [['L', 2], ['S', 2]]), 180),
         rota('sitio', 'escola', [['L', 1], ['N', 2]]),
         rota('vila', 'posto', [['O', 3], ['S', 2]]), rota('vila', 'biblioteca', [['N', 2], ['O', 2]]),
-        rota('vila', 'mercado', [['N', 3], ['L', 1]]), rota('vila', 'casaN', [['S', 3], ['O', 2]]),
+        rota('vila', 'mercado', [['N', 3], ['L', 1]]), rota('vila', 'praca', [['S', 2], ['L', 2]]),
         rota('sitio', 'poco', [['N', 2], ['L', 2]]), rota('sitio', 'escola', [['S', 2], ['L', 1]]),
         girado(rota('vila', 'posto', [['O', 3], ['S', 2]]), 90)
       ]
@@ -265,7 +278,7 @@
 
   function erroRota(missao, chegouEm) {
     var onde = chegouEm ? 'n' + nomeDoLugar(missao.mapa, chegouEm) : 'num lugar vazio do mapa';
-    return 'Você parou ' + onde + '. Siga de novo cada parte do caminho, contando as quadras.';
+    return 'Você parou ' + onde + '. Siga de novo cada parte do caminho, contando os quadradinhos.';
   }
 
   // "Você chegou ao mercado." / "Você chegou à praça."
@@ -283,14 +296,14 @@
 
   var FALAS = {
     instrucaoEncontrar: 'Toque no lugar certo do mapa.',
-    instrucaoIr: 'Use os botões com as letras da rosa dos ventos para andar.',
+    instrucaoIr: 'Use os botões Norte, Sul, Leste e Oeste para andar.',
     instrucaoRota: 'Ande seguindo o caminho e toque em Cheguei.',
     mapaGirado: 'Atenção: o mapa está girado. Use a rosa dos ventos.',
     achou: 'Achou!',
     chegou: 'Chegou!',
     chegouDica: 'Chegou, com ajuda!',
     caminhoCerto: 'Caminho certo!',
-    quase: 'Quase.',
+    quase: 'Ainda não.',
     olheReferencia: 'Olhe o lugar de referência e a seta da rosa dos ventos.',
     rosaNoExplorador: 'Agora a rosa dos ventos aparece em cima do explorador.',
     vamosVer: 'Vamos ver juntos.',
@@ -303,6 +316,7 @@
     dominio: function (etapa) { return 'Agora você sabe ' + etapa.dominio + '!'; },
     pergunta: 'Como você descobriu para onde ir?',
     obrigado: 'Boa! Conte para o seu professor como você fez.',
+    obrigadoChute: 'Tudo bem! Na próxima, olhe a rosa dos ventos antes de escolher.',
     estrategia: function (e) { return e.texto + '.'; },
     explorador: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + '.'; },
     confirma: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + ', você concorda?'; }
@@ -313,13 +327,15 @@
     var lista = [];
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
     ['instrucaoEncontrar', 'instrucaoIr', 'instrucaoRota', 'mapaGirado', 'achou', 'chegou', 'chegouDica', 'caminhoCerto',
-      'quase', 'olheReferencia', 'rosaNoExplorador', 'vamosVer', 'referencia', 'agua', 'borda', 'treinar', 'fim', 'pergunta', 'obrigado']
+      'quase', 'olheReferencia', 'rosaNoExplorador', 'vamosVer', 'referencia', 'agua', 'borda', 'treinar', 'fim', 'pergunta', 'obrigado',
+      'obrigadoChute']
       .forEach(function (k) { add(FALAS[k]); });
     [1, 2].forEach(function (n) { add(FALAS.explorador(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
     Object.keys(DIRECOES).forEach(function (d) { add(afastou(d)); });
     ETAPAS.forEach(function (etapa) {
       add(FALAS.novaEtapa(etapa));
+      add(etapa.apresenta);
       add(FALAS.dominio(etapa));
       etapa.itens.forEach(function (m) {
         add(m.texto);

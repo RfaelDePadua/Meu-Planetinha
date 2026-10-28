@@ -53,6 +53,33 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
   as falas novas gravadas.
 - Guia de manutenção ([MANUTENCAO.md](MANUTENCAO.md)) para quem continuar o
   projeto.
+- **Teste de jogo antes das escolas (28/10):** cinco testadores automáticos
+  jogaram cada jogo como crianças (acertando, chutando, em dupla, lendo pouco)
+  e apontaram problemas; os relatórios ficam em `docs/testes/` (fora do site).
+  Corrigido:
+  - Pouso na Reta: o pouso no ponto de outro item (1/8 no lugar de 1/10) não
+    conta mais como certo; etapa sobe com 4 acertos seguidos; etapa 3 alterna
+    decimal, porcentagem e dinheiro.
+  - Detetive de Letrion: gabarito aceita as frases que também provam a
+    resposta; a segunda dica destaca as frases perto da pista, não o texto
+    todo; alternativa errada fica riscada; só se marca quantas frases a
+    pergunta pede; dicas e alternativas revisadas ("Tirinha" virou "Diálogo").
+  - Teia Viva: a frase de erro "X não come Y" afirmava fatos falsos (o gavião
+    come preás); agora fala da tarefa. Todas as previsões erradas são
+    explicadas; a tela do "E se…?" diz o que fazer; novo cenário de
+    decompositores.
+  - Rumo Certo: pontos cardeais e colaterais sem respostas ambíguas (casas que
+    ficavam "meio de lado" e colaterais tortos); o caminho pela ponte não conta
+    mais como "se afastou"; mapa da cidade diz qual mercado ou escola; cada
+    etapa nova se apresenta; "quadras" virou "quadradinhos".
+  - Listen & Do: o lugar pedido nunca começa ocupado; tocar num lugar cheio
+    troca as coisas; com o som desligado, o comando aparece escrito; "Tentar
+    de novo" desfaz o que foi mexido por engano.
+  - Todos: acertar com ajuda não faz descer de etapa (só três demonstrações
+    seguidas); a etapa fica salva assim que muda; `?etapa=` do professor não
+    altera o progresso salvo; o resumo final mostra o que foi visto junto;
+    "Chutei" tem resposta própria; o portal repassa ao jogo os ajustes da URL
+    (como `?texto=1`) e o som desligado.
 
 ## Alterações a partir do parecer dos professores
 

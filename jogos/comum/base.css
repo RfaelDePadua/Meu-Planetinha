@@ -149,7 +149,9 @@ svg { display: block; }
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
 }
 .btn-principal:active, .btn-secundario:active { transform: translateY(4px); box-shadow: 0 2px 0 #B8860B; }
-.btn-principal:disabled { opacity: 0.5; cursor: default; transform: none; }
+.btn-principal:disabled, .btn-secundario:disabled { opacity: 0.5; cursor: default; transform: none; }
+/* Botão que ainda não pode agir, mas continua tocável para dizer o que falta */
+.btn-principal.incompleto { opacity: 0.6; }
 
 .controles__confirma p {
   margin: 0;

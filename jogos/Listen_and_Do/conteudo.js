@@ -49,7 +49,7 @@
     'in': { en: 'in', pt: 'dentro' },
     on: { en: 'on', pt: 'em cima' },
     under: { en: 'under', pt: 'embaixo' },
-    'next to': { en: 'next to', pt: 'do lado' }
+    'next to': { en: 'next to', pt: 'ao lado' }
   };
 
   // Lugares da cena: relação (preposição + móvel) e vagas. Cada vaga é o
@@ -225,14 +225,16 @@
       }).slice(0, quantas).forEach(function (c) { incluir(c, corQualquer(c)); });
     }
 
-    // Distribui pelas vagas: alvos longe do lugar pedido.
+    // Distribui pelas vagas. Nada começa no lugar pedido (senão o lugar pode
+    // estar cheio e a criança que entendeu não tem onde pôr). Quando a cor
+    // decide, nada começa dentro da caixa ou da mochila, que escondem a cor.
+    var pedidos = item.alvos.map(function (a) { return a.lugar; }).filter(Boolean);
+    var proibidos = pedidos.concat(alvo.cor ? ['in-box', 'in-bag'] : []);
     var livres = embaralhar(todasAsVagas());
     objetos = embaralhar(objetos);
     objetos.forEach(function (o, i) {
-      var proibido = item.alvos.filter(function (a) {
-        return a.coisa === o.coisa && (!a.cor || a.cor === o.cor) && a.lugar;
-      }).map(function (a) { return a.lugar; });
-      var k = livres.findIndex(function (v) { return proibido.indexOf(lugarDaVaga(v)) === -1; });
+      var k = livres.findIndex(function (v) { return proibidos.indexOf(lugarDaVaga(v)) === -1; });
+      if (k === -1) k = 0;
       o.id = 'o' + i;
       o.vaga = livres.splice(k, 1)[0];
       o.inicio = o.vaga;
@@ -265,7 +267,7 @@
     aindaNao: 'Ainda não.',
     ouvirDeNovo: 'Ouça de novo.',
     vamosVer: 'Vamos ver juntos.',
-    umCerto: 'Um dos comandos está certo. Veja o outro.',
+    umCerto: 'Uma parte está certa, marcada em verde. Falta a outra.',
     outraCoisa: 'O comando pede outra coisa.',
     novaEtapa: function (etapa) { return 'Nova etapa: ' + etapa.nome + '!'; },
     treinar: 'Vamos treinar mais um pouco.',
@@ -273,10 +275,11 @@
     dominio: function (etapa) { return 'Agora você sabe ' + etapa.dominio + '!'; },
     pergunta: 'Como você descobriu o que fazer?',
     obrigado: 'Boa! Conte para o seu professor como você fez.',
+    obrigadoChute: 'Tudo bem! Na próxima, toque em Devagar e ouça a palavra de novo.',
     estrategia: function (e) { return e.texto + '.'; },
     ouvinte: function (n) { return 'Ouvinte ' + ['', 'um', 'dois'][n] + '.'; },
     confirma: function (n) { return 'Ouvinte ' + ['', 'um', 'dois'][n] + ', você concorda?'; },
-    tocou: function (alvo) { return 'Você tocou ' + descPt(alvo) + '.'; },
+    tocou: function (alvo) { var d = descPt(alvo); return 'Você tocou ' + (d.charAt(0) === 'a' ? 'na' : 'no') + d.slice(1) + '.'; },
     colocou: function (alvo) { return 'Você colocou ' + descPt(alvo); },
     lugar: function (id) { return lugarPt(id) + '.'; }
   };
@@ -289,7 +292,7 @@
     var lista = [];
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
     ['instrucaoTocar', 'instrucaoColocar', 'instrucaoDois', 'fones', 'isso', 'issoAjuda', 'aindaNao', 'ouvirDeNovo',
-      'vamosVer', 'umCerto', 'outraCoisa', 'treinar', 'fim', 'pergunta', 'obrigado'].forEach(function (k) { add(FALAS[k]); });
+      'vamosVer', 'umCerto', 'outraCoisa', 'treinar', 'fim', 'pergunta', 'obrigado', 'obrigadoChute'].forEach(function (k) { add(FALAS[k]); });
     [1, 2].forEach(function (n) { add(FALAS.ouvinte(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
 

@@ -49,7 +49,7 @@
 
   function dominado(tipo) {
     var t = save.tipos[tipo];
-    return Boolean(t && t.acertos >= 3 && t.acertos / t.tentativas >= 0.75);
+    return Boolean(t && t.acertos >= 5 && t.acertos / t.tentativas >= 0.75);
   }
 
   /* ------------------------------------------------
@@ -66,12 +66,15 @@
     misterioIdx: 0,
     ordem: [],            // ordem embaralhada das opções
     escolha: null,        // índice da opção escolhida (na lista original)
+    descartadas: [],      // opções já explicadas como erradas (ficam riscadas)
     marcadas: [],         // frases marcadas como pista
+    erradas: [],          // frases marcadas que não provam (visíveis durante o feedback)
     tentativa: 1,
     respostaTravada: false,
     revelada: false,
     regiao: false,
     resultados: [],
+    casosPerfeitos: 0,    // casos seguidos com os dois mistérios de primeira
     feitosSessao: [],
     dominadosAntes: [],
     sequencia: 0,
@@ -150,6 +153,10 @@
     var caso = S.caso;
     var corpo = $('texto-corpo');
     var rolagem = corpo.scrollTop;
+    var focada = document.activeElement && document.activeElement.closest && document.activeElement.closest('#texto-corpo .frase');
+    var foco = focada ? focada.dataset.i : null;
+    // Segunda dica: destaca as frases da pista e as vizinhas, não o texto todo.
+    function perto(i) { return S.misterio.pistas.some(function (p) { return Math.abs(p - i) <= 1; }); }
     $('texto-genero').textContent = caso.genero;
     $('texto-titulo').textContent = caso.titulo;
     corpo.textContent = '';
@@ -180,11 +187,16 @@
       el.setAttribute('aria-pressed', String(marcada));
       if (S.revelada && ehPista) el.classList.add('certa');
       else if (marcada) el.classList.add('marcada');
+      else if (S.erradas.indexOf(i) !== -1) el.classList.add('errada');
+      if (S.regiao && !S.revelada && perto(i)) el.classList.add('regiao');
       paragrafo.appendChild(el);
       paragrafo.appendChild(document.createTextNode(' '));
-      if (S.regiao && ehPista) paragrafo.classList.add('regiao');
     });
     corpo.scrollTop = rolagem;
+    if (foco !== null) {
+      var nova = corpo.querySelector('.frase[data-i="' + foco + '"]');
+      if (nova) nova.focus({ preventScroll: true });
+    }
   }
 
   function desenharMisterio() {
@@ -201,15 +213,19 @@
       (S.marcadas.length ? ' · ' + S.marcadas.length + (S.marcadas.length === 1 ? ' marcada' : ' marcadas') : '')));
 
     var caixa = $('opcoes');
+    var focada = document.activeElement && document.activeElement.closest && document.activeElement.closest('#opcoes .opcao');
+    var foco = focada ? focada.dataset.idx : null;
     caixa.textContent = '';
     S.ordem.forEach(function (idx, pos) {
       var opcao = m.opcoes[idx];
+      var descartada = S.descartadas.indexOf(idx) !== -1;
       var botao = document.createElement('button');
       botao.type = 'button';
-      botao.className = 'opcao' + (S.revelada && opcao.certa ? ' certa' : '');
+      botao.dataset.idx = idx;
+      botao.className = 'opcao' + (S.revelada && opcao.certa ? ' certa' : '') + (descartada ? ' descartada' : '');
       botao.setAttribute('role', 'radio');
       botao.setAttribute('aria-checked', String(S.escolha === idx));
-      botao.disabled = S.respostaTravada || S.estado !== 'resolvendo';
+      botao.disabled = S.respostaTravada || descartada || S.estado !== 'resolvendo';
       var letra = document.createElement('span');
       letra.className = 'opcao__letra';
       letra.textContent = LETRAS[pos];
@@ -219,9 +235,12 @@
       botao.appendChild(texto);
       botao.addEventListener('click', function () { escolher(idx); });
       caixa.appendChild(botao);
+      if (foco !== null && Number(foco) === idx && !botao.disabled) botao.focus({ preventScroll: true });
     });
 
-    $('btn-resolver').disabled = !(S.escolha !== null && S.marcadas.length > 0);
+    // Fica sempre ativo: se faltar algo, o jogo diz o quê (ver pedirResolver).
+    $('btn-resolver').disabled = false;
+    $('btn-resolver').classList.toggle('incompleto', !(S.escolha !== null && S.marcadas.length > 0));
   }
 
   function desenharHUD() {
@@ -294,14 +313,17 @@
     return copia;
   }
 
-  // Prefere casos do nível atual ainda não feitos neste dispositivo.
+  // Prefere casos do nível atual ainda não feitos neste dispositivo; se todos
+  // já foram feitos, o que foi feito há mais tempo (save.feitos vai do mais
+  // antigo ao mais recente), para não repetir os mesmos casos toda sessão.
   function escolherCaso() {
     var livres = C.CASOS.filter(function (c) { return S.feitosSessao.indexOf(c.id) === -1; });
     for (var distancia = 0; distancia < NIVEIS; distancia++) {
       var doNivel = livres.filter(function (c) { return Math.abs(c.nivel - S.nivel) === distancia; });
+      if (!doNivel.length) continue;
       var ineditos = doNivel.filter(function (c) { return save.feitos.indexOf(c.id) === -1; });
-      var opcoes = ineditos.length ? ineditos : doNivel;
-      if (opcoes.length) return opcoes[Math.floor(Math.random() * opcoes.length)];
+      if (ineditos.length) return ineditos[Math.floor(Math.random() * ineditos.length)];
+      return doNivel.reduce(function (a, b) { return save.feitos.indexOf(a.id) <= save.feitos.indexOf(b.id) ? a : b; });
     }
     return C.CASOS[0];
   }
@@ -312,6 +334,7 @@
     registro.iniciarSessao(modo);
     S.casoNum = 0;
     S.resultados = [];
+    S.casosPerfeitos = 0;
     S.feitosSessao = [];
     S.sequencia = 0;
     S.melhorSequencia = 0;
@@ -333,7 +356,7 @@
       aviso('Nível ' + S.nivel + ': casos mais difíceis!');
       antes.push(F.novoNivel);
     } else if (mudanca === 'desce') {
-      aviso('Vamos treinar com casos mais curtos.');
+      aviso(F.treinar);
       antes.push(F.treinar);
     }
     iniciarMisterio(antes, true);
@@ -344,7 +367,9 @@
     S.misterio = S.caso.misterios[S.misterioIdx];
     S.ordem = embaralhar(S.misterio.opcoes.map(function (_, i) { return i; }));
     S.escolha = null;
+    S.descartadas = [];
     S.marcadas = [];
+    S.erradas = [];
     S.tentativa = 1;
     S.motivos = [];
     registro.iniciarItem();
@@ -378,8 +403,12 @@
     if (pos !== -1) {
       S.marcadas.splice(pos, 1);
     } else {
-      var limite = (S.misterio.todas ? S.misterio.pistas.length : 1) + 1;
-      if (S.marcadas.length >= limite) {
+      // Só se marca quantas frases a pergunta pede: marcar várias ao acaso
+      // não pode valer como prova. Com uma só, o novo toque troca a marcação.
+      var limite = S.misterio.todas ? S.misterio.pistas.length : 1;
+      if (limite === 1) {
+        S.marcadas = [];
+      } else if (S.marcadas.length >= limite) {
         aviso('Você já marcou ' + S.marcadas.length + ' frases. Toque numa marcada para desmarcar.');
         return;
       }
@@ -397,11 +426,17 @@
   }
 
   function pedirResolver() {
-    if (S.estado !== 'resolvendo' || S.pausado || S.escolha === null || !S.marcadas.length) return;
+    if (S.estado !== 'resolvendo' || S.pausado) return;
+    if (!S.marcadas.length || S.escolha === null) {
+      var falta = !S.marcadas.length ? F.faltaMarcar : F.faltaEscolher;
+      aviso(falta);
+      falar(falta);
+      return;
+    }
     if (S.modo === 'dupla') {
       definirEstado('confirmando');
       var parceiro = detetiveAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Detetive ' + parceiro + ', você concorda?';
+      $('confirma-texto').textContent = 'Detetive ' + parceiro + ', leia em voz alta a frase marcada. Ela prova a resposta?';
       mostrarControles('confirma');
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
@@ -441,11 +476,15 @@
     var falas;
     if (motivo === 'pista') {
       S.respostaTravada = true;
+      // A frase errada continua à vista (em vermelho) enquanto o jogo fala dela.
+      S.erradas = S.marcadas.filter(function (i) { return m.pistas.indexOf(i) === -1; });
       S.marcadas = S.marcadas.filter(function (i) { return m.pistas.indexOf(i) !== -1; });
       titulo = F.respostaCerta;
       falas = [F.respostaCerta, F.pistaNaoProva];
     } else {
+      // A alternativa explicada como errada fica riscada até o fim do mistério.
       var errada = m.opcoes[S.escolha];
+      S.descartadas.push(S.escolha);
       S.escolha = null;
       titulo = 'Ainda não';
       falas = [F.aindaNao, errada.porque];
@@ -466,6 +505,7 @@
   }
 
   function voltarAoMisterio() {
+    S.erradas = [];
     definirEstado('resolvendo');
     desenharTudo();
     mostrarControles('acao');
@@ -530,13 +570,16 @@
     return S.casoNum >= S.totalCasos ? 'Ver resultado' : 'Próximo caso';
   }
 
-  // Após cada caso: sobe de nível se os dois mistérios saíram de primeira,
-  // desce se os dois precisaram de demonstração.
+  // Após cada caso: sobe de nível depois de dois casos seguidos com todos os
+  // mistérios de primeira; desce se nenhum mistério do caso saiu de primeira e
+  // pelo menos um precisou de demonstração.
   function adaptar() {
-    var ultimos = S.resultados.slice(-2).map(function (r) { return r.resultado; });
-    if (ultimos.length < 2) return null;
-    if (ultimos.every(function (r) { return r === 'primeira'; }) && S.nivel < NIVEIS) { S.nivel += 1; return 'sobe'; }
-    if (ultimos.every(function (r) { return r === 'demo'; }) && S.nivel > 1) { S.nivel -= 1; return 'desce'; }
+    var ultimos = S.resultados.slice(-S.caso.misterios.length).map(function (r) { return r.resultado; });
+    var perfeito = ultimos.every(function (r) { return r === 'primeira'; });
+    S.casosPerfeitos = perfeito ? S.casosPerfeitos + 1 : 0;
+    if (S.casosPerfeitos >= 2 && S.nivel < NIVEIS) { S.nivel += 1; S.casosPerfeitos = 0; return 'sobe'; }
+    var semPrimeira = ultimos.indexOf('primeira') === -1;
+    if (semPrimeira && ultimos.indexOf('demo') !== -1 && S.nivel > 1) { S.nivel -= 1; S.casosPerfeitos = 0; return 'desce'; }
     return null;
   }
 
@@ -547,10 +590,12 @@
       return;
     }
     S.feitosSessao.push(S.caso.id);
-    if (save.feitos.indexOf(S.caso.id) === -1) save.feitos.push(S.caso.id);
+    // Mantém save.feitos do mais antigo ao mais recente (ver escolherCaso).
+    save.feitos = save.feitos.filter(function (id) { return id !== S.caso.id; }).concat(S.caso.id);
     gravarSave();
+    var mudanca = adaptar();
     if (S.casoNum >= S.totalCasos) { finalizar(); return; }
-    iniciarCaso(adaptar());
+    iniciarCaso(mudanca);
   }
 
   function finalizar() {
@@ -564,10 +609,11 @@
     var total = S.resultados.length;
     var primeira = S.resultados.filter(function (r) { return r.resultado === 'primeira'; }).length;
     var comDica = S.resultados.filter(function (r) { return r.resultado === 'dica'; }).length;
+    var juntos = total - primeira - comDica;
 
     var resumo = $('fim-resumo');
     resumo.textContent = '';
-    [[primeira + ' de ' + total, 'de primeira'], [String(comDica), 'com dica'], [String(S.totalCasos), 'casos resolvidos']]
+    [[primeira + ' de ' + total, 'de primeira'], [String(comDica), 'com dica'], [String(juntos), 'vimos juntos']]
       .forEach(function (par) {
         var bloco = document.createElement('div');
         var forte = document.createElement('strong');
@@ -695,8 +741,10 @@
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
       });
+      var resposta = estrategia.id === 'chute' ? F.obrigadoChute : F.obrigado;
+      $('fim-obrigado').textContent = resposta;
       $('fim-obrigado').hidden = false;
-      falar(F.obrigado);
+      falar(resposta);
     });
     $('fim-opcoes').appendChild(botao);
   });

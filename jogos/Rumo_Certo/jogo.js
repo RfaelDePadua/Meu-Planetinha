@@ -317,7 +317,8 @@
     no.textContent = texto;
     no.hidden = false;
     clearTimeout(avisoTimer);
-    avisoTimer = setTimeout(function () { no.hidden = true; }, 3200);
+    // Texto longo fica mais tempo na tela (quem lê devagar precisa).
+    avisoTimer = setTimeout(function () { no.hidden = true; }, Math.max(3200, texto.length * 75));
   }
 
   function semPonto(t) { return t.replace(/\.$/, ''); }
@@ -349,6 +350,8 @@
     S.pontos = 0;
     S.jaInstruiu = {};
     S.avisouGiro = false;
+    // ?etapa= é para o professor experimentar: não muda o progresso salvo.
+    S.etapaDaUrl = Boolean(parseInt(params.get('etapa'), 10));
     S.etapa = clamp(parseInt(params.get('etapa'), 10) || save.etapa || 1, 1, C.ETAPAS.length);
     S.dominadasAntes = C.ETAPAS.filter(function (e) { return dominada(e.id); }).map(function (e) { return e.id; });
     $('tela-inicio').hidden = true;
@@ -382,7 +385,7 @@
     desenharTudo();
     mostrarControles('acao');
 
-    var falas = [falaAntes];
+    var falas = [].concat(falaAntes);
     if (S.modo === 'dupla') falas.push(F.explorador(exploradorAtual()));
     if (giro() && !S.avisouGiro) {
       S.avisouGiro = true;
@@ -465,7 +468,31 @@
   }
 
   /* ── Ir e rota ───────────────────────────────────── */
-  function distancia(p, alvo) { return Math.abs(p.x - alvo.x) + Math.abs(p.y - alvo.y); }
+  function passa(x, y) {
+    return !ehAgua(x, y) || mapa().lugares.some(function (l) { return l.tipo === 'ponte' && l.x === x && l.y === y; });
+  }
+
+  // Passos do menor caminho andável até o alvo (desviando da água; a ponte
+  // passa). Assim, ir até a ponte quando é o único caminho não conta como
+  // "se afastou".
+  function distancia(p, alvo) {
+    var M = mapa();
+    var fila = [[p.x, p.y, 0]];
+    var visto = {};
+    visto[p.x + ',' + p.y] = true;
+    while (fila.length) {
+      var q = fila.shift();
+      if (q[0] === alvo.x && q[1] === alvo.y) return q[2];
+      [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (v) {
+        var x = q[0] + v[0];
+        var y = q[1] + v[1];
+        if (x < 0 || y < 0 || x >= M.largura || y >= M.altura || visto[x + ',' + y] || !passa(x, y)) return;
+        visto[x + ',' + y] = true;
+        fila.push([x, y, q[2] + 1]);
+      });
+    }
+    return Infinity;
+  }
 
   function mover(dir) {
     if (S.estado !== 'andando' || S.pausado) return;
@@ -474,8 +501,7 @@
     var nx = S.pos.x + d.dx;
     var ny = S.pos.y + d.dy;
     if (nx < 0 || ny < 0 || nx >= M.largura || ny >= M.altura) { aviso(F.borda); falar(F.borda); return; }
-    var ponte = M.lugares.some(function (l) { return l.tipo === 'ponte' && l.x === nx && l.y === ny; });
-    if (ehAgua(nx, ny) && !ponte) { aviso(F.agua); falar(F.agua); return; }
+    if (!passa(nx, ny)) { aviso(F.agua); falar(F.agua); return; }
 
     var antes = S.missao.tipo === 'ir' ? distancia(S.pos, lugar(S.missao.alvo)) : 0;
     S.trilha.push({ x: S.pos.x, y: S.pos.y });
@@ -515,7 +541,7 @@
     if (S.modo === 'dupla') {
       definirEstado('confirmando');
       var parceiro = exploradorAtual() === 1 ? 2 : 1;
-      $('confirma-texto').textContent = 'Explorador ' + parceiro + ', vocês chegaram?';
+      $('confirma-texto').textContent = 'Explorador ' + parceiro + ', você concorda?';
       mostrarControles('confirma');
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
@@ -573,11 +599,11 @@
     var primeira = tipo === 'primeira';
     S.resultados[S.indice] = { tipo: tipo, etapa: S.etapa };
     var historico = S.historico[S.etapa] = S.historico[S.etapa] || [];
-    historico.push(primeira);
+    historico.push(tipo);
     var reg = save.etapas[S.etapa] = save.etapas[S.etapa] || { tentativas: 0, acertos: 0 };
     reg.tentativas += 1;
     if (primeira) reg.acertos += 1;
-    if (historico.length >= 3 && historico.slice(-3).every(Boolean)) reg.dominada = true;
+    if (historico.length >= 3 && historico.slice(-3).every(function (t) { return t === 'primeira'; })) reg.dominada = true;
     S.sequencia = primeira ? S.sequencia + 1 : 0;
     S.melhorSequencia = Math.max(S.melhorSequencia, S.sequencia);
     S.pontos += primeira ? 100 : (tipo === 'dica' ? 50 : 10);
@@ -606,17 +632,18 @@
 
   function rotuloProximo() { return S.indice + 1 >= S.total ? 'Ver resultado' : 'Próxima missão'; }
 
-  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 sem acerto.
+  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 missões
+  // sem acerto (demonstradas). Acertar com ajuda não faz descer.
   function adaptar() {
     var h = S.historico[S.etapa] || [];
     var ultimos = h.slice(-3);
     if (ultimos.length < 3) return null;
-    if (ultimos.every(Boolean) && S.etapa < C.ETAPAS.length) {
+    if (ultimos.every(function (t) { return t === 'primeira'; }) && S.etapa < C.ETAPAS.length) {
       S.etapa += 1;
       S.historico[S.etapa] = [];
       return 'sobe';
     }
-    if (!ultimos.some(Boolean) && S.etapa > 1) {
+    if (ultimos.every(function (t) { return t === 'demo'; }) && S.etapa > 1) {
       S.etapa -= 1;
       S.historico[S.etapa] = [];
       return 'desce';
@@ -628,11 +655,15 @@
     S.indice += 1;
     if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
+    // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
+    if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');
-      aviso('Nova etapa: ' + etapaAtual().nome + '!');
-      fala = F.novaEtapa(etapaAtual());
+      // Apresenta a novidade da etapa antes da primeira missão dela.
+      var nova = etapaAtual();
+      aviso('Nova etapa: ' + nova.nome + '! ' + (nova.apresenta || ''));
+      fala = [F.novaEtapa(nova), nova.apresenta];
     } else if (mudanca === 'desce') {
       aviso('Vamos treinar mais um pouco: ' + etapaAtual().nome + '.');
       fala = F.treinar;
@@ -643,16 +674,17 @@
   function finalizar() {
     definirEstado('fim');
     save.sessoes += 1;
-    save.etapa = S.etapa;
+    if (!S.etapaDaUrl) save.etapa = S.etapa;
     gravarSave();
     desenharHUD();
     registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var ajuda = S.resultados.filter(function (r) { return r.tipo === 'dica'; }).length;
+    var juntos = S.resultados.filter(function (r) { return r.tipo === 'demo'; }).length;
     var resumo = $('fim-resumo');
     resumo.textContent = '';
-    [[primeira + ' de ' + S.total, 'de primeira'], [String(ajuda), 'com ajuda'], [String(S.total), 'missões']]
+    [[primeira + ' de ' + S.total, 'de primeira'], [String(ajuda), 'com ajuda'], [String(juntos), 'vimos juntos']]
       .forEach(function (par) {
         var bloco = document.createElement('div');
         var forte = document.createElement('strong');
@@ -774,8 +806,10 @@
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
       });
+      var resposta = estrategia.id === 'chute' ? F.obrigadoChute : F.obrigado;
+      $('fim-obrigado').textContent = resposta;
       $('fim-obrigado').hidden = false;
-      falar(F.obrigado);
+      falar(resposta);
     });
     $('fim-opcoes').appendChild(botao);
   });

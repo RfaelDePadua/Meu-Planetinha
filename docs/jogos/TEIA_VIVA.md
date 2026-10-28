@@ -38,7 +38,8 @@ de dois jeitos:
   com a explicação e as setas que levam ao efeito.
 
 As etapas sobem com 3 acertos de primeira seguidos e voltam com 3 tarefas sem
-acerto. Não há vidas, tempo nem ranking.
+acerto nenhum (demonstradas, ou com todas as previsões erradas); acertar com
+dica não faz voltar. Não há vidas, tempo nem ranking.
 
 ## Como usar em sala
 

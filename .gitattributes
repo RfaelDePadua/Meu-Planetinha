@@ -11,3 +11,4 @@ midia/Jogo_de_silaba.png export-ignore
 midia/planet-*.png export-ignore
 # Documento interno de apoio aos relatórios (fica no Git, fora do site).
 docs/RELATORIO_APOIO.md export-ignore
+docs/testes/ export-ignore

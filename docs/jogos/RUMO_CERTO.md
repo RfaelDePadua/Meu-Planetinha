@@ -14,7 +14,7 @@ legenda. São três tipos de missão:
 - **Ir até:** "Leve o explorador até o mercado". Os botões de andar se chamam
   Norte, Sul, Leste e Oeste e ficam numa fileira, sem setas: para saber qual
   apertar, é preciso olhar a rosa dos ventos do mapa.
-- **Rota:** o jogo descreve um caminho ("2 casas para o sul, depois 2 para o
+- **Rota:** o jogo descreve um caminho ("dois quadradinhos para o sul e depois dois para o
   leste") e a criança anda e diz onde chegou.
 
 Da etapa 4 em diante o **mapa aparece girado**: o Norte deixa de ficar em cima.
@@ -44,8 +44,10 @@ trabalha de propósito.
   deixa tentar de novo; depois mostra o caminho certo tracejado.
 
 As etapas sobem com 3 acertos de primeira seguidos e voltam com 3 missões sem
-acerto. Não há vidas, tempo nem ranking. No fim, a criança responde "Como você
-descobriu para onde ir?" (rosa dos ventos, legenda, lugar de referência ou
+acerto nenhum (demonstradas pelo jogo); acertar com ajuda não faz voltar. Cada
+etapa nova começa com uma fala que apresenta a novidade, e a etapa fica salva
+assim que muda. Não há vidas, tempo nem ranking. No fim, a criança responde
+"Como você descobriu para onde ir?" (rosa dos ventos, legenda, lugar de referência ou
 chute): dizer qual pista usou é o que mais ajuda a ler mapas.
 
 ## Como usar em sala
@@ -61,7 +63,8 @@ chute): dizer qual pista usou é o que mais ajuda a ler mapas.
 
 ## Ajustes pela URL
 
-- `?etapa=4` — começa na etapa 4 (1 a 5);
+- `?etapa=4` — começa na etapa 4 (1 a 5), para o professor experimentar: não
+  muda a etapa salva no aparelho;
 - `?tarefas=10` — missão com 10 tarefas (4 a 12; padrão 8);
 - `?dupla=1` — deixa "Jogar em dupla" selecionado.
 

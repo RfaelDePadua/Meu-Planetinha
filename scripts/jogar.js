@@ -216,11 +216,21 @@
     el.iframe.hidden = false;
   }
 
+  // Ajustes do professor na URL do portal (?texto=1, ?dupla=1, ?etapa=3…)
+  // seguem para o jogo; 'game' e 'mission' são do próprio portal.
+  function parametrosDoJogo() {
+    var params = new URLSearchParams(location.search);
+    params.delete('game');
+    params.delete('mission');
+    if (missionContext) { params.set('mode', 'story'); params.set('build', 'narrativa-v1'); }
+    var texto = params.toString();
+    return texto ? '?' + texto : '';
+  }
+
   function loadGameIframe() {
     el.gameLoading.hidden = false;
     el.iframe.hidden = true;
-    el.iframe.src = getBaseURL() + game.path +
-      (missionContext ? '?mode=story&build=narrativa-v1' : '');
+    el.iframe.src = getBaseURL() + game.path + parametrosDoJogo();
     // Dispensa quando o jogo sinaliza 'game-ready' (listener abaixo) ou no timeout.
     loadingTimeout = setTimeout(dismissGameLoading, LOADING_TIMEOUT_MS);
   }
@@ -230,6 +240,8 @@
     if (e.source !== el.iframe.contentWindow) return;
     if (e.data === 'game-ready') {
       dismissGameLoading();
+      // Silenciado antes de o jogo carregar: avisa o jogo agora.
+      if (isMuted) postToGame('mute');
       return;
     }
 

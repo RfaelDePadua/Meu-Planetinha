@@ -6,7 +6,7 @@ sessões ao longo de semanas, com conversa depois.
 
 ## O que o jogo treina
 
-A criança lê um caso curto (bilhete, fábula, notícia, tirinha, cartaz, carta,
+A criança lê um caso curto (bilhete, fábula, notícia, diálogo, cartaz, carta,
 instruções, diário, texto informativo) e resolve dois mistérios sobre ele.
 Para resolver, precisa **escolher a resposta e marcar as frases do texto que
 a provam**. Resposta sem prova não resolve o caso: a busca de evidências no
@@ -27,17 +27,23 @@ que a média dos alunos de 5º ano ainda não chega no SAEB (ver
 ## Como o jogo ajuda quem erra
 
 1. **Primeiro erro:** explica por que aquela resposta não serve (cada resposta
-   errada tem sua explicação) e dá a estratégia do tipo de mistério. Se a
-   resposta estava certa mas a frase marcada não prova, o jogo diz isso e
-   deixa a resposta travada.
-2. **Segundo erro:** repete a explicação e destaca a parte do texto onde está a
-   pista.
+   errada tem sua explicação) e dá a estratégia do tipo de mistério. A
+   alternativa errada fica riscada até o fim do mistério. Se a resposta estava
+   certa mas a frase marcada não prova, o jogo diz isso, mostra a frase errada
+   em vermelho e deixa a resposta travada.
+2. **Segundo erro:** repete a explicação e destaca as frases perto da pista
+   (a frase da pista e as vizinhas).
 3. **Terceiro erro:** demonstra — mostra as pistas e a resposta, com a
    explicação falada.
 
-Os casos têm três níveis. Depois de cada caso, o nível sobe se os dois
-mistérios saíram de primeira e desce se os dois precisaram de demonstração.
-Não há vidas, tempo nem ranking.
+Só dá para marcar quantas frases a pergunta pede (uma, ou duas quando ela diz
+"junte duas pistas"): marcar várias ao acaso não vale como prova.
+
+Os casos têm três níveis. O nível sobe depois de dois casos seguidos com os
+dois mistérios de primeira, e desce quando nenhum mistério do caso sai de
+primeira e pelo menos um precisa de demonstração. Um tipo de mistério aparece
+como "dominado" com 5 acertos de primeira (e pelo menos 75% de acerto). Não há
+vidas, tempo nem ranking.
 
 ## Como usar em sala
 

@@ -81,6 +81,8 @@
 
 /* ── Controles ───────────────────────────────────────── */
 .dica-toque { margin: 0; color: var(--texto-2); font-weight: 800; }
+/* Na rota, direções + Recomeçar + Cheguei não cabem numa linha no tablet em pé */
+.controles > div { flex-wrap: wrap; }
 .direcoes { display: flex; gap: 8px; }
 .btn-direcao {
   min-width: 92px;

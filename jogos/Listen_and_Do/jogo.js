@@ -157,12 +157,13 @@
     });
   }
 
+  // Vagas ocupadas também aparecem: tocar numa delas troca as duas coisas de lugar.
   function desenharVagas() {
     camadaVagas.textContent = '';
     if (S.estado !== 'arrumando' || !S.selecionado) return;
     var escolhido = objeto(S.selecionado);
     C.todasAsVagas().forEach(function (v) {
-      if (v === escolhido.vaga || ocupada(v, escolhido.id)) return;
+      if (v === escolhido.vaga) return;
       var xy = vagaXY(v);
       var g = el('g', {
         'class': 'vaga', 'data-vaga': v, role: 'button', tabindex: '0',
@@ -176,7 +177,7 @@
     $('tarefa-tipo').textContent = { tocar: 'Ouça e toque', colocar: 'Ouça e coloque', dois: 'Dois comandos' }[tipoDaTarefa()];
     var caixa = $('comando-texto');
     caixa.textContent = '';
-    var mostrar = S.sempreTexto || S.mostrarTexto || S.semVoz || S.revelado;
+    var mostrar = S.sempreTexto || S.mostrarTexto || S.semVoz || S.mudo || S.revelado;
     caixa.classList.toggle('escondido', !mostrar);
     if (!mostrar) {
       caixa.lang = 'pt-BR';
@@ -306,6 +307,8 @@
     S.melhorSequencia = 0;
     S.pontos = 0;
     S.jaInstruiu = {};
+    // ?etapa= é para o professor experimentar: não muda o progresso salvo.
+    S.etapaDaUrl = Boolean(parseInt(params.get('etapa'), 10));
     S.etapa = clamp(parseInt(params.get('etapa'), 10) || save.etapa || 1, 1, C.ETAPAS.length);
     S.dominadasAntes = C.ETAPAS.filter(function (e) { return dominada(e.id); }).map(function (e) { return e.id; });
     $('tela-inicio').hidden = true;
@@ -369,7 +372,8 @@
   function escolherVaga(vaga) {
     if (S.estado !== 'arrumando' || !S.selecionado || S.pausado) return;
     var o = objeto(S.selecionado);
-    if (ocupada(vaga, o.id)) return;
+    var outro = S.objetos.filter(function (x) { return x.vaga === vaga && x.id !== o.id; })[0];
+    if (outro) outro.vaga = o.vaga; // lugar cheio: troca as duas de lugar
     o.vaga = vaga;
     S.selecionado = null;
     som('tique');
@@ -438,6 +442,8 @@
     var umCerto = falhas.length < S.item.alvos.length;
     var falas = umCerto ? [F.umCerto] : [];
     var texto = umCerto ? F.umCerto + ' ' : '';
+    // A parte certa fica marcada em verde.
+    S.item.alvos.forEach(function (a) { if (falhas.indexOf(a) === -1) S.marcas[C.objetoDoAlvo(S.objetos, a).id] = 'certa'; });
     var o = C.objetoDoAlvo(S.objetos, alvo);
 
     if (o.vaga !== o.inicio) {
@@ -481,7 +487,7 @@
     var texto = textoDoErro;
     if (S.tentativa === 2) {
       falas.push(F.ouvirDeNovo, C.enLento(comando()));
-      texto += ' Ouça de novo, mais devagar.';
+      texto += semSom() ? ' Leia de novo com atenção.' : ' Ouça de novo, mais devagar.';
     } else {
       var p = palavraDoErro(motivo, alvo);
       var sig = C.significado(p.tipo, p.valor);
@@ -496,7 +502,16 @@
     falar(falas);
   }
 
+  function semSom() { return S.mudo || S.semVoz || S.sempreTexto; }
+
+  // Volta ao início o que foi mexido por engano (fica só o que está certo):
+  // assim a próxima avaliação fala só do que a criança fizer agora.
   function tentarDeNovo() {
+    if (S.item.tipo !== 'tocar') {
+      var certos = S.item.alvos.filter(confere).map(function (a) { return C.objetoDoAlvo(S.objetos, a); });
+      S.objetos.forEach(function (o) { if (certos.indexOf(o) === -1) o.vaga = o.inicio; });
+    }
+    S.selecionado = null;
     S.marcas = {};
     definirEstado(S.item.tipo === 'tocar' ? 'ouvindo' : 'arrumando');
     desenharTudo();
@@ -548,11 +563,14 @@
     var primeira = tipo === 'primeira';
     S.resultados[S.indice] = { tipo: tipo, etapa: S.etapa };
     var historico = S.historico[S.etapa] = S.historico[S.etapa] || [];
-    historico.push(primeira);
+    historico.push(tipo);
     var reg = save.etapas[S.etapa] = save.etapas[S.etapa] || { tentativas: 0, acertos: 0 };
     reg.tentativas += 1;
     if (primeira) reg.acertos += 1;
-    if (historico.length >= 3 && historico.slice(-3).every(Boolean)) reg.dominada = true;
+    // "Dominada" pede 3 seguidos de primeira e pelo menos 6 acertos de primeira
+    // na etapa (para não valer com palavras que a criança nem ouviu).
+    if (historico.length >= 3 && historico.slice(-3).every(function (t) { return t === 'primeira'; }) &&
+        reg.acertos >= 6) reg.dominada = true;
     S.sequencia = primeira ? S.sequencia + 1 : 0;
     S.melhorSequencia = Math.max(S.melhorSequencia, S.sequencia);
     S.pontos += primeira ? 100 : (tipo === 'dica' ? 50 : 10);
@@ -573,17 +591,18 @@
 
   function rotuloProximo() { return S.indice + 1 >= S.total ? 'Ver resultado' : 'Próxima'; }
 
-  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 tarefas sem acerto.
+  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 tarefas
+  // sem acerto (demonstradas). Acertar com ajuda não faz voltar.
   function adaptar() {
     var h = S.historico[S.etapa] || [];
     var ultimos = h.slice(-3);
     if (ultimos.length < 3) return null;
-    if (ultimos.every(Boolean) && S.etapa < C.ETAPAS.length) {
+    if (ultimos.every(function (t) { return t === 'primeira'; }) && S.etapa < C.ETAPAS.length) {
       S.etapa += 1;
       S.historico[S.etapa] = [];
       return 'sobe';
     }
-    if (!ultimos.some(Boolean) && S.etapa > 1) {
+    if (ultimos.every(function (t) { return t === 'demo'; }) && S.etapa > 1) {
       S.etapa -= 1;
       S.historico[S.etapa] = [];
       return 'desce';
@@ -595,6 +614,8 @@
     S.indice += 1;
     if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
+    // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
+    if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');
@@ -610,16 +631,17 @@
   function finalizar() {
     definirEstado('fim');
     save.sessoes += 1;
-    save.etapa = S.etapa;
+    if (!S.etapaDaUrl) save.etapa = S.etapa;
     gravarSave();
     desenharHUD();
     registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var ajuda = S.resultados.filter(function (r) { return r.tipo === 'dica'; }).length;
+    var juntos = S.resultados.filter(function (r) { return r.tipo === 'demo'; }).length;
     var resumo = $('fim-resumo');
     resumo.textContent = '';
-    [[primeira + ' de ' + S.total, 'de primeira'], [String(ajuda), 'com ajuda'], [String(S.total), 'comandos']]
+    [[primeira + ' de ' + S.total, 'de primeira'], [String(ajuda), 'com ajuda'], [String(juntos), 'vimos juntos']]
       .forEach(function (par) {
         var bloco = document.createElement('div');
         var forte = document.createElement('strong');
@@ -744,8 +766,10 @@
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
       });
+      var resposta = estrategia.id === 'chute' ? F.obrigadoChute : F.obrigado;
+      $('fim-obrigado').textContent = resposta;
       $('fim-obrigado').hidden = false;
-      falar(F.obrigado);
+      falar(resposta);
     });
     $('fim-opcoes').appendChild(botao);
   });
@@ -753,7 +777,9 @@
   var portal = Base.conectarPortal({
     aoPausar: function () { S.pausado = true; $('tela-pausa').hidden = false; },
     aoContinuar: function () { S.pausado = false; $('tela-pausa').hidden = true; },
-    aoReiniciar: function () { S.pausado = false; $('tela-pausa').hidden = true; voltarAoInicio(); }
+    aoReiniciar: function () { S.pausado = false; $('tela-pausa').hidden = true; voltarAoInicio(); },
+    // Portal silenciado: o comando aparece escrito (senão a criança fica sem saber o que fazer).
+    aoSilenciar: function (mudo) { S.mudo = mudo; if (S.item) desenharEnunciado(); }
   });
 
   Base.barraDoProfessor(GAME_ID);

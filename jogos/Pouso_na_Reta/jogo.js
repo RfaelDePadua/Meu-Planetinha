@@ -19,6 +19,7 @@
   var SAVE_KEY = 'meu-planetinha.pouso-na-reta.v1';
   var NS = 'http://www.w3.org/2000/svg';
   var PERFEITO = 0.025;         // erro máximo (fração da pista) para "pouso perfeito"
+  var SEGUIDOS = 4;             // acertos de primeira seguidos para subir de etapa (e "dominada")
   var PASSO_TECLADO = 0.01;     // cada seta move 1% da pista
   var REDUZIR = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -423,14 +424,23 @@
      ------------------------------------------------ */
   function chave(item) { return item.texto + (item.marco ? '@' + item.marco.texto : ''); }
 
+  // Não repete item até passar pelos outros da etapa. Na etapa 3, alterna
+  // decimal, porcentagem e dinheiro, para o "dominada" valer para os três.
+  var TIPOS_ETAPA3 = ['decimal', 'porcentagem', 'dinheiro'];
   function escolherItem() {
     var etapa = etapaAtual();
     if (S.indice === 0 && etapa.id === 1 && !save.sessoes) return etapa.itens[0]; // começa por 1/2
     var opcoes = etapa.itens.filter(function (it) { return S.recentes.indexOf(chave(it)) === -1; });
     if (!opcoes.length) opcoes = etapa.itens;
+    if (etapa.id === 3) {
+      var tipo = TIPOS_ETAPA3[(S.vezEtapa3 = (S.vezEtapa3 || 0) + 1) % 3];
+      var doTipo = opcoes.filter(function (it) { return it.tipo === tipo; });
+      if (!doTipo.length) doTipo = etapa.itens.filter(function (it) { return it.tipo === tipo; });
+      opcoes = doTipo;
+    }
     var item = opcoes[Math.floor(Math.random() * opcoes.length)];
     S.recentes.push(chave(item));
-    if (S.recentes.length > 4) S.recentes.shift();
+    if (S.recentes.length > Math.max(1, etapa.itens.length - 1)) S.recentes.shift();
     return item;
   }
 
@@ -447,6 +457,8 @@
     S.melhorSequencia = 0;
     S.pontos = 0;
     var etapaParam = parseInt(params.get('etapa'), 10);
+    // ?etapa= é para o professor experimentar: não muda o progresso salvo.
+    S.etapaDaUrl = Boolean(etapaParam);
     S.etapa = clamp(etapaParam || save.etapa || 1, 1, C.ETAPAS.length);
     S.dominadasAntes = C.ETAPAS.filter(function (e) { return dominada(e.id); }).map(function (e) { return e.id; });
     $('tela-inicio').hidden = true;
@@ -527,21 +539,21 @@
         som('pouso');
         var erro = Math.abs(S.naveV - S.item.valor) / S.item.max;
         if (S.tentativa === 1) S.erro1 = erro;
-        if (erro <= etapaAtual().tolerancia) acertou(erro);
+        if (erro <= (S.item.tolerancia || etapaAtual().tolerancia)) acertou(erro);
         else errou(erro);
       });
   }
 
   function registrar(tipo, erro) {
     var primeira = tipo === 'primeira';
-    S.resultados[S.indice] = { tipo: tipo, erro: erro, etapa: S.etapa, item: S.item.texto };
+    S.resultados[S.indice] = { tipo: tipo, erro: erro, erro1: S.erro1, etapa: S.etapa, item: S.item.texto };
     var historico = S.historico[S.etapa] = S.historico[S.etapa] || [];
-    historico.push(primeira);
+    historico.push(tipo);
 
     var reg = save.etapas[S.etapa] = save.etapas[S.etapa] || { tentativas: 0, acertos: 0 };
     reg.tentativas += 1;
     if (primeira) reg.acertos += 1;
-    if (historico.length >= 3 && historico.slice(-3).every(Boolean)) reg.dominada = true;
+    if (historico.length >= SEGUIDOS && historico.slice(-SEGUIDOS).every(function (t) { return t === 'primeira'; })) reg.dominada = true;
 
     S.sequencia = primeira ? S.sequencia + 1 : 0;
     S.melhorSequencia = Math.max(S.melhorSequencia, S.sequencia);
@@ -662,17 +674,18 @@
     });
   }
 
-  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 erros seguidos.
+  // Sobe de etapa após SEGUIDOS acertos de primeira seguidos; volta após 3
+  // pousos seguidos que terminaram em demonstração. Acertar com a régua não
+  // faz voltar.
   function adaptar() {
     var h = S.historico[S.etapa] || [];
-    var ultimos = h.slice(-3);
-    if (ultimos.length < 3) return null;
-    if (ultimos.every(Boolean) && S.etapa < C.ETAPAS.length) {
+    if (h.length >= SEGUIDOS && h.slice(-SEGUIDOS).every(function (t) { return t === 'primeira'; }) && S.etapa < C.ETAPAS.length) {
       S.etapa += 1;
       S.historico[S.etapa] = [];
       return 'sobe';
     }
-    if (!ultimos.some(Boolean) && S.etapa > 1) {
+    var ultimos = h.slice(-3);
+    if (ultimos.length === 3 && ultimos.every(function (t) { return t === 'demo'; }) && S.etapa > 1) {
       S.etapa -= 1;
       S.historico[S.etapa] = [];
       return 'desce';
@@ -684,6 +697,8 @@
     S.indice += 1;
     if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
+    // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
+    if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');
@@ -700,14 +715,15 @@
     S.token++;
     definirEstado('fim');
     save.sessoes += 1;
-    save.etapa = S.etapa;
+    if (!S.etapaDaUrl) save.etapa = S.etapa;
     gravarSave();
     atualizarHUD();
     registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var regua = S.resultados.filter(function (r) { return r.tipo === 'regua'; }).length;
-    var erroMedio = S.resultados.reduce(function (s, r) { return s + r.erro; }, 0) / S.resultados.length;
+    // Precisão do primeiro pouso de cada item (o último é sempre perto, depois da ajuda).
+    var erroMedio = S.resultados.reduce(function (s, r) { return s + r.erro1; }, 0) / S.resultados.length;
     var precisao = Math.max(0, Math.round(100 - erroMedio * 100));
 
     var resumo = $('fim-resumo');

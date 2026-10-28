@@ -443,6 +443,7 @@
       evento.className = 'evento';
       evento.textContent = item.evento;
       texto.appendChild(evento);
+      texto.appendChild(document.createTextNode(' As cartas marcadas vão aumentar, diminuir ou ficar igual?'));
       if (item.materia && item.materia.length) legenda += ' Tracejada: o caminho da matéria.';
     }
     $('legenda').textContent = legenda;
@@ -463,8 +464,10 @@
       $('btn-desfazer').hidden = false;
       $('btn-desfazer').disabled = !S.setasUsuario.length;
     } else {
+      // Fica ativo mesmo incompleto: o toque diz para quem falta escolher.
       conferir.textContent = 'Ver o que acontece';
-      conferir.disabled = S.item.perguntas.some(function (p) { return !S.previsoes[p.ser]; });
+      conferir.disabled = false;
+      conferir.classList.toggle('incompleto', S.item.perguntas.some(function (p) { return !S.previsoes[p.ser]; }));
       $('btn-desfazer').hidden = true;
     }
   }
@@ -507,13 +510,19 @@
   /* ------------------------------------------------
      Fluxo
      ------------------------------------------------ */
+  // Não repete tarefa até passar pelas outras da etapa, e evita a mesma teia
+  // duas vezes seguidas.
   function escolherItem() {
     var etapa = etapaAtual();
     var chaves = etapa.itens.map(function (_, i) { return etapa.id + '-' + i; });
     var livres = chaves.filter(function (k) { return S.recentes.indexOf(k) === -1; });
-    var chave = (livres.length ? livres : chaves)[Math.floor(Math.random() * (livres.length || chaves.length))];
+    if (!livres.length) livres = chaves;
+    var teiaAntes = S.item && S.item.teia;
+    var outraTeia = livres.filter(function (k) { var t = etapa.itens[Number(k.split('-')[1])].teia; return !t || t !== teiaAntes; });
+    if (outraTeia.length) livres = outraTeia;
+    var chave = livres[Math.floor(Math.random() * livres.length)];
     S.recentes.push(chave);
-    if (S.recentes.length > 3) S.recentes.shift();
+    if (S.recentes.length > Math.max(1, etapa.itens.length - 1)) S.recentes.shift();
     S.chaveItem = chave;
     return etapa.itens[Number(chave.split('-')[1])];
   }
@@ -741,7 +750,7 @@
         p.caminho.forEach(function (s) { if (!contem(S.caminho, s)) S.caminho.push(s); });
       });
       titulo = 'Veja o que aconteceu de verdade';
-      explicacoes = erradas.slice(0, 2).map(function (p) { return p.explicacao; });
+      explicacoes = erradas.map(function (p) { return p.explicacao; });
     }
     desenharTudo();
     mostrarFeedback(erradas.length ? 'quase' : 'acerto', titulo, explicacoes.join(' '), rotuloProximo(), proximo);
@@ -752,6 +761,14 @@
   function pedirConferir() {
     var estado = S.estado;
     if ((estado !== 'montando' && estado !== 'prevendo') || S.pausado || $('btn-conferir').disabled) return;
+    if (estado === 'prevendo') {
+      var falta = S.item.perguntas.filter(function (p) { return !S.previsoes[p.ser]; })[0];
+      if (falta) {
+        aviso(F.faltaPrever(falta.ser));
+        falar(F.faltaPrever(falta.ser));
+        return;
+      }
+    }
     if (S.modo === 'dupla') {
       S.estadoAntes = estado;
       definirEstado('confirmando');
@@ -775,11 +792,11 @@
     var primeira = tipo === 'primeira';
     S.resultados[S.indice] = { tipo: tipo, etapa: S.etapa };
     var historico = S.historico[S.etapa] = S.historico[S.etapa] || [];
-    historico.push(primeira);
+    historico.push(tipo);
     var reg = save.etapas[S.etapa] = save.etapas[S.etapa] || { tentativas: 0, acertos: 0 };
     reg.tentativas += 1;
     if (primeira) reg.acertos += 1;
-    if (historico.length >= 3 && historico.slice(-3).every(Boolean)) reg.dominada = true;
+    if (historico.length >= 3 && historico.slice(-3).every(function (t) { return t === 'primeira'; })) reg.dominada = true;
     S.sequencia = primeira ? S.sequencia + 1 : 0;
     S.melhorSequencia = Math.max(S.melhorSequencia, S.sequencia);
     S.pontos += primeira ? 100 : (tipo === 'dica' ? 50 : 10);
@@ -790,9 +807,12 @@
     // somadas nas tentativas. Prever (uma tentativa, sem dicas): erro = previsões
     // erradas de quantas, e o resultado vira primeira / parcial / errou.
     var prever = !montando();
+    var it = S.item;
+    var descricao = prever ? 'E se: ' + it.evento
+      : (it.teia ? 'teia ' + it.teia + ' (faltam ' + it.faltam.length + ' setas)' : 'cadeia ' + it.seres.join(' > '));
     registro.item({
       etapa: S.etapa,
-      item: S.chaveItem,
+      item: S.chaveItem + ' · ' + descricao,
       resultado: prever ? { primeira: 'primeira', dica: 'parcial', demo: 'errou' }[tipo] : tipo,
       tentativas: prever ? 1 : (tipo === 'demo' ? S.tentativa - 1 : S.tentativa),
       dicas: prever ? 0 : Math.min(S.tentativa - 1, 2),
@@ -802,17 +822,19 @@
 
   function rotuloProximo() { return S.indice + 1 >= S.total ? 'Ver resultado' : 'Próxima tarefa'; }
 
-  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 tarefas sem acerto.
+  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 tarefas
+  // sem acerto (demonstradas ou com todas as previsões erradas). Acertar com
+  // dica não faz descer.
   function adaptar() {
     var h = S.historico[S.etapa] || [];
     var ultimos = h.slice(-3);
     if (ultimos.length < 3) return null;
-    if (ultimos.every(Boolean) && S.etapa < C.ETAPAS.length) {
+    if (ultimos.every(function (t) { return t === 'primeira'; }) && S.etapa < C.ETAPAS.length) {
       S.etapa += 1;
       S.historico[S.etapa] = [];
       return 'sobe';
     }
-    if (!ultimos.some(Boolean) && S.etapa > 1) {
+    if (ultimos.every(function (t) { return t === 'demo'; }) && S.etapa > 1) {
       S.etapa -= 1;
       S.historico[S.etapa] = [];
       return 'desce';
@@ -964,8 +986,10 @@
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
       });
+      var resposta = estrategia.id === 'chute' ? F.obrigadoChute : F.obrigado;
+      $('fim-obrigado').textContent = resposta;
       $('fim-obrigado').hidden = false;
-      falar(F.obrigado);
+      falar(resposta);
     });
     $('fim-opcoes').appendChild(botao);
   });
