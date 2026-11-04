@@ -26,7 +26,7 @@
       cover: null,
       path: 'jogos/Pouso_na_Reta/index.html',
       orientacao: 'horizontal',
-      sobre: 'Pilote a nave e pouse no ponto certo da pista: frações, decimais, porcentagens e dinheiro na reta numérica. Para 4º e 5º ano. Dá para jogar sozinho ou em dupla.',
+      sobre: 'Pilote a nave e pouse no ponto certo da pista: frações, decimais, porcentagens e dinheiro. Jogue sozinho ou em dupla.',
       tutorial: [
         'Ouça ou leia o número que aparece no alto',
         'Arraste a nave (ou use as setas) até o ponto da pista',
@@ -43,7 +43,7 @@
       cover: null,
       path: 'jogos/Detetive_de_Letrion/index.html',
       orientacao: 'horizontal',
-      sobre: 'Leia casos curtos (bilhetes, fábulas, notícias, diálogos, cartas) e resolva os mistérios. Todo bom detetive prova o que diz: marque as frases do texto que são pistas. Para 4º e 5º ano. Dá para jogar sozinho ou em dupla.',
+      sobre: 'Leia casos curtos e resolva os mistérios. Todo bom detetive prova o que diz: marque as frases do texto que são pistas. Jogue sozinho ou em dupla.',
       tutorial: [
         'Leia o caso (ou toque em "Ouvir o texto")',
         'Toque nas frases do texto que provam a resposta',
@@ -60,7 +60,7 @@
       cover: null,
       path: 'jogos/Teia_Viva/index.html',
       orientacao: 'horizontal',
-      sobre: 'Monte as cadeias e teias alimentares do Cerrado ligando quem é comido a quem come. Depois preveja o que acontece quando algo muda (uma seca, a caça, o sumiço dos fungos) e veja a simulação. Para 4º e 5º ano. Dá para jogar sozinho ou em dupla.',
+      sobre: 'Monte as teias alimentares do Cerrado e preveja o que acontece quando algo muda. Jogue sozinho ou em dupla.',
       tutorial: [
         'Toque em um ser vivo e depois em quem se alimenta dele: a seta mostra para onde vai a energia',
         'Toque em Conferir para ver se a teia está certa',
@@ -77,7 +77,7 @@
       cover: null,
       path: 'jogos/Rumo_Certo/index.html',
       orientacao: 'horizontal',
-      sobre: 'Cumpra missões num mapa usando a rosa dos ventos e a legenda: encontre lugares, leve o explorador e siga rotas. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Para 4º e 5º ano. Dá para jogar sozinho ou em dupla.',
+      sobre: 'Cumpra missões no mapa usando a rosa dos ventos e a legenda. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Jogue sozinho ou em dupla.',
       tutorial: [
         'Ouça a missão e olhe a rosa dos ventos do mapa',
         'Para encontrar, toque no lugar certo; para andar, use os botões Norte, Sul, Leste e Oeste',
@@ -94,7 +94,7 @@
       cover: null,
       path: 'jogos/Listen_and_Do/index.html',
       orientacao: 'horizontal',
-      sobre: 'Ouça um comando em inglês e faça no quarto: toque na coisa pedida ou leve cada coisa ao lugar certo ("Put the red ball under the bed"). Vocabulário da lista Cambridge Starters (Pre-A1). Para 4º e 5º ano, como complemento: a BNCC só tem inglês a partir do 6º ano. Dá para jogar sozinho ou em dupla; use fone de ouvido se puder.',
+      sobre: 'Ouça um comando em inglês e faça no quarto, como "Put the red ball under the bed". Jogue sozinho ou em dupla. Use fone de ouvido se puder.',
       tutorial: [
         'Toque em Ouvir para escutar o comando; Devagar repete mais lento',
         'Para "Touch...", toque na coisa pedida',
