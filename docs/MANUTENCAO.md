@@ -52,6 +52,15 @@ http, não abrindo o arquivo direto.)
 
 ## Publicar
 
+O trabalho está na branch `repaginacao` (a `main` antiga não tem os jogos atuais).
+O repositório público do projeto é `RfaelDePadua/Meu-Planetinha`: a `main` dele
+publica direto em www.meuplanetinha.com.br (GitHub Pages), então combine antes de
+mexer nela. Para subir lá, use `sh ferramentas/subir-publico.sh`, que deixa de fora
+os documentos internos (`docs/RELATORIO_APOIO.md` e `docs/testes/`), guardados só no
+repositório privado `LucasTerrau/meu-planetinha` (remote `lucas`). Na Netlify, deixe
+desligado o selo "Powered by Netlify" (Project configuration > General): ele cobre
+os botões dos jogos.
+
 O site está em https://meu-planetinha.netlify.app (Netlify). **Nunca publique a
 pasta do projeto direto** (ela tem o `.env` com a chave do Azure). Publique uma
 cópia limpa, só com o que está no Git:

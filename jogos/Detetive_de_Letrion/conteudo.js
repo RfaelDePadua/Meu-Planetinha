@@ -100,9 +100,9 @@
           explicacao: 'A frase de antes fala da pomba, que viu tudo do alto. É ela quem joga a folha para ajudar a formiga.'
         },
         {
-          tipo: 'escondida', pergunta: 'Por que a formiga picou o caçador?', pistas: [2, 3],
+          tipo: 'escondida', pergunta: 'Por que a formiga picou o caçador?', pistas: [2, 3, 5],
           opcoes: [
-            { texto: 'Para salvar a pomba, que a salvou', certa: true },
+            { texto: 'Para salvar a pomba, que antes salvou a formiga', certa: true },
             { texto: 'Porque estava com muita fome', porque: 'O texto não fala de fome. Veja o que a pomba tinha feito antes pela formiga.' },
             { texto: 'Porque o caçador pisou no formigueiro', porque: 'Em nenhuma frase o caçador pisa na formiga ou no formigueiro.' }
           ],
@@ -218,9 +218,9 @@
       ],
       misterios: [
         {
-          tipo: 'assunto', pergunta: 'Qual é o assunto principal desse texto?', pistas: [1, 2],
+          tipo: 'assunto', pergunta: 'Qual é o assunto principal desse texto?', pistas: [0, 2, 3],
           opcoes: [
-            { texto: 'Os motivos pelos quais o gato ronrona', certa: true },
+            { texto: 'Quando e por que o gato ronrona', certa: true },
             { texto: 'Como cuidar de um gato filhote', porque: 'O texto não fala de filhotes nem de como cuidar deles.' },
             { texto: 'Por que os gatos têm medo de cachorro', porque: 'Medo aparece em uma frase, mas cachorro não aparece no texto.' }
           ],
@@ -410,7 +410,7 @@
       ],
       misterios: [
         {
-          tipo: 'assunto', pergunta: 'Qual ensinamento combina mais com essa fábula?', pistas: [3, 4],
+          tipo: 'assunto', pergunta: 'Qual ensinamento combina mais com essa fábula?', pistas: [2, 3],
           opcoes: [
             { texto: 'Usar a cabeça vale mais que a força', certa: true },
             { texto: 'Quem é mais forte sempre vence', porque: 'O corvo tentou usar a força para derrubar o jarro e não conseguiu.' },
@@ -453,7 +453,7 @@
           explicacao: 'A frase que diz “no salão do prédio” mostra o lugar da festa.'
         },
         {
-          tipo: 'escondida', pergunta: 'Quem vai fazer aniversário?', pistas: [1, 5],
+          tipo: 'escondida', pergunta: 'Quem vai fazer aniversário? Junte duas pistas.', pistas: [1, 5], todas: true,
           opcoes: [
             { texto: 'O Marcos', certa: true },
             { texto: 'A Lia', porque: 'A Lia é quem recebe o convite. Veja quem assina no fim.' },
@@ -483,7 +483,7 @@
           explicacao: 'A frase de antes fala da raposa com fome. É ela quem pula para pegar as uvas.'
         },
         {
-          tipo: 'escondida', pergunta: 'Por que a raposa disse que as uvas estavam verdes?', pistas: [0, 1],
+          tipo: 'escondida', pergunta: 'Por que a raposa disse que as uvas estavam verdes?', pistas: [0, 1, 2],
           opcoes: [
             { texto: 'Para disfarçar que não conseguiu', certa: true },
             { texto: 'Porque as uvas ainda estavam verdes', porque: 'O texto diz logo no começo que as uvas estavam bem maduras.' },

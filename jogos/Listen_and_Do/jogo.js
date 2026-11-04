@@ -47,6 +47,7 @@
   }
 
   function gravarSave() {
+    if (S && S.etapaDaUrl) return; // o professor experimentando pela URL não muda o progresso
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignora */ }
   }
 
@@ -54,7 +55,13 @@
 
   function dominada(id) {
     var e = save.etapas[id];
-    return Boolean(e && (e.dominada || (e.acertos >= 5 && e.acertos / e.tentativas >= 0.75)));
+    return Boolean(e && e.dominada);
+  }
+
+  // A etapa está vencida com pelo menos 5 tarefas feitas e as 3 últimas de primeira
+  // (para não valer com palavras que a criança nem ouviu).
+  function etapaVencida(h) {
+    return h.length >= 5 && h.slice(-3).every(function (t) { return t === 'primeira'; });
   }
 
   /* ------------------------------------------------
@@ -157,13 +164,12 @@
     });
   }
 
-  // Vagas ocupadas também aparecem: tocar numa delas troca as duas coisas de lugar.
   function desenharVagas() {
     camadaVagas.textContent = '';
     if (S.estado !== 'arrumando' || !S.selecionado) return;
     var escolhido = objeto(S.selecionado);
     C.todasAsVagas().forEach(function (v) {
-      if (v === escolhido.vaga) return;
+      if (v === escolhido.vaga || ocupada(v, escolhido.id)) return;
       var xy = vagaXY(v);
       var g = el('g', {
         'class': 'vaga', 'data-vaga': v, role: 'button', tabindex: '0',
@@ -376,8 +382,7 @@
   function escolherVaga(vaga) {
     if (S.estado !== 'arrumando' || !S.selecionado || S.pausado) return;
     var o = objeto(S.selecionado);
-    var outro = S.objetos.filter(function (x) { return x.vaga === vaga && x.id !== o.id; })[0];
-    if (outro) outro.vaga = o.vaga; // lugar cheio: troca as duas de lugar
+    if (ocupada(vaga, o.id)) return;
     o.vaga = vaga;
     S.selecionado = null;
     som('tique');
@@ -587,10 +592,7 @@
     var reg = save.etapas[S.etapa] = save.etapas[S.etapa] || { tentativas: 0, acertos: 0 };
     reg.tentativas += 1;
     if (primeira) reg.acertos += 1;
-    // "Dominada" pede 3 seguidos de primeira e pelo menos 6 acertos de primeira
-    // na etapa (para não valer com palavras que a criança nem ouviu).
-    if (historico.length >= 3 && historico.slice(-3).every(function (t) { return t === 'primeira'; }) &&
-        reg.acertos >= 6) reg.dominada = true;
+    if (etapaVencida(historico)) reg.dominada = true;
     S.sequencia = primeira ? S.sequencia + 1 : 0;
     S.melhorSequencia = Math.max(S.melhorSequencia, S.sequencia);
     S.pontos += primeira ? 100 : (tipo === 'dica' ? 50 : 10);
@@ -611,13 +613,13 @@
 
   function rotuloProximo() { return S.indice + 1 >= S.total ? 'Ver resultado' : 'Próxima'; }
 
-  // Sobe de etapa após 3 acertos de primeira seguidos; volta após 3 tarefas
+  // Sobe de etapa quando ela está vencida (ver etapaVencida); volta após 3 tarefas
   // sem acerto (demonstradas). Acertar com ajuda não faz voltar.
   function adaptar() {
     var h = S.historico[S.etapa] || [];
     var ultimos = h.slice(-3);
     if (ultimos.length < 3) return null;
-    if (ultimos.every(function (t) { return t === 'primeira'; }) && S.etapa < C.ETAPAS.length) {
+    if (etapaVencida(h) && S.etapa < C.ETAPAS.length) {
       S.etapa += 1;
       S.historico[S.etapa] = [];
       return 'sobe';
@@ -632,10 +634,10 @@
 
   function proximo() {
     S.indice += 1;
-    if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
     // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
     if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
+    if (S.indice >= S.total) { finalizar(); return; }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');

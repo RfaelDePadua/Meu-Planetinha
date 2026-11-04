@@ -62,7 +62,7 @@
 }
 /* A cena recebe foco para as setas funcionarem; a própria nave mostra a posição. */
 .cena:focus-visible { outline: none; }
-.cena svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cena svg { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; width: 100%; height: 100%; }
 [data-estado="feedback"] .cena,
 [data-estado="animando"] .cena { cursor: default; }
 

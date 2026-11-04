@@ -67,7 +67,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* ─── LOBBY ─────────────────────────────── */
 .state-lobby {
-  position: fixed; inset: 0; z-index: 20;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 20;
   display: flex; align-items: flex-start; justify-content: center;
   overflow-y: auto;
   padding: var(--espaco-2xl) var(--espaco-md) var(--espaco-md);
@@ -183,7 +183,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* ─── GAME SHELL ─────────────────────────── */
 .state-shell {
-  position: fixed; inset: 0; z-index: 10;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 10;
   display: grid;
   grid-template-areas: "left center right";
   grid-template-columns: 200px 1fr 200px;
@@ -283,7 +283,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* loading dots inside game area */
 .game-loading {
-  position: absolute; inset: 0;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: var(--espaco-md);
   background: var(--cor-superficie-2); border-radius: var(--borda-raio-md); z-index: 3;
@@ -457,7 +457,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* ─── ROTATE OVERLAY ─────────────────────── */
 .rotate-overlay {
-  position: fixed; inset: 0; z-index: 200;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 200;
   background: rgba(10,14,40,.94);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: var(--espaco-lg); text-align: center; padding: var(--espaco-xl);
@@ -482,7 +482,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* ─── PAUSE OVERLAY ──────────────────────── */
 .pause-overlay {
-  position: fixed; inset: 0; z-index: 100;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 100;
   background: rgba(10,14,40,.82);
   display: flex; align-items: center; justify-content: center;
   padding: var(--espaco-md);
@@ -519,7 +519,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* ─── TUTORIAL OVERLAY ───────────────────── */
 .tutorial-overlay {
-  position: fixed; inset: 0; z-index: 150;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 150;
   background: rgba(10,14,40,.82);
   display: flex; align-items: center; justify-content: center;
   padding: var(--espaco-md);
@@ -566,7 +566,7 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 
 /* ─── ERROR STATE ─────────────────────────── */
 .state-error {
-  position: fixed; inset: 0; z-index: 50;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 50;
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: var(--espaco-lg);
   text-align: center; padding: var(--espaco-xl);
@@ -637,3 +637,16 @@ body[data-planeta="globish"]  { --p-cor:#00D4E8; --p-acc:#00A3CC; --p-sup:rgba(0
 }
 
 [hidden] { display: none !important; }
+
+/* "Jogar assim mesmo": sem isso, o texto ficava branco sobre branco. */
+#rotate-dispensar {
+  margin-top: 12px;
+  padding: 10px 18px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  background: #11173A;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}

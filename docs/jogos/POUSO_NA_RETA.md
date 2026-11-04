@@ -24,12 +24,12 @@ preciso entender a fração, o decimal ou a porcentagem como uma **medida**.
 2. **Segundo erro:** o jogo demonstra, contando as partes em voz alta até o
    ponto certo ("um quarto, dois quartos, três quartos").
 
-Não há vidas, cronômetro nem ranking. A dificuldade sobe depois de 4 acertos
+Não há vidas, cronômetro nem ranking. A dificuldade sobe depois de 3 acertos
 de primeira seguidos e volta uma etapa depois de 3 pousos seguidos em que o
-jogo precisou demonstrar (acertar com a régua não faz voltar). O pouso só
-conta como certo perto o bastante do ponto para não confundir com o item
-vizinho da etapa (por exemplo, 1/8 não vale como 1/10). Na etapa 3, os itens
-alternam decimal, porcentagem e dinheiro.
+jogo precisou demonstrar (acertar com a régua não faz voltar). O pouso conta
+como certo dentro de uma margem (10% da pista na etapa 1 até 6% nas últimas), e
+a tela sempre mostra o ponto exato. Na etapa 3, os itens alternam decimal,
+porcentagem e dinheiro.
 
 ## Como usar em sala
 
@@ -97,7 +97,7 @@ comparação de frações. Detalhes em [PESQUISA_JOGOS.md](../PESQUISA_JOGOS.md)
 ## Ainda falta
 
 - Testar com crianças e professores e ajustar as tolerâncias de acerto
-  (hoje 7% da pista na etapa 1 até 5% na etapa 5).
+  (hoje 10% da pista na etapa 1 até 6% na etapa 5; o registro guarda o erro do primeiro pouso).
 - Pré-teste e pós-teste curtos para medir o efeito antes de afirmar que
   funciona.
 - Etapa de ordenar 3 ou 4 números na pista (EF05MA05).

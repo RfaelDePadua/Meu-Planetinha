@@ -19,7 +19,7 @@
   var SAVE_KEY = 'meu-planetinha.pouso-na-reta.v1';
   var NS = 'http://www.w3.org/2000/svg';
   var PERFEITO = 0.025;         // erro máximo (fração da pista) para "pouso perfeito"
-  var SEGUIDOS = 4;             // acertos de primeira seguidos para subir de etapa (e "dominada")
+  var SEGUIDOS = 3;             // acertos de primeira seguidos para subir de etapa (e "dominada")
   var PASSO_TECLADO = 0.01;     // cada seta move 1% da pista
   var REDUZIR = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -44,6 +44,7 @@
   }
 
   function gravarSave() {
+    if (S && S.etapaDaUrl) return; // o professor experimentando pela URL não muda o progresso
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignora */ }
   }
 
@@ -561,7 +562,7 @@
         som('pouso');
         var erro = Math.abs(S.naveV - S.item.valor) / S.item.max;
         if (S.tentativa === 1) S.erro1 = erro;
-        if (erro <= (S.item.tolerancia || etapaAtual().tolerancia)) acertou(erro);
+        if (erro <= etapaAtual().tolerancia) acertou(erro);
         else errou(erro);
       });
   }
@@ -717,10 +718,10 @@
 
   function proximo() {
     S.indice += 1;
-    if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
     // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
     if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
+    if (S.indice >= S.total) { finalizar(); return; }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');
@@ -744,13 +745,14 @@
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var regua = S.resultados.filter(function (r) { return r.tipo === 'regua'; }).length;
+    var juntos = S.resultados.filter(function (r) { return r.tipo === 'demo'; }).length;
     // Precisão do primeiro pouso de cada item (o último é sempre perto, depois da ajuda).
     var erroMedio = S.resultados.reduce(function (s, r) { return s + r.erro1; }, 0) / S.resultados.length;
     var precisao = Math.max(0, Math.round(100 - erroMedio * 100));
 
     var resumo = $('fim-resumo');
     resumo.textContent = '';
-    [[primeira + ' de ' + S.total, 'de primeira'], [String(regua), 'com a régua'], [precisao + '%', 'de precisão']]
+    [[primeira + ' de ' + S.total, 'de primeira'], [String(regua), 'com a régua'], [String(juntos), 'vimos juntos']]
       .forEach(function (par) {
         var bloco = document.createElement('div');
         var forte = document.createElement('strong');
@@ -920,8 +922,10 @@
         b.classList.toggle('escolhida', b === botao);
         b.disabled = true;
       });
+      var resposta = estrategia.id === 'chute' ? F.obrigadoChute : F.obrigado;
+      $('fim-obrigado').textContent = resposta;
       $('fim-obrigado').hidden = false;
-      falar(F.obrigado);
+      falar(resposta);
     });
     $('fim-opcoes').appendChild(botao);
   });

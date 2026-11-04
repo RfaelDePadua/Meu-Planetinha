@@ -141,7 +141,9 @@
   /* ------------------------------------------------
      Etapas (progressão), cada uma ligada à BNCC
      `tolerancia` = erro máximo aceito, em fração do comprimento da pista.
-     Valores iniciais; ajustar depois dos testes com crianças.
+     Fazio et al. (2016), com 4º e 5º ano, usaram de 20% a 10%, com erro médio de
+     19% antes do jogo e 10% depois. Ajustar com o erro do primeiro pouso, que fica
+     no registro das jogadas. A tela sempre mostra o ponto exato depois do pouso.
      ------------------------------------------------ */
   function reduzidas(denominadores) {
     var lista = [];
@@ -154,21 +156,21 @@
   // `nomeFala` e `dominioFala`: versões para a voz, sem símbolos.
   var ETAPAS = [
     {
-      id: 1, nome: 'Frações unitárias', bncc: 'EF04MA09', tolerancia: 0.07,
+      id: 1, nome: 'Frações unitárias', bncc: 'EF04MA09', tolerancia: 0.10,
       dominio: 'localizar frações unitárias, como 1/4, na reta',
       dominioFala: 'localizar frações unitárias, como um quarto, na reta',
       itens: [[1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 8], [1, 10]]
         .map(function (p) { return fracao(p[0], p[1], 1); })
     },
     {
-      id: 2, nome: 'Frações até 1', bncc: 'EF05MA03', tolerancia: 0.06,
+      id: 2, nome: 'Frações até 1', bncc: 'EF05MA03', tolerancia: 0.08,
       nomeFala: 'Frações até um',
       dominio: 'localizar frações como 3/4 e 5/8 na reta',
       dominioFala: 'localizar frações como três quartos e cinco oitavos na reta',
       itens: reduzidas([3, 4, 5, 6, 8, 10])
     },
     {
-      id: 3, nome: 'Decimais, % e dinheiro', bncc: 'EF04MA10 · EF05MA06', tolerancia: 0.06,
+      id: 3, nome: 'Decimais, % e dinheiro', bncc: 'EF04MA10 · EF05MA06', tolerancia: 0.07,
       nomeFala: 'Decimais, porcentagens e dinheiro',
       dominio: 'localizar decimais, porcentagens e valores em reais',
       itens: [0.2, 0.3, 0.5, 0.6, 0.7, 0.9, 0.25, 0.75].map(function (v) { return decimal(v, 1); })
@@ -176,7 +178,7 @@
         .concat([0.1, 0.25, 0.3, 0.5, 0.6, 0.75].map(dinheiro))
     },
     {
-      id: 4, nome: 'Maiores que 1', bncc: 'EF05MA03', tolerancia: 0.05,
+      id: 4, nome: 'Maiores que 1', bncc: 'EF05MA03', tolerancia: 0.06,
       nomeFala: 'Maiores que um',
       dominio: 'localizar frações maiores que um inteiro',
       itens: [[3, 2], [5, 4], [7, 4], [4, 3], [5, 3], [6, 5], [7, 5], [8, 5]]
@@ -184,7 +186,7 @@
         .concat([1.5, 1.25, 1.75].map(function (v) { return decimal(v, 2); }))
     },
     {
-      id: 5, nome: 'Mesmo ponto, outro nome', bncc: 'EF05MA04 · EF05MA05', tolerancia: 0.05,
+      id: 5, nome: 'Mesmo ponto, outro nome', bncc: 'EF05MA04 · EF05MA05', tolerancia: 0.06,
       dominio: 'reconhecer frações equivalentes e comparar números na reta',
       itens: [[2, 4], [4, 8], [2, 10], [3, 9], [2, 6], [4, 6], [2, 8], [6, 8], [4, 10], [6, 10], [8, 10]]
         .map(function (p) { return equivalente(p[0], p[1]); })
@@ -199,19 +201,6 @@
         ])
     }
   ];
-
-  // Tolerância de cada item, em fração da pista: a da etapa, mas nunca mais que
-  // metade da distância até o valor vizinho mais perto na mesma etapa. Assim o
-  // pouso no ponto de outro item (1/8 no lugar de 1/10) não conta como certo.
-  ETAPAS.forEach(function (etapa) {
-    etapa.itens.forEach(function (item) {
-      var perto = etapa.itens.reduce(function (menor, outro) {
-        var d = Math.abs(outro.valor - item.valor);
-        return d > 1e-9 && d < menor ? d : menor;
-      }, Infinity);
-      item.tolerancia = Math.min(etapa.tolerancia, perto / 2 / item.max);
-    });
-  });
 
   /* ------------------------------------------------
      Textos de apoio: cada função devolve { texto, fala }
@@ -398,7 +387,8 @@
     treinar: 'Vamos treinar mais um pouco.',
     fim: 'Missão concluída!',
     pergunta: 'Como você decidiu onde pousar?',
-    obrigado: 'Boa! Conte para o seu professor como você fez.'
+    obrigado: 'Boa! Conte para o seu professor como você fez.',
+    obrigadoChute: 'Tudo bem! Na próxima, tente dividir a pista em partes iguais antes de pousar.'
   };
 
   var TITULOS = ['Pouso perfeito!', 'Bom pouso!', 'Perfeito, com a régua!', 'Boa, com a régua!',
@@ -425,7 +415,7 @@
     TITULOS.forEach(function (t) { add(FALAS.titulo(t)); });
     [1, 2].forEach(function (n) { add(FALAS.piloto(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
-    [FALAS.pista2, FALAS.usarRegua, FALAS.treinar, FALAS.fim, FALAS.pergunta, FALAS.obrigado,
+    [FALAS.pista2, FALAS.usarRegua, FALAS.treinar, FALAS.fim, FALAS.pergunta, FALAS.obrigado, FALAS.obrigadoChute,
       FALAS.perguntaMetade, FALAS.perguntaUm, FALAS.pensaramDiferente].forEach(add);
     return lista;
   }

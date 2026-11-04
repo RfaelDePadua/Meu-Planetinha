@@ -226,10 +226,9 @@
     }
 
     // Distribui pelas vagas. Nada começa no lugar pedido (senão o lugar pode
-    // estar cheio e a criança que entendeu não tem onde pôr). Quando a cor
-    // decide, nada começa dentro da caixa ou da mochila, que escondem a cor.
-    var pedidos = item.alvos.map(function (a) { return a.lugar; }).filter(Boolean);
-    var proibidos = pedidos.concat(alvo.cor ? ['in-box', 'in-bag'] : []);
+    // estar cheio e a criança que entendeu não tem onde pôr), nem dentro da
+    // caixa ou da mochila, que escondem a coisa e a cor dela.
+    var proibidos = item.alvos.map(function (a) { return a.lugar; }).filter(Boolean).concat(['in-box', 'in-bag']);
     var livres = embaralhar(todasAsVagas());
     objetos = embaralhar(objetos);
     objetos.forEach(function (o, i) {

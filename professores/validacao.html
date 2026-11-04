@@ -39,7 +39,7 @@
             ['Maiores que 1', 'EF05MA03'], ['Mesmo ponto, outro nome (equivalência)', 'EF05MA04 · EF05MA05']]
         },
         'detetive-de-letrion': {
-          nome: 'Detetive de Letrion', planeta: 'Letrion · Português',
+          nome: 'Detetive de Letrion', planeta: 'Letrion · Português', coluna: 'Tipo', parametro: '&nivel=2',
           resumo: 'Ler casos curtos, responder perguntas e marcar no texto a frase que prova a resposta.',
           etapas: [['Pista direta (informação explícita)', 'EF15LP03'], ['Pista escondida (inferência)', 'EF35LP04'],
             ['Palavra misteriosa (sentido pelo contexto)', 'EF35LP05'], ['Quem é quem (referência)', 'EF35LP06'], ['Assunto principal', 'EF35LP03']]
@@ -48,13 +48,13 @@
           nome: 'Teia Viva', planeta: 'Naturox · Ciências',
           resumo: 'Montar cadeias e teias alimentares do Cerrado com setas e prever o que acontece quando um ser some ou aumenta.',
           etapas: [['Cadeias alimentares', 'EF04CI04'], ['Teias alimentares', 'EF04CI04'], ['E se…? Efeito direto', 'EF04CI04'],
-            ['E se…? Efeito em cadeia', 'EF04CI04'], ['Decompositores e o solo', 'EF04CI05 · EF04CI06']]
+            ['E se…? Efeito em cadeia', 'EF04CI04'], ['Decompositores e o solo', 'EF04CI06']]
         },
         'rumo-certo': {
           nome: 'Rumo Certo', planeta: 'Terramund · Geografia',
           resumo: 'Cumprir missões num mapa com rosa dos ventos e legenda; às vezes o mapa aparece girado.',
-          etapas: [['Pontos cardeais', 'EF04GE09'], ['Pontos colaterais', 'EF04GE09'], ['Legenda do mapa', 'EF03GE07 · EF04GE10'],
-            ['Mapa girado', 'EF04GE09 · EF04GE10'], ['Rotas', 'EF04GE09 · EF04MA16']]
+          etapas: [['Pontos cardeais', 'EF04GE09'], ['Pontos colaterais', 'EF04GE09'], ['Legenda do mapa', 'EF03GE07'],
+            ['Mapa girado', 'EF04GE09'], ['Rotas', 'EF04GE09 · EF04MA16']]
         },
         'listen-and-do': {
           nome: 'Listen & Do', planeta: 'Globish · Inglês (complemento)',
@@ -111,16 +111,17 @@
         c.appendChild(el('p', 'projeto', 'Meu Planetinha · IFSULDEMINAS Campus Passos · Projeto de extensão (Edital 07/2026)'));
         c.appendChild(el('h1', '', 'Validação pedagógica — ' + J.nome));
         c.appendChild(campos(['Escola', 'Data']));
-        c.appendChild(campos(['Professor(a)', 'Ano(s) em que leciona']));
+        c.appendChild(campos(['Professor(a)', 'Ano(s)', 'Entregar até']));
         folha.appendChild(c);
 
-        folha.appendChild(el('p', 'instrucao', 'Jogue o ' + J.nome + ' por 10 a 15 minutos (de preferência nas várias etapas) em ' +
-          SITE + '/jogos/jogar.html?game=' + id + ' e responda. Não há resposta certa: o objetivo é ajustar o jogo à sua turma.'));
+        folha.appendChild(el('p', 'instrucao', 'Jogue o ' + J.nome + ' por 10 a 15 minutos em ' +
+          SITE + '/jogos/jogar.html?game=' + id + '; para ver partes avançadas, acrescente ' + (J.parametro || '&etapa=3') +
+          ' ao endereço (não muda o progresso). Não há resposta certa: o objetivo é ajustar o jogo à sua turma.'));
 
         folha.appendChild(el('h2', '', J.planeta + ' — o que o jogo trabalha'));
         folha.appendChild(el('p', '', J.resumo));
         var tab = el('table', 'gabarito');
-        tab.innerHTML = '<thead><tr><th>Etapa</th><th>O que a criança faz</th><th>Habilidade</th></tr></thead>';
+        tab.innerHTML = '<thead><tr><th>' + (J.coluna || 'Etapa') + '</th><th>O que a criança faz</th><th>Habilidade</th></tr></thead>';
         var corpo = el('tbody');
         J.etapas.forEach(function (e, i) {
           var tr = el('tr');

@@ -42,8 +42,8 @@ como referência. O vocabulário vem da lista **Cambridge Pre A1 Starters**
   ao lugar, e diz o comando em inglês e em português.
 
 Depois de cada tarefa, certa ou não, a tela mostra o comando e a tradução. As
-etapas sobem com 3 acertos de primeira seguidos e voltam com 3 tarefas sem
-acerto. Não há vidas, tempo nem ranking.
+etapas sobem depois de pelo menos 5 tarefas, com as 3 últimas de primeira, e
+voltam com 3 tarefas seguidas que o jogo precisou demonstrar. Não há vidas, tempo nem ranking.
 
 ## Como usar em sala
 

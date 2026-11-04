@@ -24,7 +24,7 @@ de dois jeitos:
 | 2 | Completar teias alimentares com vários caminhos | EF04CI04 |
 | 3 | E se…? Efeito direto (quem come ou é comido) | EF04CI04 |
 | 4 | E se…? Efeito em cadeia (seguir as setas) | EF04CI04 |
-| 5 | Decompositores e o solo (ciclo da matéria) | EF04CI05 · EF04CI06 |
+| 5 | Decompositores e o solo (toca em EF04CI05, sem comparar matéria e energia) | EF04CI06 |
 
 ## Como o jogo ajuda quem erra
 

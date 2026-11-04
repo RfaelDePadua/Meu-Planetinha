@@ -43,7 +43,7 @@
       cover: null,
       path: 'jogos/Detetive_de_Letrion/index.html',
       orientacao: 'horizontal',
-      sobre: 'Leia casos curtos (bilhetes, fábulas, notícias, tirinhas, cartas) e resolva os mistérios. Todo bom detetive prova o que diz: marque as frases do texto que são pistas. Para 4º e 5º ano (BNCC EF15LP03, EF35LP03 a EF35LP06). Dá para jogar sozinho ou em dupla.',
+      sobre: 'Leia casos curtos (bilhetes, fábulas, notícias, diálogos, cartas) e resolva os mistérios. Todo bom detetive prova o que diz: marque as frases do texto que são pistas. Para 4º e 5º ano (BNCC EF15LP03, EF35LP03 a EF35LP06). Dá para jogar sozinho ou em dupla.',
       tutorial: [
         'Leia o caso (ou toque em "Ouvir o texto")',
         'Toque nas frases do texto que provam a resposta',
@@ -60,7 +60,7 @@
       cover: null,
       path: 'jogos/Teia_Viva/index.html',
       orientacao: 'horizontal',
-      sobre: 'Monte as cadeias e teias alimentares do Cerrado ligando quem é comido a quem come. Depois preveja o que acontece quando algo muda (uma seca, a caça, o sumiço dos fungos) e veja a simulação. Para 4º e 5º ano (BNCC EF04CI04, EF04CI05, EF04CI06). Dá para jogar sozinho ou em dupla.',
+      sobre: 'Monte as cadeias e teias alimentares do Cerrado ligando quem é comido a quem come. Depois preveja o que acontece quando algo muda (uma seca, a caça, o sumiço dos fungos) e veja a simulação. Para 4º e 5º ano (BNCC EF04CI04, EF04CI06). Dá para jogar sozinho ou em dupla.',
       tutorial: [
         'Toque em um ser vivo e depois em quem se alimenta dele: a seta mostra para onde vai a energia',
         'Toque em Conferir para ver se a teia está certa',
@@ -77,7 +77,7 @@
       cover: null,
       path: 'jogos/Rumo_Certo/index.html',
       orientacao: 'horizontal',
-      sobre: 'Cumpra missões num mapa usando a rosa dos ventos e a legenda: encontre lugares, leve o explorador e siga rotas. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Para 4º e 5º ano (BNCC EF04GE09, EF04GE10, EF03GE07, EF04MA16). Dá para jogar sozinho ou em dupla.',
+      sobre: 'Cumpra missões num mapa usando a rosa dos ventos e a legenda: encontre lugares, leve o explorador e siga rotas. Cuidado: às vezes o mapa está girado e o Norte não fica em cima! Para 4º e 5º ano (BNCC EF04GE09, EF03GE07, EF04MA16). Dá para jogar sozinho ou em dupla.',
       tutorial: [
         'Ouça a missão e olhe a rosa dos ventos do mapa',
         'Para encontrar, toque no lugar certo; para andar, use os botões Norte, Sul, Leste e Oeste',

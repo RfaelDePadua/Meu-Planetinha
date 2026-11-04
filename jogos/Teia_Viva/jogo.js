@@ -51,6 +51,7 @@
   }
 
   function gravarSave() {
+    if (S && S.etapaDaUrl) return; // o professor experimentando pela URL não muda o progresso
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignora */ }
   }
 
@@ -542,6 +543,8 @@
     S.sequencia = 0;
     S.melhorSequencia = 0;
     S.pontos = 0;
+    // ?etapa= é para o professor experimentar: não muda o progresso salvo.
+    S.etapaDaUrl = Boolean(parseInt(params.get('etapa'), 10));
     S.etapa = clamp(parseInt(params.get('etapa'), 10) || save.etapa || 1, 1, C.ETAPAS.length);
     S.dominadasAntes = C.ETAPAS.filter(function (e) { return dominada(e.id); }).map(function (e) { return e.id; });
     S.jaInstruiu = {};
@@ -824,7 +827,7 @@
   function respostaDoParceiro(id) {
     var de = S.perguntaDupla.de;
     Base.fimDaPergunta();
-    fimDaPerguntaDupla(contem(S.setasUsuario, [de, id]), id);
+    fimDaPerguntaDupla(contem(S.setasUsuario, [de, id]) || contem(S.item.prontas || [], [de, id]), id);
   }
 
   function fimDaPerguntaDupla(concordam, cartaParceiro) {
@@ -904,8 +907,10 @@
 
   function proximo() {
     S.indice += 1;
-    if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
+    // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
+    if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
+    if (S.indice >= S.total) { finalizar(); return; }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');
@@ -922,16 +927,17 @@
     S.token++;
     definirEstado('fim');
     save.sessoes += 1;
-    save.etapa = S.etapa;
+    if (!S.etapaDaUrl) save.etapa = S.etapa;
     gravarSave();
     desenharHUD();
     registro.fim({ etapa: S.etapa });
 
     var primeira = S.resultados.filter(function (r) { return r.tipo === 'primeira'; }).length;
     var ajuda = S.resultados.filter(function (r) { return r.tipo === 'dica'; }).length;
+    var juntos = S.resultados.filter(function (r) { return r.tipo === 'demo'; }).length;
     var resumo = $('fim-resumo');
     resumo.textContent = '';
-    [[primeira + ' de ' + S.total, 'de primeira'], [String(ajuda), 'com ajuda'], [String(S.total), 'tarefas']]
+    [[primeira + ' de ' + S.total, 'de primeira'], [String(ajuda), 'com ajuda'], [String(juntos), 'vimos juntos']]
       .forEach(function (par) {
         var bloco = document.createElement('div');
         var forte = document.createElement('strong');

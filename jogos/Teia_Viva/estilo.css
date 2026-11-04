@@ -35,8 +35,8 @@
 
 /* ── Campo (setas em SVG por baixo, cartas por cima) ─── */
 .campo { position: relative; min-height: 260px; margin: 6px 12px 0; }
-.setas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.cartas { position: absolute; inset: 0; pointer-events: none; }
+.setas { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cartas { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; }
 
 .seta { fill: none; stroke-width: 4; stroke-linecap: round; }
 .seta--pronta { stroke: #C7D2FE; }

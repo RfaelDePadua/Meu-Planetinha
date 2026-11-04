@@ -251,7 +251,7 @@
       ]
     },
     {
-      id: 5, nome: 'Decompositores e o solo', bncc: 'EF04CI05 · EF04CI06', modo: 'prever',
+      id: 5, nome: 'Decompositores e o solo', bncc: 'EF04CI06', modo: 'prever',
       dominio: 'explicar o papel dos fungos e bactérias no solo',
       itens: [
         {
@@ -341,6 +341,7 @@
     var plural = /^(os|as) /.test(B.o);
     if (a === 'sol') return maiuscula(B.o) + (plural ? ' não se alimentam' : ' não se alimenta') + ' da luz do Sol. Só as plantas e as algas usam a luz do Sol para produzir alimento.';
     if (ehProdutor(b)) return maiuscula(B.o) + (plural ? ' não comem' : ' não come') + ' outros seres. As plantas e as algas produzem o próprio alimento com a luz do Sol.';
+    if (!setasCertas.some(function (s) { return s[0] === a; })) return 'Nesta tarefa, ninguém come ' + A.o + '. Nenhuma seta sai daí.';
     return 'Nesta tarefa, a seta ' + de(a) + ' não vai para ' + B.o + '. Procure quem come ' + A.o + ' aqui.';
   }
 
@@ -401,8 +402,7 @@
     obrigado: 'Boa! Conte para o seu professor como você fez.',
     obrigadoChute: 'Tudo bem! Na próxima, tente seguir as setas, uma de cada vez.',
     estrategia: function (e) { return e.texto + '.'; },
-    evento: function (item) { return item.evento; },
-    previsao: function (ser, dir) { return maiuscula(SERES[ser].o) + ' ' + DIRECOES[dir].fala + '.'; }
+    evento: function (item) { return item.evento; }
   };
 
   // Todas as frases que o jogo pode falar: o roteiro para gerar os áudios.
@@ -436,7 +436,6 @@
             add(p.explicacao);
             add(FALAS.faltaPrever(p.ser));
             add(FALAS.perguntaPrevisao(p.ser));
-            Object.keys(DIRECOES).forEach(function (d) { add(FALAS.previsao(p.ser, d)); });
           });
         }
       });

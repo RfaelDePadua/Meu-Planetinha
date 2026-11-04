@@ -194,7 +194,7 @@
       ]
     },
     {
-      id: 3, nome: 'Legenda do mapa', bncc: 'EF03GE07 · EF04GE10',
+      id: 3, nome: 'Legenda do mapa', bncc: 'EF03GE07',
       apresenta: 'Agora use a legenda: ela mostra o que é cada símbolo do mapa. Para atravessar o rio, só pela ponte.',
       dominio: 'ler a legenda para reconhecer os símbolos do mapa',
       itens: [
@@ -206,7 +206,7 @@
       ]
     },
     {
-      id: 4, nome: 'Mapa girado', bncc: 'EF04GE09 · EF04GE10',
+      id: 4, nome: 'Mapa girado', bncc: 'EF04GE09',
       apresenta: 'Agora o mapa pode aparecer girado. O norte é para onde aponta a letra N da rosa dos ventos, não o alto da tela.',
       dominio: 'usar a rosa dos ventos mesmo com o mapa girado',
       itens: [
@@ -321,9 +321,7 @@
     explorador: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + '.'; },
     confirma: function (n) { return 'Explorador ' + ['', 'um', 'dois'][n] + ', você concorda?'; },
     // Modo dupla: o parceiro responde sozinho antes de conferir.
-    perguntaLado: function (missao) {
-      return 'Para que lado d' + nomeDoLugar(missao.mapa, missao.referencia) + ' fica o lugar que o colega tocou?';
-    },
+    toqueLugar: 'Toque no lugar que você acha certo.',
     perguntaQuadradinhos: 'Quantos quadradinhos vocês andaram ao todo?',
     pensaramDiferente: 'Vocês pensaram diferente. Conversem e decidam juntos.'
   };
@@ -334,7 +332,7 @@
     function add(f) { if (f && lista.indexOf(f) === -1) lista.push(f); }
     ['instrucaoEncontrar', 'instrucaoIr', 'instrucaoRota', 'mapaGirado', 'achou', 'chegou', 'chegouDica', 'caminhoCerto',
       'quase', 'olheReferencia', 'rosaNoExplorador', 'vamosVer', 'referencia', 'agua', 'borda', 'treinar', 'fim', 'pergunta', 'obrigado',
-      'obrigadoChute', 'perguntaQuadradinhos', 'pensaramDiferente']
+      'obrigadoChute', 'toqueLugar', 'perguntaQuadradinhos', 'pensaramDiferente']
       .forEach(function (k) { add(FALAS[k]); });
     [1, 2].forEach(function (n) { add(FALAS.explorador(n)); add(FALAS.confirma(n)); });
     ESTRATEGIAS.forEach(function (e) { add(FALAS.estrategia(e)); });
@@ -348,7 +346,6 @@
         if (m.tipo === 'encontrar') {
           add(dicaRosa(m));
           add(explicaEncontrar(m));
-          add(FALAS.perguntaLado(m));
           MAPAS[m.mapa].lugares.forEach(function (l) { if (l.id !== m.alvo && l.id !== m.referencia) add(erroEncontrar(m, l.id)); });
         }
         if (m.tipo === 'ir') add(chegouA(m.mapa, m.alvo));

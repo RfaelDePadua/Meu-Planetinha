@@ -56,7 +56,7 @@
 .cena-caixa { position: relative; min-height: 220px; padding: 8px 16px 0; }
 .cena {
   position: absolute;
-  inset: 8px 16px 0;
+  top: 8px; right: 16px; bottom: 0; left: 16px; inset: 8px 16px 0;
   width: calc(100% - 32px);
   height: calc(100% - 8px);
   border-radius: 18px;

@@ -66,7 +66,9 @@
 
     if ('speechSynthesis' in global) {
       carregarVozes();
-      global.speechSynthesis.addEventListener('voiceschanged', carregarVozes);
+      // Safari antigo não tem addEventListener em speechSynthesis.
+      if (global.speechSynthesis.addEventListener) global.speechSynthesis.addEventListener('voiceschanged', carregarVozes);
+      else global.speechSynthesis.onvoiceschanged = carregarVozes;
     }
 
     function audioDe(fala) {
@@ -153,7 +155,8 @@
     ganho.gain.setValueAtTime(0.0001, inicio);
     ganho.gain.exponentialRampToValueAtTime(volume, inicio + 0.01);
     ganho.gain.exponentialRampToValueAtTime(0.0001, inicio + duracao);
-    osc.connect(ganho).connect(audioCtx.destination);
+    osc.connect(ganho);
+    ganho.connect(audioCtx.destination);
     osc.start(inicio);
     osc.stop(inicio + duracao + 0.02);
   }
@@ -225,7 +228,7 @@
       else if (tipo === 'resume') { if (acoes.aoContinuar) acoes.aoContinuar(); }
       else if (tipo === 'mute') { mudo = true; calarTudo(); if (acoes.aoSilenciar) acoes.aoSilenciar(true); }
       else if (tipo === 'unmute') { mudo = false; if (acoes.aoSilenciar) acoes.aoSilenciar(false); }
-      else if (tipo === 'restart') { calarTudo(); if (acoes.aoReiniciar) acoes.aoReiniciar(); }
+      else if (tipo === 'restart') { calarTudo(); fimDaPergunta(); if (acoes.aoReiniciar) acoes.aoReiniciar(); }
     });
     var noPortal = global.parent !== global;
     return {

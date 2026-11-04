@@ -47,6 +47,9 @@ function candidatos(href) {
   var lista = [url.href];
   if (/\/index\.html$/.test(url.pathname)) lista.push(url.origin + url.pathname.replace(/index\.html$/, ''));
   else if (/\/$/.test(url.pathname)) lista.push(url.origin + url.pathname + 'index.html');
+  // O Netlify reescreve os links do HTML para endereços sem .html (/explorar/explorar),
+  // e o "Preparar" guarda as páginas com .html.
+  else if (!/\.[a-z0-9]+$/i.test(url.pathname)) lista.push(url.origin + url.pathname + '.html');
   lista.slice().forEach(function (u) {
     var v = new URL(u);
     var minusculo = v.origin + v.pathname.toLowerCase() + v.search;

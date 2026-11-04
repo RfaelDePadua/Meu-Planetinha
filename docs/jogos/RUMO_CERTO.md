@@ -25,8 +25,8 @@ trabalha de propósito.
 |---|---|---|
 | 1 | Pontos cardeais (norte, sul, leste, oeste) | EF04GE09 |
 | 2 | Pontos colaterais (nordeste, noroeste, sudeste, sudoeste) | EF04GE09 |
-| 3 | Legenda: achar lugares pelo símbolo, numa cidade com rio e ponte | EF03GE07 · EF04GE10 |
-| 4 | Mapa girado: o Norte em outra posição | EF04GE09 · EF04GE10 |
+| 3 | Legenda: achar lugares pelo símbolo, numa cidade com rio e ponte | EF03GE07 |
+| 4 | Mapa girado: o Norte em outra posição | EF04GE09 |
 | 5 | Rotas descritas com pontos cardeais | EF04GE09 · EF04MA16 |
 
 ## Como o jogo ajuda quem erra
@@ -53,7 +53,7 @@ chute): dizer qual pista usou é o que mais ajuda a ler mapas.
 ## Como usar em sala
 
 - **Em dupla** ("Jogar em dupla"): os exploradores se alternam. Em "Encontre",
-  o parceiro diz sozinho para que lado da referência fica o lugar tocado; na
+  o parceiro procura sozinho e toca no lugar (o toque do colega não fica marcado); na
   rota, conta quantos quadradinhos andaram; em "Leve o explorador", os dois se
   revezam a cada passo. Se as respostas não batem, conversam e decidem juntos. Peça que a dupla diga a direção em voz
   alta ("é para o leste, que fica à direita neste mapa").

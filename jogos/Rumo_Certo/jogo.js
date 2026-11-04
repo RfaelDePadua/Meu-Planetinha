@@ -41,6 +41,7 @@
   }
 
   function gravarSave() {
+    if (S && S.etapaDaUrl) return; // o professor experimentando pela URL não muda o progresso
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignora */ }
   }
 
@@ -200,11 +201,13 @@
       var tipo = C.TIPOS_LUGAR[l.tipo];
       var grupo = el('g', { class: 'lugar', transform: 'translate(' + c.x + ' ' + c.y + ')', 'data-id': l.id }, raiz);
       if (S.missao.tipo === 'encontrar') {
-        grupo.setAttribute('tabindex', S.estado === 'procurando' ? '0' : '-1');
+        grupo.setAttribute('tabindex', S.estado === 'procurando' || S.perguntando ? '0' : '-1');
         grupo.setAttribute('role', 'button');
         grupo.setAttribute('aria-label', tipo.nome);
         if (S.referenciaDestacada && l.id === S.missao.referencia) grupo.classList.add('referencia');
         if (S.errados.indexOf(l.id) !== -1) grupo.classList.add('errado');
+        if (!S.perguntando && l.id === S.tocado) grupo.classList.add('tocado');
+        if (l.id === S.lugarParceiro) grupo.classList.add('parceiro');
         if (S.revelado && l.id === S.missao.alvo) grupo.classList.add('certo');
       } else if ((S.missao.tipo === 'ir' && l.id === S.missao.alvo) || (S.revelado && l.id === S.missao.destino)) {
         grupo.classList.add('certo');
@@ -369,6 +372,8 @@
     registro.iniciarItem();
     S.erros = 0;
     S.tocado = null;
+    S.perguntando = false;
+    S.lugarParceiro = null;
     S.duplaConversou = false;
     S.vez = exploradorAtual();
     S.errados = [];
@@ -406,33 +411,39 @@
 
   /* ── Encontrar ───────────────────────────────────── */
   function tocarLugar(id) {
+    if (S.estado === 'confirmando' && S.perguntando && !S.pausado) { respostaDoParceiro(id); return; }
     if (S.estado !== 'procurando' || S.pausado) return;
+    S.lugarParceiro = null;
     if (S.modo === 'dupla') {
       S.tocado = id;
       definirEstado('confirmando');
       var parceiro = exploradorAtual() === 1 ? 2 : 1;
       mostrarControles('confirma');
-      // Na primeira vez da missão, o parceiro diz sozinho para que lado da
-      // referência fica o lugar tocado; se não for a direção pedida, conversam.
+      // Na primeira vez da missão, o parceiro procura sozinho e toca no lugar
+      // (o toque do colega não fica marcado); o jogo compara os dois.
       if (!S.duplaConversou && id !== S.missao.referencia) {
-        var ordem = etapaAtual().id === 1 ? ['N', 'L', 'S', 'O'] : ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
-        Base.perguntarAoParceiro({
-          texto: 'Explorador ' + parceiro + ': ' + F.perguntaLado(S.missao).charAt(0).toLowerCase() + F.perguntaLado(S.missao).slice(1),
-          opcoes: ordem.map(function (d) { var n = C.DIRECOES[d].nome; return { rotulo: n.charAt(0).toUpperCase() + n.slice(1), valor: d }; }),
-          aoResponder: function (dir) {
-            if (dir === S.missao.dir) { avaliarToque(id); return; }
-            pensaramDiferente('procurando');
-          }
-        });
-        falar([F.explorador(parceiro), F.perguntaLado(S.missao)]);
+        S.perguntando = true;
+        desenharTudo();
+        Base.perguntarAoParceiro({ texto: 'Explorador ' + parceiro + ': toque no lugar que você acha certo.' });
+        falar([F.explorador(parceiro), F.toqueLugar]);
         return;
       }
+      desenharTudo();
       $('confirma-texto').textContent = 'Explorador ' + parceiro + ', você concorda com ' + C.nomeDoLugar(S.missao.mapa, id) + '?';
       $('btn-confirmar').focus({ preventScroll: true });
       falar(F.confirma(parceiro));
       return;
     }
     avaliarToque(id);
+  }
+
+  function respostaDoParceiro(id) {
+    S.perguntando = false;
+    Base.fimDaPergunta();
+    if (id === S.tocado) { avaliarToque(id); return; }
+    // Lugares diferentes: os dois ficam marcados e a dupla decide junto.
+    S.lugarParceiro = id;
+    pensaramDiferente('procurando');
   }
 
   function pensaramDiferente(estado) {
@@ -445,6 +456,8 @@
   }
 
   function avaliarToque(id) {
+    S.tocado = null;
+    S.lugarParceiro = null;
     var m = S.missao;
     if (id === m.alvo) {
       registrar(S.tentativa === 1 ? 'primeira' : 'dica');
@@ -559,7 +572,7 @@
   }
 
   function chegouIr() {
-    var resultado = S.erros === 0 ? 'primeira' : (S.erros <= 3 ? 'dica' : 'demo');
+    var resultado = S.erros === 0 ? 'primeira' : 'dica';
     registrar(resultado);
     som('acerto');
     definirEstado('feedback');
@@ -580,7 +593,9 @@
       // a dupla andou; se não bate com o que andaram, conversam.
       var andou = S.trilha.length;
       if (!S.duplaConversou && andou > 0) {
-        var opcoes = [andou - 1, andou, andou + 1].filter(function (n) { return n > 0; });
+        // A resposta certa não fica sempre no meio.
+        var menor = Math.max(1, andou - Math.floor(Math.random() * 3));
+        var opcoes = [menor, menor + 1, menor + 2];
         Base.perguntarAoParceiro({
           texto: 'Explorador ' + parceiro + ': ' + F.perguntaQuadradinhos.charAt(0).toLowerCase() + F.perguntaQuadradinhos.slice(1),
           opcoes: opcoes.map(function (n) { return { rotulo: String(n), valor: n }; }),
@@ -703,10 +718,10 @@
 
   function proximo() {
     S.indice += 1;
-    if (S.indice >= S.total) { finalizar(); return; }
     var mudanca = adaptar();
     // Guarda a etapa já na mudança: quem sai no meio não perde o que conquistou.
     if (mudanca && !S.etapaDaUrl) { save.etapa = S.etapa; gravarSave(); }
+    if (S.indice >= S.total) { finalizar(); return; }
     var fala = null;
     if (mudanca === 'sobe') {
       som('etapa');
@@ -828,6 +843,8 @@
   $('btn-mudar').addEventListener('click', function () {
     if (S.estado !== 'confirmando') return;
     Base.fimDaPergunta();
+    S.perguntando = false;
+    S.tocado = null;
     definirEstado(S.missao.tipo === 'encontrar' ? 'procurando' : 'andando');
     desenharTudo();
     mostrarControles('acao');

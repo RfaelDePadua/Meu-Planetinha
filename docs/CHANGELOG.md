@@ -48,18 +48,16 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
   de **feedback da visita** (depois de cada visita), como prevê a metodologia
   do projeto (Fases 3 e 4).
 - Apresentação do projeto para as escolas, com a folha de combinados.
-- Mais conteúdo para várias sessões sem repetir: **Teia Viva** de 19 para 39
-  tarefas e **Rumo Certo** de 28 para 56 missões (mesmos mapas e teias), com
+- Mais conteúdo para várias sessões sem repetir: **Teia Viva** de 19 para 40
+  tarefas e **Rumo Certo** de 28 para 50 missões (mesmos mapas e teias), com
   as falas novas gravadas.
 - Guia de manutenção ([MANUTENCAO.md](MANUTENCAO.md)) para quem continuar o
   projeto.
 - **Teste de jogo antes das escolas (28/10):** cinco testadores automáticos
   jogaram cada jogo como crianças (acertando, chutando, em dupla, lendo pouco)
-  e apontaram problemas; os relatórios ficam em `docs/testes/` (fora do site).
+  e apontaram problemas; os relatórios ficam no repositório privado da equipe.
   Corrigido:
-  - Pouso na Reta: o pouso no ponto de outro item (1/8 no lugar de 1/10) não
-    conta mais como certo; etapa sobe com 4 acertos seguidos; etapa 3 alterna
-    decimal, porcentagem e dinheiro.
+  - Pouso na Reta: etapa 3 alterna decimal, porcentagem e dinheiro.
   - Detetive de Letrion: gabarito aceita as frases que também provam a
     resposta; a segunda dica destaca as frases perto da pista, não o texto
     todo; alternativa errada fica riscada; só se marca quantas frases a
@@ -75,11 +73,8 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
   - Listen & Do: o lugar pedido nunca começa ocupado; tocar num lugar cheio
     troca as coisas; com o som desligado, o comando aparece escrito; "Tentar
     de novo" desfaz o que foi mexido por engano.
-  - Todos: acertar com ajuda não faz descer de etapa (só três demonstrações
-    seguidas); a etapa fica salva assim que muda; `?etapa=` do professor não
-    altera o progresso salvo; o resumo final mostra o que foi visto junto;
-    "Chutei" tem resposta própria; o portal repassa ao jogo os ajustes da URL
-    (como `?texto=1`) e o som desligado.
+  - Todos: acertar com ajuda não faz descer de etapa; o portal repassa ao jogo
+    os ajustes da URL (como `?texto=1`) e o som desligado.
 
 - **O que tinha ficado do teste (28/10):**
   - Modo dupla nos cinco jogos: antes de conferir, o parceiro responde sozinho
@@ -98,6 +93,28 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
     ficam presos ao pé da tela, o Detetive mostra a pergunta antes do texto e
     os botões de previsão da Teia têm 44 px; no celular deitado, o Listen & Do
     rola.
+
+- **Revisão de 04/11, antes da primeira reunião na escola** (robô com 21 mil
+  toques, teste real sem internet e três revisões independentes):
+  - Pouso na Reta: desfeita a margem apertada de 28/10 (até ±1,25% da pista),
+    que quase impedia sair da primeira etapa. Agora 10% a 6% por etapa e 3
+    acertos seguidos para subir; a tela sempre mostra o ponto exato.
+  - Modo dupla: no Rumo Certo, o parceiro toca sozinho no lugar; na Teia Viva,
+    a seta certa já pronta deixou de contar como discordância.
+  - Listen & Do: tocar em outra coisa muda a seleção (não troca de lugar); nada
+    começa dentro da caixa ou da mochila; subir e dominar seguem o mesmo critério.
+  - Detetive de Letrion: gabarito revisado em cinco mistérios.
+  - Todos os jogos: a etapa fica salva assim que muda; experimentar com `?etapa=`
+    (`?nivel=` no Detetive) não grava nada; a última tarefa da sessão também conta
+    para subir ou descer; o resumo final mostra o que foi visto junto; "Chutei"
+    tem resposta própria.
+  - Portal: "Nova dupla" funciona dentro do portal; sem internet, o botão
+    principal e o menu funcionam; contato corrigido; compatibilidade com
+    navegadores antigos.
+  - Referências: retirados EF04GE10 (Rumo Certo) e EF04CI05 (Teia Viva), que os
+    jogos não trabalham.
+  - Fichas e apresentação: prazo e destinatário, tempo real, como ver as etapas
+    avançadas, registro das jogadas e voz sintética.
 
 ## Alterações a partir do parecer dos professores
 

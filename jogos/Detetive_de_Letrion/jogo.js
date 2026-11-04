@@ -42,6 +42,7 @@
   }
 
   function gravarSave() {
+    if (S && S.etapaDaUrl) return; // o professor experimentando pela URL não muda o progresso
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignora */ }
   }
 
@@ -342,6 +343,8 @@
     S.sequencia = 0;
     S.melhorSequencia = 0;
     S.pontos = 0;
+    // ?nivel= é para o professor experimentar: não muda o progresso salvo.
+    S.etapaDaUrl = Boolean(parseInt(params.get('nivel'), 10));
     S.nivel = clamp(parseInt(params.get('nivel'), 10) || save.nivel || 1, 1, NIVEIS);
     S.dominadosAntes = Object.keys(C.TIPOS).filter(dominado);
     $('tela-inicio').hidden = true;
@@ -625,6 +628,8 @@
     save.feitos = save.feitos.filter(function (id) { return id !== S.caso.id; }).concat(S.caso.id);
     gravarSave();
     var mudanca = adaptar();
+    // Guarda o nível já na mudança: quem sai no meio não perde o que conquistou.
+    if (mudanca && !S.etapaDaUrl) { save.nivel = S.nivel; gravarSave(); }
     if (S.casoNum >= S.totalCasos) { finalizar(); return; }
     iniciarCaso(mudanca);
   }
@@ -632,7 +637,7 @@
   function finalizar() {
     definirEstado('fim');
     save.sessoes += 1;
-    save.nivel = S.nivel;
+    if (!S.etapaDaUrl) save.nivel = S.nivel;
     gravarSave();
     desenharHUD();
     registro.fim({ etapa: S.nivel });
