@@ -72,6 +72,9 @@
     modo: 'solo',
     total: clamp(parseInt(params.get('tarefas'), 10) || 8, 4, 12),
     sempreTexto: params.get('texto') === '1',
+    // Sem som no computador: em dupla, um lê o comando em voz alta e o outro faz.
+    leitor: params.get('leitor') === '1',
+    leitorMostrando: false,
     semVoz: false,
     indice: 0,
     etapa: 1,
@@ -120,8 +123,8 @@
   // Sem nenhuma voz (nem gravada, nem do navegador), o comando aparece escrito.
   voz.aoMudarDisponibilidade(function (disponivel) {
     S.semVoz = !disponivel;
-    $('btn-ouvir').hidden = !disponivel;
-    $('btn-devagar').hidden = !disponivel;
+    $('btn-ouvir').hidden = !disponivel || S.leitor;
+    $('btn-devagar').hidden = !disponivel || S.leitor;
     $('btn-ouvir-reflexao').hidden = !disponivel;
     if (S.item) desenharEnunciado();
   });
@@ -184,10 +187,24 @@
     var caixa = $('comando-texto');
     caixa.textContent = '';
     var mostrar = S.sempreTexto || S.mostrarTexto || S.semVoz || S.mudo || S.revelado;
+    var aviso = $('leitor-aviso');
+    var botao = $('btn-leitor');
+    aviso.hidden = !S.leitor;
+    $('btn-ouvir').hidden = S.leitor || S.semVoz;
+    $('btn-devagar').hidden = S.leitor || S.semVoz;
+    botao.hidden = !S.leitor || S.revelado || (S.estado !== 'ouvindo' && S.estado !== 'arrumando');
+    if (S.leitor) {
+      // Na confirmação, o comando volta a aparecer para o leitor conferir.
+      mostrar = S.leitorMostrando || S.mostrarTexto || S.revelado || S.estado === 'confirmando';
+      aviso.textContent = S.leitorMostrando
+        ? 'Leitor ' + leitorAtual() + ': leia em voz alta, em inglês. Ouvinte ' + ouvinteAtual() + ': não olhe, só escute!'
+        : 'Ouvinte ' + ouvinteAtual() + ': faça o que ouviu. Pode pedir para ler de novo.';
+      botao.textContent = S.leitorMostrando ? 'Já li em voz alta' : 'Ler de novo';
+    }
     caixa.classList.toggle('escondido', !mostrar);
     if (!mostrar) {
       caixa.lang = 'pt-BR';
-      caixa.textContent = 'Ouça o comando em inglês.';
+      caixa.textContent = S.leitor ? '(comando escondido)' : 'Ouça o comando em inglês.';
       return;
     }
     caixa.lang = 'en';
@@ -231,7 +248,7 @@
     }
     var ouvinte = $('hud-ouvinte');
     ouvinte.hidden = S.modo !== 'dupla';
-    ouvinte.textContent = 'Ouvinte ' + ouvinteAtual() + ' na vez';
+    ouvinte.textContent = S.leitor ? 'Ouvinte ' + ouvinteAtual() + ' · Leitor ' + leitorAtual() : 'Ouvinte ' + ouvinteAtual() + ' na vez';
   }
 
   function desenharControles() {
@@ -301,10 +318,12 @@
     return etapa.itens[Number(chave.split('-')[1])];
   }
 
-  function iniciarSessao(modo) {
+  function iniciarSessao(modo, leitor) {
     calar();
     S.modo = modo;
-    registro.iniciarSessao(modo);
+    if (leitor !== undefined) S.leitor = leitor;
+    if (S.leitor) S.modo = 'dupla';
+    registro.iniciarSessao(S.leitor ? 'leitor' : S.modo);
     S.indice = 0;
     S.resultados = [];
     S.recentes = [];
@@ -330,6 +349,7 @@
     S.motivos = [];
     S.palavraChave = null;
     S.mostrarTexto = false;
+    S.leitorMostrando = S.leitor;
     S.revelado = false;
     S.marcas = {};
     S.selecionado = null;
@@ -347,6 +367,11 @@
     if (!S.jaInstruiu[tipo]) {
       S.jaInstruiu[tipo] = true;
       falas.push({ tocar: F.instrucaoTocar, colocar: F.instrucaoColocar, dois: F.instrucaoDois }[tipo]);
+    }
+    if (S.leitor) {
+      // O comando em inglês não é falado: quem lê é o colega.
+      falar(falas);
+      return;
     }
     if (!S.avisouFones && S.indice === 0 && (!save.sessoes || S.modo === 'dupla')) {
       S.avisouFones = true;
@@ -418,9 +443,9 @@
       falar([F.ouvinte(parceiro), F.ouvirAntes]);
       return;
     }
-    $('confirma-texto').textContent = 'Ouvinte ' + parceiro + ', você concorda?';
+    $('confirma-texto').textContent = S.leitor ? 'Leitor ' + parceiro + ': foi isso que você leu?' : 'Ouvinte ' + parceiro + ', você concorda?';
     $('btn-confirmar').focus({ preventScroll: true });
-    falar(F.confirma(parceiro));
+    if (!S.leitor) falar(F.confirma(parceiro));
   }
 
   function pedirPronto() {
@@ -512,7 +537,7 @@
     var texto = textoDoErro;
     if (S.tentativa === 2) {
       falas.push(F.ouvirDeNovo, C.enLento(comando()));
-      texto += semSom() ? ' Leia de novo com atenção.' : ' Ouça de novo, mais devagar.';
+      texto += S.leitor ? ' O leitor lê de novo, bem devagar.' : (semSom() ? ' Leia de novo com atenção.' : ' Ouça de novo, mais devagar.');
     } else {
       var p = palavraDoErro(motivo, alvo);
       var sig = C.significado(p.tipo, p.valor);
@@ -527,7 +552,8 @@
     falar(falas);
   }
 
-  function semSom() { return S.mudo || S.semVoz || S.sempreTexto; }
+  function semSom() { return S.mudo || S.semVoz || S.sempreTexto || S.leitor; }
+  function leitorAtual() { return ouvinteAtual() === 1 ? 2 : 1; }
 
   // Volta ao início o que foi mexido por engano (fica só o que está certo):
   // assim a próxima avaliação fala só do que a criança fizer agora.
@@ -538,6 +564,7 @@
     }
     S.selecionado = null;
     S.marcas = {};
+    S.leitorMostrando = S.leitor; // o leitor lê de novo
     definirEstado(S.item.tipo === 'tocar' ? 'ouvindo' : 'arrumando');
     desenharTudo();
     mostrarControles('acao');
@@ -768,8 +795,14 @@
   $('btn-seguir').addEventListener('click', function () {
     if (S.estado === 'feedback' && acaoSeguir) acaoSeguir();
   });
-  $('btn-solo').addEventListener('click', function () { iniciarSessao('solo'); });
-  $('btn-dupla').addEventListener('click', function () { iniciarSessao('dupla'); });
+  $('btn-solo').addEventListener('click', function () { iniciarSessao('solo', false); });
+  $('btn-dupla').addEventListener('click', function () { iniciarSessao('dupla', false); });
+  $('btn-leitor').addEventListener('click', function () {
+    if (!S.leitor || S.pausado) return;
+    S.leitorMostrando = !S.leitorMostrando;
+    desenharTudo();
+  });
+  $('btn-sem-som').addEventListener('click', function () { iniciarSessao('dupla', true); });
   $('btn-de-novo').addEventListener('click', voltarAoInicio);
 
   $('btn-ouvir-reflexao').addEventListener('click', function () {

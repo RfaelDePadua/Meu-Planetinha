@@ -107,3 +107,25 @@
 @media (prefers-reduced-motion: reduce) {
   .coisa { transition: none; }
 }
+
+/* Modo sem som: um lê o comando em voz alta e o outro faz */
+.leitor-aviso {
+  margin: 6px auto 2px;
+  max-width: 760px;
+  color: var(--amarelo);
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 1.25;
+}
+.btn-leitor { min-width: 170px; }
+.btn-leitor svg { display: none; }
+.painel__sem-som {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 14px 0 0;
+  color: var(--texto-2);
+  font-weight: 700;
+}

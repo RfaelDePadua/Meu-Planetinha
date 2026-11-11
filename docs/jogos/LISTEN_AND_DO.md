@@ -55,6 +55,15 @@ voltam com 3 tarefas seguidas que o jogo precisou demonstrar. Não há vidas, te
   the book!") e a turma faz com objetos de verdade; depois, uma criança dá o
   comando para a turma.
 
+## Computador sem som
+
+Na tela inicial, **"Dupla sem som: um lê, o outro faz"**: o leitor vê o comando
+em inglês e o lê em voz alta; o ouvinte faz sem olhar a tela. O leitor toca em
+"Já li em voz alta" (o comando some) e pode tocar em "Ler de novo". No fim, o
+leitor confere se foi isso que leu. Os papéis trocam a cada tarefa. Assim a
+criança ainda treina ouvir, e o leitor treina ler e falar. No registro, a
+sessão aparece com o modo `leitor`. Pela URL: `?leitor=1`.
+
 ## Ajustes pela URL
 
 - `?etapa=3` — começa na etapa 3 (1 a 5);

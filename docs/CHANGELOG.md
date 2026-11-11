@@ -130,6 +130,8 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
     para seguir a cadeia; tocar fora desmarca; "Desfazer" volta a marcar de
     onde a seta saía.
 
+- **11/11 — Listen & Do sem som:** modo "Dupla sem som: um lê, o outro faz",
+  para computadores sem caixa de som (o colega lê o comando em voz alta).
 - **11/11 — site no domínio do projeto:** a versão nova passou a ser publicada em
   www.meuplanetinha.com.br (GitHub Pages, `main` do repositório público); o
   endereço da Netlify redireciona para lá.

@@ -91,7 +91,9 @@
       <div class="enunciado__linha">
         <button class="btn-ouvir" id="btn-ouvir" type="button"><svg aria-hidden="true"><use href="#i-som"/></svg>Ouvir</button>
         <button class="btn-ouvir btn-ouvir--devagar" id="btn-devagar" type="button"><svg aria-hidden="true"><use href="#i-devagar"/></svg>Devagar</button>
+        <button class="btn-ouvir btn-leitor" id="btn-leitor" type="button" hidden>Já li em voz alta</button>
       </div>
+      <p class="leitor-aviso" id="leitor-aviso" hidden></p>
       <p class="enunciado__texto" id="comando-texto" lang="en"></p>
     </section>
 
@@ -169,6 +171,9 @@
           <button class="btn-principal" id="btn-solo" type="button">Jogar sozinho</button>
           <button class="btn-secundario" id="btn-dupla" type="button">Jogar em dupla</button>
         </div>
+        <p class="painel__sem-som">Computador sem som?
+          <button class="btn-secundario" id="btn-sem-som" type="button">Dupla sem som: um lê, o outro faz</button>
+        </p>
       </div>
     </section>
 
