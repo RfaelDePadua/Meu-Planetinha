@@ -231,6 +231,19 @@
     // Pista
     el('line', { x1: L.x0, x2: L.x1, y1: y, y2: y, stroke: '#E8ECFF', 'stroke-width': 8, 'stroke-linecap': 'round' }, svg);
 
+    // Marquinhas de régua, sempre visíveis: cada inteiro em 10 partes, com a
+    // metade um pouco maior. Ajudam a estimar sem dar a resposta das frações
+    // (a régua da dica, em azul, é que divide pelo denominador).
+    for (var t = 1; t < max * 10; t++) {
+      if (t % 10 === 0) continue;
+      var xt = xDe(t / 10);
+      var meio = t % 5 === 0;
+      el('line', {
+        x1: xt, x2: xt, y1: y - (meio ? 11 : 7), y2: y + (meio ? 11 : 7),
+        stroke: '#C9D1FF', 'stroke-width': meio ? 2.5 : 2, 'stroke-linecap': 'round', opacity: meio ? 0.9 : 0.65
+      }, svg);
+    }
+
     // Régua (dica): divide cada inteiro em `partes`
     var totalPartes = max * item.partes;
     var passoPx = (L.x1 - L.x0) / totalPartes;

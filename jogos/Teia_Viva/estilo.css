@@ -140,3 +140,12 @@
   .previsao { justify-content: center; gap: 6px; margin: 5px -33px 0; }
   .previsao button { width: 44px; height: 44px; border-radius: 12px; }
 }
+
+/* Mostra quem está marcado e o que fazer em seguida. */
+.dica-selecao {
+  flex: 1 1 260px;
+  margin: 0;
+  color: var(--amarelo);
+  font-weight: 800;
+  line-height: 1.25;
+}

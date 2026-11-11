@@ -116,6 +116,20 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
   - Fichas e apresentação: prazo e destinatário, tempo real, como ver as etapas
     avançadas, registro das jogadas e voz sintética.
 
+- **11/11 — ajustes pedidos pela equipe:**
+  - Rumo Certo: mapa redesenhado como tabuleiro de papel (chão em dois tons,
+    rio com margem e ponte de verdade, lugares em plaquinhas, explorador novo
+    que fica no canto quando está sobre um lugar, rastro tracejado, rosa dos
+    ventos nova e nome do mapa); o mapa girado não encolhe mais; legenda junto
+    do mapa; tablet em pé e celular deitado com o mapa grande.
+  - Rumo Certo: na etapa 4, metade das missões com o mapa girado e metade com
+    o norte para cima; cada mapa gira sempre do mesmo jeito; as rotas da etapa 5
+    ficaram todas com o norte para cima (duas rotas novas no lugar das giradas).
+  - Pouso na Reta: marquinhas de régua fixas na pista (10 por inteiro).
+  - Teia Viva: menos toques: depois de cada seta, o último ser fica marcado
+    para seguir a cadeia; tocar fora desmarca; "Desfazer" volta a marcar de
+    onde a seta saía.
+
 ## Alterações a partir do parecer dos professores
 
 Registre aqui cada mudança feita por causa de uma ficha de validação ou de um

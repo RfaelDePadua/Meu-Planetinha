@@ -2,7 +2,8 @@
 
 :root { --planeta: #FB923C; }
 
-.app { grid-template-rows: auto auto 1fr auto; }
+/* A coluna tem a largura da tela: sem isso, o mapa (que segue a altura) alarga a página. */
+.app { grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); }
 [data-estado="inicio"] .enunciado,
 [data-estado="inicio"] .mesa { visibility: hidden; }
 
@@ -28,58 +29,101 @@
 }
 
 /* ── Mapa e legenda ──────────────────────────────────── */
+/* O mapa e a legenda ficam lado a lado, centralizados; o tamanho do mapa
+   segue a proporção do desenho (--proporcao vem do jogo.js). */
 .mesa {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
   min-height: 0;
   padding: 8px 16px 0;
 }
-.mapa-caixa { position: relative; min-height: 220px; }
+.mapa-caixa {
+  position: relative;
+  flex: 0 1 auto;
+  height: 100%;
+  min-height: 220px;
+  min-width: 0;
+  max-width: calc(100% - 200px);
+  aspect-ratio: var(--proporcao, 4 / 3);
+}
 .mapa { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; width: 100%; height: 100%; }
 .mapa-caixa .aviso { top: auto; bottom: 6px; }
 
-.chao { fill: #E7F3D8; stroke: #6B8F4E; stroke-width: 3; }
-.margem { fill: #F4EFE2; stroke: #6B8F4E; stroke-width: 3; }
-.malha { stroke: #B9CDA3; stroke-width: 1.5; }
-.agua { fill: #7CC4F0; }
-.trilha { fill: #F59E0B; opacity: 0.55; }
+.moldura { fill: #F3E9CF; stroke: #8B6F47; stroke-width: 3; }
+.moldura-sombra { fill: rgba(0, 0, 0, 0.35); }
+.mapa-nome { font-family: var(--fonte-titulo); font-size: 17px; font-weight: 800; fill: #6B4F2A; }
+.moldura-divisa { stroke: #C9B48A; stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; }
+.chao-a { fill: #DCEFC6; }
+.chao-b { fill: #CFE6B6; }
+.chao-borda { fill: none; stroke: #6B8F4E; stroke-width: 3; }
+.malha { stroke: #A9C78E; stroke-width: 1; opacity: 0.55; }
+.tufo { fill: none; stroke: #86AD62; stroke-width: 2; stroke-linecap: round; }
+.agua { fill: #79C2EE; }
+.onda { fill: none; stroke: #E0F2FE; stroke-width: 2.5; stroke-linecap: round; opacity: 0.8; }
+.beira { stroke: #E7D49E; stroke-width: 5; stroke-linecap: round; }
+.ponte-tabuas { fill: #C2773A; stroke: #7C3F12; stroke-width: 1.5; }
+.ponte-junta { stroke: #8A4B1C; stroke-width: 1.5; }
+.ponte-corrimao { stroke: #5A2D0C; stroke-width: 3.5; stroke-linecap: round; }
+.trilha { fill: none; stroke: #B45309; stroke-width: 5; stroke-dasharray: 1 11; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
 .rota-certa { fill: none; stroke: #0891B2; stroke-width: 7; stroke-dasharray: 2 12; stroke-linecap: round; }
 .seta-dica { fill: none; stroke: #0891B2; stroke-width: 6; stroke-linecap: round; }
+
+.rosa-anel { fill: #FFFBF0; stroke: #8B6F47; stroke-width: 3; }
+.rosa-anel-dentro { fill: none; stroke: #D8C7A1; stroke-width: 1.5; }
 .rosa-braco { fill: #1E293B; }
-.rosa-braco--menor { fill: #64748B; }
-.rosa-letra { font-family: var(--fonte-titulo); font-size: 22px; font-weight: 800; fill: #1E293B; }
+.rosa-braco--claro { fill: #64748B; }
+.rosa-braco--norte { fill: #B91C1C; }
+.rosa-braco--norte-claro { fill: #EF4444; }
+.rosa-colateral { fill: #CBD5E1; stroke: #64748B; stroke-width: 1.2; }
+.rosa-miolo { fill: #FFD43B; stroke: #1E293B; stroke-width: 2; }
+.rosa-letra { font-family: var(--fonte-titulo); font-size: 21px; font-weight: 800; fill: #1E293B; }
 .rosa-letra--n { fill: #B91C1C; }
-.rosa-letra--menor { font-size: 13px; fill: #475569; }
+.rosa-letra--menor { font-size: 12px; fill: #475569; }
 .rosa-explorador path { fill: none; stroke: #B91C1C; stroke-width: 4; stroke-linecap: round; }
 .rosa-explorador text { font-family: var(--fonte-titulo); font-size: 17px; font-weight: 800; fill: #B91C1C; }
+.explorador__sombra { fill: rgba(40, 60, 25, 0.3); }
 
 .lugar { cursor: default; outline: none; }
-.lugar__fundo { fill: transparent; stroke: transparent; stroke-width: 4; }
+.lugar__sombra { fill: rgba(52, 78, 35, 0.28); }
+.lugar__fundo { fill: #FFFCF2; stroke: #CDBB8E; stroke-width: 2; transition: fill 0.15s; }
+.lugar__fundo--vazado { fill: transparent; stroke: transparent; }
 [data-estado="procurando"] .lugar, [data-estado="confirmando"] .lugar { cursor: pointer; }
 [data-estado="procurando"] .lugar:hover .lugar__fundo,
-.lugar:focus-visible .lugar__fundo { fill: rgba(255, 212, 59, 0.35); }
-.lugar.referencia .lugar__fundo { fill: rgba(8, 145, 178, 0.18); stroke: #0891B2; }
-.lugar.tocado .lugar__fundo { fill: rgba(255, 212, 59, 0.4); stroke: #D69E00; }
-.lugar.parceiro .lugar__fundo { fill: rgba(47, 128, 237, 0.22); stroke: #2F80ED; }
-.lugar.errado .lugar__fundo { fill: rgba(255, 107, 107, 0.25); stroke: #DC2626; }
-.lugar.certo .lugar__fundo { fill: rgba(77, 255, 180, 0.35); stroke: #059669; }
+.lugar:focus-visible .lugar__fundo { fill: #FFF1A8; stroke: #D69E00; stroke-width: 3; }
+.lugar.referencia .lugar__fundo { fill: #CFF1F7; stroke: #0891B2; stroke-width: 3.5; }
+.lugar.tocado .lugar__fundo { fill: #FFEB85; stroke: #D69E00; stroke-width: 3.5; }
+.lugar.parceiro .lugar__fundo { fill: #D6E6FF; stroke: #2F80ED; stroke-width: 3.5; }
+.lugar.errado .lugar__fundo { fill: #FFD6D6; stroke: #DC2626; stroke-width: 3.5; }
+.lugar.certo .lugar__fundo { fill: #C9F7DF; stroke: #059669; stroke-width: 3.5; }
+.lugar.referencia .lugar__fundo--vazado, .lugar.tocado .lugar__fundo--vazado,
+.lugar.parceiro .lugar__fundo--vazado, .lugar.errado .lugar__fundo--vazado,
+.lugar.certo .lugar__fundo--vazado { fill-opacity: 0.35; }
 
 .legenda {
-  align-self: start;
+  flex: none;
+  width: 186px;
   max-height: 100%;
   overflow: auto;
-  padding: 10px 12px;
-  border: 2px solid var(--borda);
+  padding: 12px 14px;
+  border: 3px solid #8B6F47;
   border-radius: 16px;
-  background: #F4EFE2;
-  color: #1E293B;
+  background: #F3E9CF;
+  color: #2B2113;
+  box-shadow: 3px 6px 0 rgba(0, 0, 0, 0.3);
 }
-.legenda h2 { margin: 0 0 6px; font-family: var(--fonte-titulo); font-size: 17px; }
-.legenda ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
-.legenda li { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+.legenda h2 {
+  margin: 0 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px dashed #C9B48A;
+  font-family: var(--fonte-titulo);
+  font-size: 18px;
+}
+.legenda ul { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.legenda li { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; line-height: 1.15; }
 .legenda svg { width: 30px; height: 30px; flex: none; }
-.legenda .amostra-agua { width: 30px; height: 18px; border-radius: 4px; background: #7CC4F0; flex: none; }
+.legenda .amostra-agua { width: 30px; height: 20px; border-radius: 5px; background: #79C2EE; box-shadow: inset 0 -3px 0 #E7D49E; flex: none; }
 
 /* ── Controles ───────────────────────────────────────── */
 .dica-toque { margin: 0; color: var(--texto-2); font-weight: 800; }
@@ -100,12 +144,22 @@
 .btn-direcao:active { background: var(--superficie); transform: translateY(2px); }
 .btn-direcao:disabled { opacity: 0.5; }
 
-@media (max-width: 760px) {
+/* Celular e tablet em pé: mapa em cima, legenda embaixo. */
+@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
   body { overflow: auto; }
   .app { height: auto; min-height: 100%; }
-  .mesa { grid-template-columns: 1fr; }
-  .mapa-caixa { min-height: 62vw; }
+  .mesa { flex-direction: column; justify-content: flex-start; align-items: stretch; }
+  .mapa-caixa { width: 100%; height: auto; max-width: none; min-height: 0; }
+  .legenda { width: auto; }
   .legenda ul { grid-template-columns: repeat(2, 1fr); }
   .controles > div { flex-wrap: wrap; }
   .btn-direcao { min-width: 70px; font-size: 17px; }
+}
+
+/* Celular deitado: pouca altura. A página rola e o mapa ganha quase a tela toda. */
+@media (orientation: landscape) and (max-height: 520px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .mesa { align-items: flex-start; }
+  .mapa-caixa { height: 82vh; min-height: 0; }
 }

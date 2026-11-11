@@ -209,12 +209,16 @@
       id: 4, nome: 'Mapa girado', bncc: 'EF04GE09',
       apresenta: 'Agora o mapa pode aparecer girado. O norte é para onde aponta a letra N da rosa dos ventos, não o alto da tela.',
       dominio: 'usar a rosa dos ventos mesmo com o mapa girado',
+      // Metade das missões com o mapa girado e metade com o norte para cima, para
+      // a criança aprender a conferir a rosa sempre, e não só quando o mapa
+      // "parece estranho". Cada mapa gira sempre do mesmo jeito: a Vila fica de
+      // cabeça para baixo e o Sítio, com o norte à direita.
       itens: [
-        girado(encontrar('vila', 'casaN', 'praca', 'N'), 180), girado(encontrar('vila', 'casaL', 'praca', 'L'), 90),
-        girado(encontrar('vila', 'casaO', 'praca', 'O'), 270), girado(ir('vila', 'escola', 'praca'), 90),
+        girado(encontrar('vila', 'casaN', 'praca', 'N'), 180), encontrar('vila', 'casaL', 'praca', 'L'),
+        girado(ir('vila', 'escola', 'praca'), 180), encontrar('vila', 'casaO', 'praca', 'O'),
         girado(ir('vila', 'mercado', 'biblioteca'), 180), girado(encontrar('sitio', 'casaNE', 'poco', 'NE'), 90),
-        girado(encontrar('vila', 'casaS', 'praca', 'S'), 90), girado(encontrar('sitio', 'mataNO', 'poco', 'NO'), 270),
-        girado(ir('vila', 'posto', 'mercado'), 270), girado(encontrar('sitio', 'casaSO', 'poco', 'SO'), 180),
+        encontrar('vila', 'casaS', 'praca', 'S'), girado(encontrar('sitio', 'mataNO', 'poco', 'NO'), 90),
+        ir('vila', 'posto', 'mercado'), encontrar('sitio', 'casaSO', 'poco', 'SO'),
         girado(encontrar('sitio', 'mataSE', 'poco', 'SE'), 90)
       ]
     },
@@ -224,12 +228,12 @@
       dominio: 'seguir rotas descritas com pontos cardeais',
       itens: [
         rota('vila', 'escola', [['S', 2], ['L', 2]]), rota('vila', 'mercado', [['L', 3], ['S', 1]]),
-        rota('vila', 'praca', [['N', 2], ['L', 3]]), girado(rota('vila', 'escola', [['L', 2], ['S', 2]]), 180),
+        rota('vila', 'praca', [['N', 2], ['L', 3]]), rota('vila', 'posto', [['S', 2], ['O', 1]]),
         rota('sitio', 'escola', [['L', 1], ['N', 2]]),
         rota('vila', 'posto', [['O', 3], ['S', 2]]), rota('vila', 'biblioteca', [['N', 2], ['O', 2]]),
         rota('vila', 'mercado', [['N', 3], ['L', 1]]), rota('vila', 'praca', [['S', 2], ['L', 2]]),
         rota('sitio', 'poco', [['N', 2], ['L', 2]]), rota('sitio', 'escola', [['S', 2], ['L', 1]]),
-        girado(rota('vila', 'posto', [['O', 3], ['S', 2]]), 90)
+        rota('vila', 'biblioteca', [['N', 2], ['O', 4]])
       ]
     }
   ];

@@ -371,7 +371,7 @@
   ];
 
   var FALAS = {
-    instrucaoMontar: 'Toque em um ser vivo e depois em quem come ele. A seta mostra para onde vai a energia.',
+    instrucaoMontar: 'Toque em um ser vivo e depois em quem come ele. A seta mostra para onde vai a energia. Para continuar a cadeia, é só tocar no próximo.',
     instrucaoCadeia: 'Monte a cadeia alimentar começando pelo Sol.',
     instrucaoTeia: 'Complete a teia: faltam algumas setas.',
     instrucaoPrever: 'Para cada carta marcada, diga se ela vai aumentar, diminuir ou ficar igual. Depois veja o que acontece.',

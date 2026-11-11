@@ -12,7 +12,8 @@ de dois jeitos:
 - **Montar:** liga os seres com setas que mostram para onde vai a energia — do
   alimento para quem come (Sol → capim → gafanhoto → sapo…). Desenhar a seta
   ao contrário ("quem come quem") é um erro muito comum, e o jogo explica esse
-  erro em particular.
+  erro em particular. Depois de cada seta, o último ser tocado continua
+  marcado: para seguir a cadeia, basta tocar no próximo (tocar fora desmarca).
 - **E se…?:** acontece um evento (uma seca, a caça dos gaviões, o sumiço dos
   fungos). A criança **prevê** se cada ser marcado vai aumentar, diminuir ou
   ficar igual. A simulação mostra o que acontece, passo a passo, e destaca o

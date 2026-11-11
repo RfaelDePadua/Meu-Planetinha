@@ -17,16 +17,20 @@ legenda. São três tipos de missão:
 - **Rota:** o jogo descreve um caminho ("dois quadradinhos para o sul e depois dois para o
   leste") e a criança anda e diz onde chegou.
 
-Da etapa 4 em diante o **mapa aparece girado**: o Norte deixa de ficar em cima.
-É a dificuldade mais documentada na leitura de mapas por crianças, e o jogo a
-trabalha de propósito.
+Na etapa 4, **metade das missões tem o mapa girado**: o Norte deixa de ficar em
+cima. É a dificuldade mais documentada na leitura de mapas por crianças, e o jogo
+a trabalha de propósito. A outra metade tem o norte para cima, para a criança
+conferir a rosa sempre, e não só quando o mapa "parece estranho". Cada mapa gira
+sempre do mesmo jeito (a Vila de cabeça para baixo; o Sítio com o norte à
+direita). As rotas da etapa 5 têm sempre o norte para cima, para não juntar duas
+dificuldades.
 
 | Etapa | Tarefa | BNCC |
 |---|---|---|
 | 1 | Pontos cardeais (norte, sul, leste, oeste) | EF04GE09 |
 | 2 | Pontos colaterais (nordeste, noroeste, sudeste, sudoeste) | EF04GE09 |
 | 3 | Legenda: achar lugares pelo símbolo, numa cidade com rio e ponte | EF03GE07 |
-| 4 | Mapa girado: o Norte em outra posição | EF04GE09 |
+| 4 | Mapa girado (metade das missões): o Norte em outra posição | EF04GE09 |
 | 5 | Rotas descritas com pontos cardeais | EF04GE09 · EF04MA16 |
 
 ## Como o jogo ajuda quem erra
@@ -75,7 +79,9 @@ chute): dizer qual pista usou é o que mais ajuda a ler mapas.
 São três mapas: a Vila de Terramund (8 × 6), o Sítio do Poço (7 × 5, para os
 colaterais) e uma cidade com rio e ponte (8 × 7, para a legenda). No mapa, o
 Norte de cada missão é desenhado na rosa; símbolos e letras ficam sempre de pé,
-mesmo com o mapa girado. Os nomes dos lugares concordam em gênero nas falas
+mesmo com o mapa girado. O mapa parece um tabuleiro de papel: chão quadriculado
+em dois tons (para contar os quadradinhos), rio com margem e ponte, cada lugar
+numa plaquinha, a rosa e o nome do mapa numa faixa à direita e a legenda ao lado. Os nomes dos lugares concordam em gênero nas falas
 ("Essa casa…", "Esse mercado…", "Você chegou à praça"). **Precisa de revisão de um professor
 de Geografia.** Para revisar as frases, abra
 `ferramentas/roteiro-falas.html?jogo=Rumo_Certo` pelo servidor local.

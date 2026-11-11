@@ -19,7 +19,8 @@
   var SAVE_KEY = 'meu-planetinha.rumo-certo.v1';
   var NS = 'http://www.w3.org/2000/svg';
   var CEL = 60;          // tamanho de uma quadra, em unidades do SVG
-  var MARGEM = 112;      // faixa a leste do mapa onde fica a rosa dos ventos
+  var MARGEM = 136;      // faixa à direita do mapa onde fica a rosa dos ventos
+  var BORDA = 10;        // moldura de papel em volta do mapa
 
   var params = new URLSearchParams(location.search);
 
@@ -122,52 +123,134 @@
     return mapa().agua.some(function (c) { return c[0] === x && c[1] === y; });
   }
 
+  // Número fixo por quadradinho (0 a 1), para a decoração não mudar a cada desenho.
+  function sorteio(x, y, k) {
+    var h = (x * 73856093) ^ (y * 19349663) ^ ((k || 0) * 83492791);
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
+  }
+
+  // Rosa dos ventos: gira junto com o mapa; as letras ficam de pé.
   function desenharRosa(pai, cx, cy) {
-    var g = el('g', { transform: 'translate(' + cx + ' ' + cy + ')' }, pai);
-    // Braços: N, S, L, O longos; colaterais curtos.
-    [['N', 0, -1], ['S', 0, 1], ['L', 1, 0], ['O', -1, 0]].forEach(function (b) {
-      var px = -b[2] * 7;
-      var py = b[1] * 7;
-      el('path', { d: 'M' + px + ' ' + py + 'L' + (b[1] * 34) + ' ' + (b[2] * 34) + 'L' + (-px) + ' ' + (-py) + 'Z', class: 'rosa-braco' }, g);
-      var letra = el('text', { transform: dePe(b[1] * 44, b[2] * 44), 'text-anchor': 'middle', 'dominant-baseline': 'central',
-        class: 'rosa-letra' + (b[0] === 'N' ? ' rosa-letra--n' : '') }, g);
-      letra.textContent = b[0];
-    });
+    var g = el('g', { transform: 'translate(' + cx + ' ' + cy + ') rotate(' + giro() + ')' }, pai);
+    el('circle', { r: 41, class: 'rosa-anel' }, g);
+    el('circle', { r: 33, class: 'rosa-anel-dentro' }, g);
     if (S.etapa >= 2) {
-      [['NE', 1, -1], ['NO', -1, -1], ['SE', 1, 1], ['SO', -1, 1]].forEach(function (b) {
-        el('path', { d: 'M0 0L' + (b[1] * 19) + ' ' + (b[2] * 19), stroke: '#64748B', 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
-        var letra = el('text', { transform: dePe(b[1] * 27, b[2] * 27), 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'rosa-letra rosa-letra--menor' }, g);
-        letra.textContent = b[0];
+      [[1, -1], [-1, -1], [1, 1], [-1, 1]].forEach(function (b) {
+        var ang = Math.atan2(b[1], b[0]);
+        var ponta = { x: Math.cos(ang) * 27, y: Math.sin(ang) * 27 };
+        var lado = { x: -Math.sin(ang) * 5, y: Math.cos(ang) * 5 };
+        el('path', { d: 'M' + lado.x + ' ' + lado.y + 'L' + ponta.x + ' ' + ponta.y + 'L' + (-lado.x) + ' ' + (-lado.y) + 'Z', class: 'rosa-colateral' }, g);
       });
     }
-    el('circle', { r: 6, fill: '#FFD43B', stroke: '#1E293B', 'stroke-width': 2 }, g);
+    // Braços principais em duas cores, como numa rosa de verdade.
+    [[0, -1], [1, 0], [0, 1], [-1, 0]].forEach(function (b) {
+      var ponta = { x: b[0] * 38, y: b[1] * 38 };
+      var lado = { x: -b[1] * 7, y: b[0] * 7 };
+      el('path', { d: 'M0 0L' + lado.x + ' ' + lado.y + 'L' + ponta.x + ' ' + ponta.y + 'Z', class: 'rosa-braco' + (b[1] === -1 ? ' rosa-braco--norte' : '') }, g);
+      el('path', { d: 'M0 0L' + (-lado.x) + ' ' + (-lado.y) + 'L' + ponta.x + ' ' + ponta.y + 'Z', class: 'rosa-braco rosa-braco--claro' + (b[1] === -1 ? ' rosa-braco--norte-claro' : '') }, g);
+    });
+    el('circle', { r: 5, class: 'rosa-miolo' }, g);
+    var letras = [['N', 0, -1], ['S', 0, 1], ['L', 1, 0], ['O', -1, 0]];
+    if (S.etapa >= 2) letras = letras.concat([['NE', 1, -1], ['NO', -1, -1], ['SE', 1, 1], ['SO', -1, 1]]);
+    letras.forEach(function (b) {
+      var colateral = b[0].length === 2;
+      var r = colateral ? 51 : 53;
+      var ang = Math.atan2(b[2], b[1]);
+      var letra = el('text', {
+        transform: dePe(Math.cos(ang) * r, Math.sin(ang) * r), 'text-anchor': 'middle', 'dominant-baseline': 'central',
+        class: 'rosa-letra' + (b[0] === 'N' ? ' rosa-letra--n' : '') + (colateral ? ' rosa-letra--menor' : '')
+      }, g);
+      letra.textContent = b[0];
+    });
+  }
+
+  // Ponte desenhada no próprio mapa (gira com ele), atravessando o rio de norte a sul.
+  function desenharPonte(pai) {
+    el('rect', { x: -CEL / 2, y: -CEL / 2, width: CEL, height: CEL, class: 'agua' }, pai);
+    el('rect', { x: -15, y: -CEL / 2 - 4, width: 30, height: CEL + 8, rx: 3, class: 'ponte-tabuas' }, pai);
+    for (var t = -CEL / 2 + 4; t < CEL / 2; t += 8) {
+      el('line', { x1: -15, x2: 15, y1: t, y2: t, class: 'ponte-junta' }, pai);
+    }
+    el('line', { x1: -15, x2: -15, y1: -CEL / 2 - 4, y2: CEL / 2 + 4, class: 'ponte-corrimao' }, pai);
+    el('line', { x1: 15, x2: 15, y1: -CEL / 2 - 4, y2: CEL / 2 + 4, class: 'ponte-corrimao' }, pai);
   }
 
   function desenharMapa() {
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     if (!S.missao) return;
     var M = mapa();
-    var W = M.largura * CEL + MARGEM;
+    var W = M.largura * CEL;
     var H = M.altura * CEL;
     var g = giro();
-    var vw = g % 180 ? H : W;
-    var vh = g % 180 ? W : H;
-    svg.setAttribute('viewBox', (-8) + ' ' + (-8) + ' ' + (vw + 16) + ' ' + (vh + 16));
-    var raiz = el('g', { transform: 'translate(' + vw / 2 + ' ' + vh / 2 + ') rotate(' + g + ') translate(' + (-W / 2) + ' ' + (-H / 2) + ')' }, svg);
+    // Só o mapa gira; a faixa da rosa fica sempre à direita, para o mapa
+    // girado não encolher na tela.
+    var gw = g % 180 ? H : W;
+    var gh = g % 180 ? W : H;
+    var larguraTotal = gw + MARGEM;
+    var alturaTotal = Math.max(gh, 250);
+    var vb = [-BORDA - 2, -BORDA - 2, larguraTotal + 2 * BORDA + 8, alturaTotal + 2 * BORDA + 10];
+    svg.setAttribute('viewBox', vb.join(' '));
+    svg.parentNode.style.setProperty('--proporcao', vb[2] + ' / ' + vb[3]);
 
-    el('rect', { x: 0, y: 0, width: W, height: H, rx: 12, class: 'margem' }, raiz);
-    el('rect', { x: 0, y: 0, width: M.largura * CEL, height: H, rx: 12, class: 'chao' }, raiz);
-    M.agua.forEach(function (c) { el('rect', { x: c[0] * CEL, y: c[1] * CEL, width: CEL, height: CEL, class: 'agua' }, raiz); });
-    for (var i = 1; i < M.largura; i++) el('line', { x1: i * CEL, y1: 0, x2: i * CEL, y2: H, class: 'malha' }, raiz);
-    for (var j = 1; j < M.altura; j++) el('line', { x1: 0, y1: j * CEL, x2: M.largura * CEL, y2: j * CEL, class: 'malha' }, raiz);
+    // Moldura de papel, com sombra
+    el('rect', { x: -BORDA + 3, y: -BORDA + 6, width: larguraTotal + 2 * BORDA, height: alturaTotal + 2 * BORDA, rx: 18, class: 'moldura-sombra' }, svg);
+    el('rect', { x: -BORDA, y: -BORDA, width: larguraTotal + 2 * BORDA, height: alturaTotal + 2 * BORDA, rx: 18, class: 'moldura' }, svg);
 
-    desenharRosa(raiz, M.largura * CEL + MARGEM / 2, Math.min(H / 2, 90));
+    var oy = (alturaTotal - gh) / 2;
+    var raiz = el('g', { transform: 'translate(' + gw / 2 + ' ' + (oy + gh / 2) + ') rotate(' + g + ') translate(' + (-W / 2) + ' ' + (-H / 2) + ')' }, svg);
+    var defs = el('defs', {}, raiz);
+    var recorte = el('clipPath', { id: 'recorte-mapa' }, defs);
+    el('rect', { x: 0, y: 0, width: W, height: H, rx: 10 }, recorte);
+    var chao = el('g', { 'clip-path': 'url(#recorte-mapa)' }, raiz);
 
-    // Rastro do explorador
-    S.trilha.forEach(function (p) {
-      var c = centro(p.x, p.y);
-      el('circle', { cx: c.x, cy: c.y, r: 7, class: 'trilha' }, raiz);
+    // Chão quadriculado em dois tons (ajuda a contar os quadradinhos)
+    var ehPonte = function (x, y) { return M.lugares.some(function (l) { return l.tipo === 'ponte' && l.x === x && l.y === y; }); };
+    for (var y = 0; y < M.altura; y++) {
+      for (var x = 0; x < M.largura; x++) {
+        el('rect', { x: x * CEL, y: y * CEL, width: CEL, height: CEL, class: (x + y) % 2 ? 'chao-b' : 'chao-a' }, chao);
+      }
+    }
+    // Água com ondinhas e margem de areia
+    M.agua.forEach(function (c) {
+      el('rect', { x: c[0] * CEL - 0.5, y: c[1] * CEL - 0.5, width: CEL + 1, height: CEL + 1, class: 'agua' }, chao);
     });
+    M.agua.forEach(function (c) {
+      var px = c[0] * CEL;
+      var py = c[1] * CEL;
+      var desloca = Math.round(sorteio(c[0], c[1]) * 14);
+      // Ondinhas sempre "deitadas" na tela, mesmo com o mapa girado
+      var ondas = el('g', { transform: 'translate(' + (px + CEL / 2) + ' ' + (py + CEL / 2) + ') rotate(' + (-g) + ')' }, chao);
+      el('path', { d: 'M' + (-20 + desloca) + ' -8q5 -5 10 0t10 0', class: 'onda' }, ondas);
+      el('path', { d: 'M' + (-6 - desloca / 2) + ' 12q5 -5 10 0t10 0', class: 'onda' }, ondas);
+      [[0, -1, 0, 0, CEL, 0], [0, 1, 0, CEL, CEL, CEL], [-1, 0, 0, 0, 0, CEL], [1, 0, CEL, 0, CEL, CEL]].forEach(function (v) {
+        var nx = c[0] + v[0];
+        var ny = c[1] + v[1];
+        if (nx < 0 || ny < 0 || nx >= M.largura || ny >= M.altura || ehAgua(nx, ny) || ehPonte(nx, ny)) return;
+        el('line', { x1: px + v[2], y1: py + v[3], x2: px + v[4], y2: py + v[5], class: 'beira' }, chao);
+      });
+    });
+    // Linhas finas dos quadradinhos
+    for (var i = 1; i < M.largura; i++) el('line', { x1: i * CEL, y1: 0, x2: i * CEL, y2: H, class: 'malha' }, chao);
+    for (var j = 1; j < M.altura; j++) el('line', { x1: 0, y1: j * CEL, x2: W, y2: j * CEL, class: 'malha' }, chao);
+    // Tufos de grama nos quadradinhos vazios (só enfeite, bem discreto)
+    for (var ty = 0; ty < M.altura; ty++) {
+      for (var tx = 0; tx < M.largura; tx++) {
+        if (ehAgua(tx, ty)) continue;
+        var ocupado = M.lugares.some(function (l) { return l.x === tx && l.y === ty; });
+        if (ocupado || sorteio(tx, ty, 1) > 0.45) continue;
+        var bx = tx * CEL + 12 + sorteio(tx, ty, 2) * 34;
+        var by = ty * CEL + 18 + sorteio(tx, ty, 3) * 30;
+        el('path', { d: 'M0 0l-3 -7M0 0l0 -9M0 0l3 -7', class: 'tufo', transform: 'translate(' + bx + ' ' + by + ') rotate(' + (-g) + ')' }, chao);
+      }
+    }
+    el('rect', { x: 0, y: 0, width: W, height: H, rx: 10, class: 'chao-borda' }, raiz);
+
+    // Rastro do explorador: um caminho tracejado por onde ele passou
+    if (S.trilha.length && S.pos) {
+      var pontos = S.trilha.concat([S.pos]).map(function (p) { var c = centro(p.x, p.y); return c.x + ' ' + c.y; });
+      el('path', { d: 'M' + pontos.join('L'), class: 'trilha' }, raiz);
+    }
 
     // Caminho certo (demonstração de rota)
     if (S.rotaCerta && S.missao.tipo === 'rota') {
@@ -184,22 +267,11 @@
       el('path', { d: d, class: 'rota-certa' }, raiz);
     }
 
-    // Dica: seta saindo da referência na direção pedida
-    if (S.referenciaDestacada && S.missao.tipo === 'encontrar') {
-      var ref = lugar(S.missao.referencia);
-      var dir = C.DIRECOES[S.missao.dir];
-      var a = centro(ref.x, ref.y);
-      var b = { x: a.x + dir.dx * CEL * 1.6, y: a.y + dir.dy * CEL * 1.6 };
-      var marcador = el('marker', { id: 'ponta-dica', viewBox: '0 0 10 10', refX: 6, refY: 5, markerWidth: 3, markerHeight: 3, orient: 'auto' }, el('defs', {}, raiz));
-      el('path', { d: 'M0 0L10 5L0 10z', fill: '#0891B2' }, marcador);
-      el('path', { d: 'M' + a.x + ' ' + a.y + 'L' + b.x + ' ' + b.y, class: 'seta-dica', 'marker-end': 'url(#ponta-dica)' }, raiz);
-    }
-
-    // Lugares
+    // Lugares: cada um numa plaquinha, como peça de tabuleiro
     M.lugares.forEach(function (l) {
       var c = centro(l.x, l.y);
       var tipo = C.TIPOS_LUGAR[l.tipo];
-      var grupo = el('g', { class: 'lugar', transform: 'translate(' + c.x + ' ' + c.y + ')', 'data-id': l.id }, raiz);
+      var grupo = el('g', { class: 'lugar lugar--' + l.tipo, transform: 'translate(' + c.x + ' ' + c.y + ')', 'data-id': l.id }, raiz);
       if (S.missao.tipo === 'encontrar') {
         grupo.setAttribute('tabindex', S.estado === 'procurando' || S.perguntando ? '0' : '-1');
         grupo.setAttribute('role', 'button');
@@ -212,25 +284,68 @@
       } else if ((S.missao.tipo === 'ir' && l.id === S.missao.alvo) || (S.revelado && l.id === S.missao.destino)) {
         grupo.classList.add('certo');
       }
-      el('rect', { x: -CEL / 2 + 3, y: -CEL / 2 + 3, width: CEL - 6, height: CEL - 6, rx: 10, class: 'lugar__fundo' }, grupo);
-      var simbolo = el('use', { href: '#l-' + l.tipo, x: -21, y: -21, width: 42, height: 42 }, el('g', { transform: 'rotate(' + (-giro()) + ')' }, grupo));
+      if (l.tipo === 'ponte') {
+        desenharPonte(grupo);
+        el('rect', { x: -CEL / 2 + 4, y: -CEL / 2 + 4, width: CEL - 8, height: CEL - 8, rx: 12, class: 'lugar__fundo lugar__fundo--vazado' }, grupo);
+        return;
+      }
+      el('rect', { x: -CEL / 2 + 6, y: -CEL / 2 + 8, width: CEL - 10, height: CEL - 10, rx: 12, class: 'lugar__sombra' }, grupo);
+      el('rect', { x: -CEL / 2 + 4, y: -CEL / 2 + 4, width: CEL - 8, height: CEL - 8, rx: 12, class: 'lugar__fundo' }, grupo);
+      var simbolo = el('use', { href: '#l-' + l.tipo, x: -19, y: -19, width: 38, height: 38 }, el('g', { transform: 'rotate(' + (-g) + ')' }, grupo));
       simbolo.setAttribute('aria-hidden', 'true');
     });
 
-    // Explorador
+    // Dica: seta saindo da referência na direção pedida (por cima das plaquinhas)
+    if (S.referenciaDestacada && S.missao.tipo === 'encontrar') {
+      var ref = lugar(S.missao.referencia);
+      var dir = C.DIRECOES[S.missao.dir];
+      var a = centro(ref.x, ref.y);
+      var inicioSeta = { x: a.x + dir.dx * CEL * 0.42, y: a.y + dir.dy * CEL * 0.42 };
+      var b = { x: a.x + dir.dx * CEL * 1.6, y: a.y + dir.dy * CEL * 1.6 };
+      var marcador = el('marker', { id: 'ponta-dica', viewBox: '0 0 10 10', refX: 6, refY: 5, markerWidth: 3, markerHeight: 3, orient: 'auto' }, defs);
+      el('path', { d: 'M0 0L10 5L0 10z', fill: '#0891B2' }, marcador);
+      el('path', { d: 'M' + inicioSeta.x + ' ' + inicioSeta.y + 'L' + b.x + ' ' + b.y, class: 'seta-dica', 'marker-end': 'url(#ponta-dica)' }, raiz);
+    }
+
+    // Explorador: se estiver em cima de um lugar, fica no canto para o lugar continuar visível
     if (S.pos) {
       var e = centro(S.pos.x, S.pos.y);
-      var grupoE = el('g', { transform: 'translate(' + e.x + ' ' + e.y + ')' }, raiz);
+      var grupoE = el('g', { class: 'explorador', transform: 'translate(' + e.x + ' ' + e.y + ')' }, raiz);
+      if (S.animarDe) {
+        var de = centro(S.animarDe.x, S.animarDe.y);
+        el('animateTransform', { attributeName: 'transform', type: 'translate', from: de.x + ' ' + de.y, to: e.x + ' ' + e.y, dur: '0.18s', fill: 'freeze' }, grupoE);
+        S.animarDe = null;
+      }
       if (S.rosaNoExplorador) {
         var rosa = el('g', { class: 'rosa-explorador' }, grupoE);
-        [['N', 0, -1], ['S', 0, 1], ['L', 1, 0], ['O', -1, 0]].forEach(function (b) {
-          el('path', { d: 'M' + (b[1] * 20) + ' ' + (b[2] * 20) + 'L' + (b[1] * 30) + ' ' + (b[2] * 30) }, rosa);
-          var letra = el('text', { transform: dePe(b[1] * 40, b[2] * 40), 'text-anchor': 'middle', 'dominant-baseline': 'central' }, rosa);
-          letra.textContent = b[0];
+        [['N', 0, -1], ['S', 0, 1], ['L', 1, 0], ['O', -1, 0]].forEach(function (b2) {
+          el('path', { d: 'M' + (b2[1] * 20) + ' ' + (b2[2] * 20) + 'L' + (b2[1] * 30) + ' ' + (b2[2] * 30) }, rosa);
+          var letra = el('text', { transform: dePe(b2[1] * 40, b2[2] * 40), 'text-anchor': 'middle', 'dominant-baseline': 'central' }, rosa);
+          letra.textContent = b2[0];
         });
       }
-      el('use', { href: '#l-explorador', x: -18, y: -18, width: 36, height: 36 }, el('g', { transform: 'rotate(' + (-giro()) + ')' }, grupoE));
+      var sobreLugar = M.lugares.some(function (l) { return l.x === S.pos.x && l.y === S.pos.y; });
+      var dePeE = el('g', { transform: 'rotate(' + (-g) + ')' + (sobreLugar ? ' translate(15 15) scale(0.72)' : '') }, grupoE);
+      el('ellipse', { cx: 0, cy: 17, rx: 14, ry: 5, class: 'explorador__sombra' }, dePeE);
+      el('use', { href: '#l-explorador', x: -19, y: -19, width: 38, height: 38 }, dePeE);
     }
+
+    // Faixa da rosa dos ventos, sempre à direita do mapa
+    var xRosa = gw + 10 + (MARGEM - 10) / 2;
+    el('line', { x1: gw + 10, y1: 6, x2: gw + 10, y2: alturaTotal - 6, class: 'moldura-divisa' }, svg);
+    desenharRosa(svg, xRosa, Math.min(alturaTotal / 2, 76));
+
+    // Nome do mapa no pé da faixa, como nos mapas de verdade (em duas linhas)
+    var nome = M.nome;
+    var espacos = [];
+    for (var k = 0; k < nome.length; k++) if (nome[k] === ' ') espacos.push(k);
+    var corte = espacos.reduce(function (melhor, s) { return Math.abs(s - nome.length / 2) < Math.abs(melhor - nome.length / 2) ? s : melhor; }, espacos[0]);
+    var linhas = corte === undefined ? [nome] : [nome.slice(0, corte), nome.slice(corte + 1)];
+    var titulo = el('text', { x: xRosa, y: alturaTotal - 14 - (linhas.length - 1) * 19, 'text-anchor': 'middle', class: 'mapa-nome' }, svg);
+    linhas.forEach(function (linha, n) {
+      var t = el('tspan', { x: xRosa, dy: n ? 19 : 0 }, titulo);
+      t.textContent = linha;
+    });
   }
 
   function desenharLegenda() {
@@ -548,6 +663,7 @@
 
     var antes = S.missao.tipo === 'ir' ? distancia(S.pos, lugar(S.missao.alvo)) : 0;
     S.trilha.push({ x: S.pos.x, y: S.pos.y });
+    S.animarDe = { x: S.pos.x, y: S.pos.y };
     S.pos = { x: nx, y: ny };
     if (S.modo === 'dupla') {
       S.vez = S.vez === 1 ? 2 : 1;

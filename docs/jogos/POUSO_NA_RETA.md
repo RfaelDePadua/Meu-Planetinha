@@ -8,6 +8,8 @@
 A criança pilota uma nave e pousa no ponto da pista (uma reta numérica) que
 corresponde ao número pedido. O lugar do pouso é a resposta: para acertar, é
 preciso entender a fração, o decimal ou a porcentagem como uma **medida**.
+A pista tem marquinhas de régua fixas (cada inteiro em 10 partes, com a
+metade maior), que ajudam a estimar sem dividir pelo denominador.
 
 | Etapa | Conteúdo | BNCC |
 |---|---|---|

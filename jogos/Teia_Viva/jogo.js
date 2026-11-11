@@ -465,6 +465,9 @@
     if (montando()) {
       conferir.textContent = 'Conferir';
       conferir.disabled = !S.setasUsuario.length;
+      var marcado = S.estado === 'montando' && S.selecionada ? C.SERES[S.selecionada] : null;
+      $('dica-selecao').hidden = !marcado;
+      if (marcado) $('dica-selecao').textContent = (marcado.tipo === 'sol' ? 'Agora toque em quem usa a luz do Sol.' : 'Agora toque em quem come ' + marcado.o + '.') + ' Para desmarcar, toque fora.';
       $('btn-desfazer').hidden = false;
       $('btn-desfazer').disabled = !S.setasUsuario.length;
     } else {
@@ -607,8 +610,10 @@
     } else if (S.selecionada === id) {
       S.selecionada = null;
     } else {
+      // Quem foi tocado por último continua marcado: para seguir a cadeia
+      // (capim → gafanhoto → seriema), basta tocar no próximo.
       adicionarSeta(S.selecionada, id);
-      S.selecionada = null;
+      S.selecionada = id;
     }
     desenharTudo();
   }
@@ -1015,7 +1020,15 @@
   $('btn-conferir').addEventListener('click', pedirConferir);
   $('btn-desfazer').addEventListener('click', function () {
     if (S.estado !== 'montando' || !S.setasUsuario.length) return;
-    S.setasUsuario.pop();
+    // Volta a marcar de onde a seta saía, para refazer dali.
+    S.selecionada = S.setasUsuario.pop()[0];
+    desenharTudo();
+  });
+  // Tocar fora das cartas desmarca (para começar uma seta de outro ser).
+  $('campo').addEventListener('click', function (e) {
+    if (S.estado !== 'montando' || S.pausado || !S.selecionada) return;
+    if (e.target.closest && e.target.closest('.carta, .seta-alvo, button')) return;
+    S.selecionada = null;
     desenharTudo();
   });
   $('btn-confirmar').addEventListener('click', function () {
