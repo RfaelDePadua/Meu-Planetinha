@@ -130,6 +130,10 @@ ano. Fundamentação em [PESQUISA_JOGOS.md](PESQUISA_JOGOS.md).
     para seguir a cadeia; tocar fora desmarca; "Desfazer" volta a marcar de
     onde a seta saía.
 
+- **11/11 — site no domínio do projeto:** a versão nova passou a ser publicada em
+  www.meuplanetinha.com.br (GitHub Pages, `main` do repositório público); o
+  endereço da Netlify redireciona para lá.
+
 ## Alterações a partir do parecer dos professores
 
 Registre aqui cada mudança feita por causa de uma ficha de validação ou de um

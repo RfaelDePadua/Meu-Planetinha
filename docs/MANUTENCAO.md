@@ -52,26 +52,28 @@ http, não abrindo o arquivo direto.)
 
 ## Publicar
 
-O trabalho está na branch `repaginacao` (a `main` antiga não tem os jogos atuais).
-O repositório público do projeto é `RfaelDePadua/Meu-Planetinha`: a `main` dele
-publica direto em www.meuplanetinha.com.br (GitHub Pages), então combine antes de
-mexer nela. Para subir lá, use `sh ferramentas/subir-publico.sh`, que deixa de fora
-os documentos internos (`docs/RELATORIO_APOIO.md` e `docs/testes/`), guardados só no
-repositório privado `LucasTerrau/meu-planetinha` (remote `lucas`). Na Netlify, deixe
-desligado o selo "Powered by Netlify" (Project configuration > General): ele cobre
-os botões dos jogos.
+O site está em **https://www.meuplanetinha.com.br**, publicado pelo GitHub Pages a
+partir da `main` do repositório público `RfaelDePadua/Meu-Planetinha` (remote
+`origin`). O trabalho do dia a dia fica na branch `repaginacao` do repositório
+privado `LucasTerrau/meu-planetinha` (remote `lucas`), que guarda também os
+documentos internos (`docs/RELATORIO_APOIO.md` e `docs/testes/`).
 
-O site está em https://meu-planetinha.netlify.app (Netlify). **Nunca publique a
-pasta do projeto direto** (ela tem o `.env` com a chave do Azure). Publique uma
-cópia limpa, só com o que está no Git:
+Para publicar, faça o commit na `repaginacao`, dê `git push lucas repaginacao` e rode:
 
 ```bash
-rm -rf .publicar && mkdir .publicar && git archive HEAD | tar -x -C .publicar
+sh ferramentas/subir-publico.sh
 ```
 
-Depois publique a pasta `.publicar` (Netlify CLI ou arrastando a pasta no painel
-do Netlify). O `.gitattributes` tira da cópia os protótipos antigos e as artes
-PNG. Funciona igual no GitHub Pages, se for preciso trocar de hospedagem.
+O script tira os documentos internos do histórico e sobe a mesma cópia na
+`repaginacao` e na `main` do repositório público; o Pages atualiza o site em
+um ou dois minutos. **Nunca use push forçado na `main`.** O Pages publica tudo o
+que está na `main` (o `.gitattributes` não vale lá), por isso nada secreto pode
+entrar no Git; o `.env` com a chave do Azure fica fora (`.gitignore`).
+
+O endereço antigo, meu-planetinha.netlify.app, só redireciona para o domínio (está
+nos papéis entregues às escolas em 04/11). Se precisar republicar o redirecionamento,
+publique na Netlify uma pasta só com o arquivo `_redirects`:
+`/*  https://www.meuplanetinha.com.br/:splat  301!`
 
 **Ao mudar algo que precisa chegar a computadores já preparados sem internet**,
 nada a fazer: páginas e código vêm da rede primeiro. Só ao mudar a estrutura do
